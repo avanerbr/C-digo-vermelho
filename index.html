@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Central Código Vermelho</title>
+<meta name="description" content="Calendário de 30 dias, 60 roteiros completos, mapa de crédito e painel de execução da Avaner">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;700;800&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="ticker-wrap"><div class="ticker" id="ticker"></div></div>
+
+<header class="top">
+  <div class="brand">
+    <h1><em>Código</em> Vermelho</h1>
+    <span class="sub">Central de conteúdo — Avaner · 30 dias · 60 roteiros</span>
+  </div>
+  <button class="theme-toggle" id="themeToggle" type="button">Tema: sistema</button>
+</header>
+
+<nav class="tabs" id="tabs" role="tablist" aria-label="Seções">
+  <button role="tab" aria-selected="true" data-view="geral">Visão geral</button>
+  <button role="tab" aria-selected="false" data-view="execucao">Execução</button>
+  <button role="tab" aria-selected="false" data-view="calendario">Calendário</button>
+  <button role="tab" aria-selected="false" data-view="roteiros">Roteiros</button>
+  <button role="tab" aria-selected="false" data-view="dores">Dores &amp; desejos</button>
+  <button role="tab" aria-selected="false" data-view="credito">Mapa de crédito</button>
+  <button role="tab" aria-selected="false" data-view="viral">Sistema de viralização</button>
+</nav>
+
+<main>
+  <section class="view active" id="view-geral">
+    <p class="eyebrow">Painel</p>
+    <h2>60 vídeos. 1 meta: virar referência em alavancagem.</h2>
+    <p class="lede">30 dias, 2 Reels por dia, formato cortes. Cada roteiro tem copy completa, direção de fala, direção de edição, a dor e o desejo que ele ativa, e a fonte do dado quando aplicável.</p>
+    <div class="stats" id="statsRow"></div>
+    <div class="section-block">
+      <h3>Distribuição por pilar</h3>
+      <div class="pilar-bars" id="pilarBars"></div>
+    </div>
+    <div class="section-block">
+      <h3>Como este painel funciona</h3>
+      <div class="field-grid">
+        <div class="field"><div class="fl">Execução</div><div class="fv">O status de produção de cada vídeo — gravado, editado, programado, publicado. Sincroniza com o Supabase, então o time inteiro vê o mesmo status.</div></div>
+        <div class="field"><div class="fl">Calendário</div><div class="fv">Os 30 dias com 2 posts cada, na ordem sugerida. Clique num horário pra abrir o roteiro completo.</div></div>
+        <div class="field"><div class="fl">Roteiros</div><div class="fv">Biblioteca com os 60 roteiros completos, filtrável por pilar e por busca de texto.</div></div>
+        <div class="field"><div class="fl">Dores &amp; desejos / Mapa de crédito</div><div class="fv">O mapa emocional e as taxas reais de cada tipo de dívida no Brasil hoje, pra usar como referência a qualquer momento.</div></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="view" id="view-execucao">
+    <p class="eyebrow">Produção</p>
+    <h2>Painel de execução</h2>
+    <p class="lede">Acompanhe o que já foi gravado, editado, programado e publicado. Marcar uma etapa marca automaticamente as anteriores.</p>
+    <div id="execConnStatus" class="conn-status"></div>
+    <div class="stats" id="execStats"></div>
+    <div class="exec-progress" id="execProgressBar"></div>
+    <div class="exec-legend" id="execProgressLegend"></div>
+    <div class="filters" id="execFilters">
+      <input class="search-box" id="execSearchBox" type="search" placeholder="Buscar por título ou pilar...">
+    </div>
+    <p class="result-count" id="execResultCount"></p>
+    <div class="table-scroll">
+      <table class="exec-table">
+        <thead><tr><th>Quando</th><th>Pilar</th><th>Título</th><th>Gravado</th><th>Editado</th><th>Programado</th><th>Publicado</th><th>Notas</th></tr></thead>
+        <tbody id="execTableBody"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="view" id="view-calendario">
+    <p class="eyebrow" id="calPeriodo">Período</p>
+    <h2>Calendário — 30 dias</h2>
+    <p class="lede">2 Reels por dia. Clique em qualquer horário pra abrir o roteiro completo na aba Roteiros. A bolinha ao lado do horário mostra o status de execução.</p>
+    <div class="cal-grid" id="calGrid"></div>
+  </section>
+
+  <section class="view" id="view-roteiros">
+    <p class="eyebrow">Biblioteca completa</p>
+    <h2>Roteiros — copy, fala e edição</h2>
+    <p class="lede">Roteiro-base: grave com a sua própria cadência e gírias. O texto é o esqueleto do que falar — sua voz é o que faz não soar como IA.</p>
+    <div class="filters" id="filters">
+      <input class="search-box" id="searchBox" type="search" placeholder="Buscar por palavra, gancho ou dado...">
+    </div>
+    <p class="result-count" id="resultCount"></p>
+    <div class="script-list" id="scriptList"></div>
+  </section>
+
+  <section class="view" id="view-dores">
+    <p class="eyebrow">Psicologia do gancho</p>
+    <h2>Dores &amp; desejos</h2>
+    <p class="lede">Todo roteiro deste calendário ativa pelo menos uma dor e promete pelo menos um desejo — não é decoração, é o motor emocional por trás do dado e da virada. Veja a lista completa nas fichas de cada roteiro.</p>
+    <div class="section-block">
+      <h3>Dores</h3>
+      <div class="pain-grid" id="doresGrid"></div>
+    </div>
+    <div class="section-block">
+      <h3>Desejos</h3>
+      <div class="pain-grid" id="desejosGrid"></div>
+    </div>
+  </section>
+
+  <section class="view" id="view-credito">
+    <p class="eyebrow">Todas as opções de crédito</p>
+    <h2>Mapa de crédito no Brasil</h2>
+    <p class="lede">Não é só financiamento imobiliário — o bloco Código Vermelho bate em todas as frentes de dívida. Taxas reais, com fonte, pra usar em qualquer roteiro novo.</p>
+    <div class="table-scroll">
+      <table class="credit-table">
+        <thead><tr><th>Tipo de crédito</th><th>Taxa</th><th>O que significa</th><th>Fonte</th></tr></thead>
+        <tbody id="creditBody"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="view" id="view-viral">
+    <p class="eyebrow">O mecanismo, não só a lista de ideias</p>
+    <h2>Sistema de viralização</h2>
+    <p class="lede">Aplique estas regras em qualquer vídeo do calendário — inclusive nos que vierem depois dos 30 dias.</p>
+    <div class="viral-list" id="viralList"></div>
+    <div class="meta-box">
+      <h4>Meta dos 30 dias</h4>
+      <p>A palavra <strong>"alavancagem"</strong> aparece de propósito nos ganchos e CTAs dos pilares de Alavancagem Patrimonial, Financeira e de Capital. Repetir o mesmo conceito-âncora em ângulos diferentes, todos os dias, é o que faz o algoritmo e o público te associarem a esse termo em 30 dias. Não troque por sinônimos ("crescimento", "investimento") nesses vídeos — a repetição exata da palavra constrói a associação de marca.</p>
+    </div>
+  </section>
+</main>
+
+<footer>Central de conteúdo Avaner · dados públicos do Banco Central, Boletim Focus, ABAC, FipeZap e Serasa Experian (ago/2026) · uso interno</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="supabase-config.js"></script>
+<script src="data.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
