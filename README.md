@@ -96,3 +96,12 @@ O status de cada campanha é independente. Trocar de campanha no seletor também
 - sincronização no Supabase.
 
 Com Supabase disponível, celular e computador veem as mesmas marcações em tempo real. Sem conexão, o painel usa backup local do navegador.
+
+## Ajustes desta versão
+
+- Tela **Hoje** agora é global: reúne conteúdos de Imóveis e Caminhões no mesmo painel, com selo por campanha.
+- Corrigida a exibição de `R$` nas parcelas do Grupo 20.004.
+- Restaurados os avisos do Grupo 11.000 sobre simulação bancária do dia e parcela pós-contemplação ainda não confirmada.
+- Proteção contra mistura de status ao trocar de campanha enquanto uma consulta do Supabase ainda está em andamento.
+- Adicionada a pendência sobre a regra do **lance exclusivo** no Grupo 20.004.
+- Mantida a campanha de caminhões apenas como base oficial, sem inventar roteiros ou anúncios antes da validação das regras.

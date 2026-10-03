@@ -29,14 +29,20 @@ function fallbackCopy(text, done){
 }
 
 /* ---------- Dados / campanhas ---------- */
-const CAMPAIGNS = window.CAMPAIGNS;
+const CAMPAIGNS = window.CAMPAIGNS || {};
+if (!Object.keys(CAMPAIGNS).length) {
+  console.error('Nenhuma campanha carregada. Verifique data.js.');
+  const hb = document.querySelector('#hojeBody');
+  if (hb) hb.innerHTML = '<div class="notice red"><b>Erro ao carregar os dados.</b> O arquivo data.js não foi carregado corretamente.</div>';
+}
 let campaignKey = store.get('avaner-campaign', Object.keys(CAMPAIGNS)[0] || 'g11000');
 if(!CAMPAIGNS[campaignKey]) campaignKey = Object.keys(CAMPAIGNS)[0];
 let ACTIVE_DATA = CAMPAIGNS[campaignKey];
 let ITEMS = [];
 let byId = {};
 let C = {};
-function storageKey(suffix){ return 'avaner-'+campaignKey+'-'+suffix; }
+function storageKeyFor(key, suffix){ return 'avaner-'+key+'-'+suffix; }
+function storageKey(suffix){ return storageKeyFor(campaignKey, suffix); }
 function rebuildCampaignRefs(){
   ACTIVE_DATA = CAMPAIGNS[campaignKey];
   C = ACTIVE_DATA.campanha;
@@ -55,17 +61,32 @@ const STAGES = ['gravado','editado','publicado'];
 const STAGE_LABEL = {gravado:'Gravado', editado:'Editado', publicado:'Publicado'};
 let exec = {};
 let pendState = {};
+const stateByCampaign = {};
 function defRow(id){ return {item_id:id, gravado:false, gravado_em:null, editado:false, editado_em:null, publicado:false, publicado_em:null, notas:''}; }
-function rowOf(id){ return exec[id] || defRow(id); }
-function stageIdx(r){ let i = 0; STAGES.forEach((s,k) => { if(r[s]) i = k+1; }); return i; }
-function pendOf(pid){
-  const base = ACTIVE_DATA.pendencias.find(p => p.id === pid) || {};
-  return Object.assign({}, base, pendState[pid] || {});
+function stateFor(key){
+  if(!stateByCampaign[key]) stateByCampaign[key] = {
+    exec: store.get(storageKeyFor(key, 'exec'), {}),
+    pend: store.get(storageKeyFor(key, 'pend'), {})
+  };
+  return stateByCampaign[key];
 }
-
-function execTable(){ return C.db_exec || ('camp_'+campaignKey+'_execucao'); }
-function pendTable(){ return C.db_pend || ('camp_'+campaignKey+'_pendencias'); }
+function syncActiveState(){ const st = stateFor(campaignKey); exec = st.exec; pendState = st.pend; }
+function rowOfFor(key, id){ return stateFor(key).exec[id] || defRow(id); }
+function rowOf(id){ return rowOfFor(campaignKey, id); }
+function stageIdx(r){ let i = 0; STAGES.forEach((s,k) => { if(r[s]) i = k+1; }); return i; }
+function pendOfFor(key, pid){
+  const data = CAMPAIGNS[key] || {pendencias:[]};
+  const base = (data.pendencias || []).find(p => p.id === pid) || {};
+  return Object.assign({}, base, stateFor(key).pend[pid] || {});
+}
+function pendOf(pid){ return pendOfFor(campaignKey, pid); }
+function execTableFor(key){ const c = CAMPAIGNS[key].campanha; return c.db_exec || ('camp_'+key+'_execucao'); }
+function pendTableFor(key){ const c = CAMPAIGNS[key].campanha; return c.db_pend || ('camp_'+key+'_pendencias'); }
+function execTable(){ return execTableFor(campaignKey); }
+function pendTable(){ return pendTableFor(campaignKey); }
 let syncChannel = null;
+let loadGeneration = 0;
+syncActiveState();
 
 function setConn(kind, text){
   const el = $('#connStatus');
@@ -75,25 +96,40 @@ function setConn(kind, text){
 }
 
 async function loadAll(silent){
+  const generation = ++loadGeneration;
+  const keys = Object.keys(CAMPAIGNS);
+  let hadError = false;
   if(sb){
-    const [e1, e2] = await Promise.all([
-      sb.from(execTable()).select('*'),
-      sb.from(pendTable()).select('*')
-    ]);
-    if(e1.error || e2.error){
-      console.error(e1.error || e2.error);
-      setConn('warn', 'Não consegui falar com o Supabase agora. Usando o backup deste navegador.');
-      exec = store.get(storageKey('exec'), {}); pendState = store.get(storageKey('pend'), {});
-    } else {
-      exec = {}; (e1.data || []).forEach(r => exec[r.item_id] = Object.assign(defRow(r.item_id), r));
-      pendState = {}; (e2.data || []).forEach(r => pendState[r.id] = {status:r.status, obs:r.obs});
-      store.set(storageKey('exec'), exec); store.set(storageKey('pend'), pendState);
-      if(!silent) setConn('ok', 'Sincronizado com o Supabase. Todos os aparelhos veem o mesmo status.');
-    }
+    const results = await Promise.all(keys.map(async key => {
+      const [e1, e2] = await Promise.all([
+        sb.from(execTableFor(key)).select('*'),
+        sb.from(pendTableFor(key)).select('*')
+      ]);
+      return {key, e1, e2};
+    }));
+    if(generation !== loadGeneration) return;
+    results.forEach(({key,e1,e2}) => {
+      const st = stateFor(key);
+      if(e1.error || e2.error){
+        hadError = true;
+        console.error(e1.error || e2.error);
+        st.exec = store.get(storageKeyFor(key, 'exec'), {});
+        st.pend = store.get(storageKeyFor(key, 'pend'), {});
+      } else {
+        st.exec = {}; (e1.data || []).forEach(r => st.exec[r.item_id] = Object.assign(defRow(r.item_id), r));
+        st.pend = {}; (e2.data || []).forEach(r => st.pend[r.id] = {status:r.status, obs:r.obs});
+        store.set(storageKeyFor(key, 'exec'), st.exec);
+        store.set(storageKeyFor(key, 'pend'), st.pend);
+      }
+    });
+    if(hadError) setConn('warn', 'Uma das campanhas não sincronizou com o Supabase. Usando o backup deste navegador onde foi necessário.');
+    else if(!silent) setConn('ok', 'Sincronizado com o Supabase. Todos os aparelhos veem o mesmo status.');
   } else {
+    keys.forEach(key => { const st = stateFor(key); st.exec = store.get(storageKeyFor(key, 'exec'), {}); st.pend = store.get(storageKeyFor(key, 'pend'), {}); });
     setConn('warn', (window.SUPABASE_CONFIG && window.SUPABASE_CONFIG.url && !window.supabase) ? 'Não consegui carregar o Supabase (sem internet?). Usando o backup deste navegador.' : 'Supabase não configurado. O status fica salvo só neste navegador (veja o README).');
-    exec = store.get(storageKey('exec'), {}); pendState = store.get(storageKey('pend'), {});
   }
+  if(generation !== loadGeneration) return;
+  syncActiveState();
   renderAll();
 }
 
@@ -101,19 +137,26 @@ function subscribe(){
   if(!sb || !sb.channel) return;
   try{
     if(syncChannel && sb.removeChannel) sb.removeChannel(syncChannel);
-    syncChannel = sb.channel('avaner-sync-'+campaignKey)
-      .on('postgres_changes', {event:'*', schema:'public', table:execTable()}, p => {
-        const r = p.new; if(r && r.item_id){ exec[r.item_id] = Object.assign(defRow(r.item_id), r); store.set(storageKey('exec'), exec); renderAll(); }
+    const subscribedKey = campaignKey;
+    const execT = execTableFor(subscribedKey);
+    const pendT = pendTableFor(subscribedKey);
+    syncChannel = sb.channel('avaner-sync-'+subscribedKey)
+      .on('postgres_changes', {event:'*', schema:'public', table:execT}, p => {
+        if(subscribedKey !== campaignKey) return;
+        const r = p.new; if(r && r.item_id){ const st = stateFor(subscribedKey); st.exec[r.item_id] = Object.assign(defRow(r.item_id), r); store.set(storageKeyFor(subscribedKey,'exec'), st.exec); syncActiveState(); renderAll(); }
       })
-      .on('postgres_changes', {event:'*', schema:'public', table:pendTable()}, p => {
-        const r = p.new; if(r && r.id){ pendState[r.id] = {status:r.status, obs:r.obs}; store.set(storageKey('pend'), pendState); renderAll(); }
+      .on('postgres_changes', {event:'*', schema:'public', table:pendT}, p => {
+        if(subscribedKey !== campaignKey) return;
+        const r = p.new; if(r && r.id){ const st = stateFor(subscribedKey); st.pend[r.id] = {status:r.status, obs:r.obs}; store.set(storageKeyFor(subscribedKey,'pend'), st.pend); syncActiveState(); renderAll(); }
       })
       .subscribe();
   }catch(e){ console.error(e); }
 }
+
 document.addEventListener('visibilitychange', () => { if(document.visibilityState === 'visible') loadAll(true); });
 
 async function saveRow(row){
+  stateFor(campaignKey).exec = exec;
   store.set(storageKey('exec'), exec);
   if(sb){
     const {error} = await sb.from(execTable()).upsert(row, {onConflict:'item_id'});
@@ -121,6 +164,7 @@ async function saveRow(row){
   }
 }
 async function savePend(id){
+  stateFor(campaignKey).pend = pendState;
   store.set(storageKey('pend'), pendState);
   if(sb){
     const p = pendOf(id);
@@ -130,8 +174,8 @@ async function savePend(id){
 }
 
 /* ---------- Situação (alerta) ---------- */
-function situacao(item){
-  const ps = (item.pend || []).map(pendOf);
+function situacaoFor(key, item){
+  const ps = (item.pend || []).map(pid => pendOfFor(key, pid));
   const blocked = ps.filter(p => p.status === 'BLOQUEADO');
   const pending = ps.filter(p => p.status === 'PENDENTE');
   if(blocked.length) return {cls:'red', label:'Bloqueado', blocked, pending};
@@ -140,16 +184,19 @@ function situacao(item){
   if(start > todayISO()) return {cls:'gray', label:'Ainda não chegou', blocked, pending};
   return {cls:'green', label:'Liberado', blocked, pending};
 }
+function situacao(item){ return situacaoFor(campaignKey, item); }
 function alertPill(item){ const s = situacao(item); return '<span class="alert '+s.cls+'">'+s.label+'</span>'; }
-function isBlocked(item){ return situacao(item).cls === 'red'; }
-function nextStep(item){
-  const r = rowOf(item.id);
-  if(isBlocked(item) && r.editado) return 'Aguardar liberação';
+function isBlockedFor(key, item){ return situacaoFor(key, item).cls === 'red'; }
+function isBlocked(item){ return isBlockedFor(campaignKey, item); }
+function nextStepFor(key, item){
+  const r = rowOfFor(key, item.id);
+  if(isBlockedFor(key, item) && r.editado) return 'Aguardar liberação';
   if(!r.gravado) return item.kind === 'ad' ? 'Gravar' : 'Gravar';
   if(!r.editado) return 'Editar';
   if(!r.publicado) return item.kind === 'ad' ? 'Subir no Meta' : 'Publicar';
   return 'Feito';
 }
+function nextStep(item){ return nextStepFor(campaignKey, item); }
 
 /* ---------- Mudar etapa ---------- */
 async function setStage(id, stage, val){
@@ -170,6 +217,18 @@ async function setStage(id, stage, val){
   renderAll();
   await saveRow(r);
 }
+async function setStageFor(key, id, stage, val){
+  const data = CAMPAIGNS[key]; if(!data) return;
+  const item = (data.reels||[]).concat(data.ads||[]).find(i => i.id === id); if(!item) return;
+  const st = stateFor(key); const r = Object.assign(defRow(id), rowOfFor(key,id));
+  const k = STAGES.indexOf(stage);
+  if(stage === 'publicado' && val && isBlockedFor(key,item)){ toast(id+' está bloqueado. Libere a pendência antes de publicar.'); renderAll(); return; }
+  if(val){ for(let i=0;i<=k;i++){ const ss=STAGES[i]; if(!r[ss]){ r[ss]=true; r[ss+'_em']=todayISO(); } } }
+  else { for(let i=k;i<STAGES.length;i++){ const ss=STAGES[i]; r[ss]=false; r[ss+'_em']=null; } }
+  r.updated_at = new Date().toISOString(); st.exec[id]=r; store.set(storageKeyFor(key,'exec'),st.exec); renderAll();
+  if(sb){ const {error}=await sb.from(execTableFor(key)).upsert(r,{onConflict:'item_id'}); if(error){ console.error(error); toast('Não salvou no Supabase. Ficou só neste aparelho.'); } }
+}
+
 async function setNota(id, val){
   const r = Object.assign(defRow(id), rowOf(id));
   r.notas = val; r.updated_at = new Date().toISOString(); exec[id] = r;
@@ -207,9 +266,9 @@ async function switchCampaign(key){
   if(!CAMPAIGNS[key] || key === campaignKey) return;
   campaignKey = key;
   store.set('avaner-campaign', key);
+  ++loadGeneration; // invalida qualquer leitura antiga ainda em voo
   rebuildCampaignRefs();
-  exec = {};
-  pendState = {};
+  syncActiveState();
   openCards.clear();
   execFilter = 'Todos';
   rotFilter = 'Todos';
@@ -253,7 +312,8 @@ function openItem(id){
 
 /* ---------- Componentes ---------- */
 function tipoChip(item){ const t = item.kind === 'ad' ? 'Anúncio' : item.tipo; return '<span class="tipo t-'+t+'">'+t+'</span>'; }
-function dots(item){ const r = rowOf(item.id); return '<span class="dots" title="Gravado · Editado · Publicado">'+STAGES.map(s => '<i class="'+(r[s]?'on':'')+'"></i>').join('')+'</span>'; }
+function dotsFor(key,item){ const r = rowOfFor(key,item.id); return '<span class="dots" title="Gravado · Editado · Publicado">'+STAGES.map(s => '<i class="'+(r[s]?'on':'')+'"></i>').join('')+'</span>'; }
+function dots(item){ return dotsFor(campaignKey,item); }
 function stageButtons(item){
   const r = rowOf(item.id); const bl = isBlocked(item);
   return STAGES.map(s => {
@@ -274,44 +334,74 @@ function pendNotices(item){
 /* ---------- HOJE ---------- */
 function renderHoje(){
   const t = todayISO();
-  $('#hojeEyebrow').textContent = 'Hoje · ' + fmtDay(t);
-  const dTaxa = daysTo(C.fim_taxa);
-  const limite = C.limite_hora && C.limite_hora !== 'a confirmar' ? ', proposta até '+C.limite_hora : '';
-  $('#hojeLede').textContent = dTaxa > 0 ? 'Faltam '+dTaxa+' dia'+(dTaxa>1?'s':'')+' pro fim da condição de '+C.taxa+' ('+fmtDate(C.fim_taxa)+limite+').'
-    : dTaxa === 0 ? 'Hoje é o último dia da condição de '+C.taxa+(C.limite_hora && C.limite_hora !== 'a confirmar' ? '. Proposta até '+C.limite_hora+'.' : '.') 
-    : (C.pos_taxa_text || 'A condição promocional acabou em '+fmtDate(C.fim_taxa)+'. Vendas do grupo até '+fmtDate(C.fim_vendas)+'.');
-  const reels = ACTIVE_DATA.reels;
-  const hoje = reels.filter(r => r.date === t);
-  const atras = reels.filter(r => r.date < t && !rowOf(r.id).publicado);
-  const prox = reels.filter(r => r.date > t).slice(0, 4);
-  const adsAtivos = ACTIVE_DATA.ads.filter(a => a.inicio <= t && a.fim >= t);
-  const adsPrep = ACTIVE_DATA.ads.filter(a => a.inicio > t && a.inicio <= addDays(t, 3) && !rowOf(a.id).editado);
-  $('#hojeTitle').textContent = hoje.length ? (hoje.length === 1 ? '1 conteúdo pra hoje' : hoje.length+' conteúdos pra hoje') : (t < C.inicio ? 'A campanha começa em '+fmtDate(C.inicio) : 'Nenhum Reel marcado pra hoje');
+  $('#hojeEyebrow').textContent = 'Hoje · ' + fmtDay(t) + ' · todas as campanhas';
+  const activeKeys = Object.keys(CAMPAIGNS).filter(key => {
+    const c = CAMPAIGNS[key].campanha;
+    return t <= c.assembleia; // inclui campanhas que começam nos próximos dias
+  });
+  $('#hojeLede').textContent = activeKeys.length
+    ? activeKeys.length+' campanha'+(activeKeys.length>1?'s':'')+' ativa'+(activeKeys.length>1?'s':'')+' ou em preparação. Esta tela junta imóveis e caminhões; o seletor continua valendo para as outras abas.'
+    : 'Nenhuma campanha está dentro da janela ativa hoje.';
+
+  const all = [];
+  activeKeys.forEach(key => {
+    const d = CAMPAIGNS[key];
+    (d.reels||[]).forEach(item => all.push({key,item}));
+    (d.ads||[]).forEach(item => all.push({key,item}));
+  });
+  const hoje = all.filter(x => x.item.kind === 'reel' && x.item.date === t);
+  const atras = all.filter(x => x.item.kind === 'reel' && x.item.date < t && !rowOfFor(x.key,x.item.id).publicado);
+  const adsAtivos = all.filter(x => x.item.kind === 'ad' && x.item.inicio <= t && x.item.fim >= t);
+  const adsPrep = all.filter(x => x.item.kind === 'ad' && x.item.inicio > t && x.item.inicio <= addDays(t,3) && !rowOfFor(x.key,x.item.id).editado);
+  const prox = all.filter(x => x.item.kind === 'reel' && x.item.date > t).sort((a,b) => a.item.date.localeCompare(b.item.date)).slice(0,8);
+
+  $('#hojeTitle').textContent = hoje.length ? (hoje.length === 1 ? '1 conteúdo pra hoje' : hoje.length+' conteúdos pra hoje') : 'Painel de hoje';
   let h = '';
-  h += group('Pra fazer hoje', hoje.map(card).join('') || '<div class="empty-note">Nenhum Reel com data de hoje.'+(prox[0] ? ' O próximo é o '+prox[0].id+' ('+fmtDay(prox[0].date)+').' : '')+'</div>');
-  if(atras.length) h += group('Atrasados (data passou e não foi publicado)', atras.map(card).join(''));
+  h += group('Pra fazer hoje', hoje.map(card).join('') || '<div class="empty-note">Nenhum Reel com data de hoje nas campanhas ativas.</div>');
+  if(atras.length) h += group('Atrasados (data passou e não foi publicado)', atras.sort(sortByDate).map(card).join(''));
   if(adsAtivos.length) h += group('Anúncios que devem estar no ar', adsAtivos.map(card).join(''));
   if(adsPrep.length) h += group('Anúncios pra preparar (começam nos próximos dias)', adsPrep.map(card).join(''));
   if(prox.length) h += group('Próximos', prox.map(compact).join(''));
+  if(activeKeys.some(k => !(CAMPAIGNS[k].reels||[]).length && !(CAMPAIGNS[k].ads||[]).length)){
+    const empties = activeKeys.filter(k => !(CAMPAIGNS[k].reels||[]).length && !(CAMPAIGNS[k].ads||[]).length).map(k => campaignShort(k)).join(', ');
+    h += '<div class="notice yellow"><b>Conteúdo em preparação:</b> '+esc(empties)+'. A base da campanha já está no sistema, mas ainda não há roteiros/anúncios aprovados.</div>';
+  }
   $('#hojeBody').innerHTML = h;
+
+  function sortByDate(a,b){ return (a.item.date||a.item.inicio).localeCompare(b.item.date||b.item.inicio); }
   function group(title, inner){ return '<div class="today-group"><h3>'+title+'</h3>'+inner+'</div>'; }
-  function card(item){
-    const s = situacao(item);
-    const turb = item.kind === 'reel' ? (item.turbinar ? 'Sim' : 'Não') : 'Anúncio';
-    return '<div class="card today-card '+s.cls+'">'
-      + '<div class="row1"><span class="code">'+item.id+'</span>'+tipoChip(item)+alertPill(item)+(item.turbinar?'<span class="tag boost">turbinar</span>':'')+dots(item)+'</div>'
+  function campaignShort(key){ const d=CAMPAIGNS[key].campanha; return d.apelido || d.nome; }
+  function campaignBadge(key){ const d=CAMPAIGNS[key].campanha; const cls=key==='g11000'?'imovel':'caminhao'; return '<span class="campaign-badge '+cls+'">'+esc((d.apelido||d.nome).toUpperCase())+'</span>'; }
+  function situPill(key,item){ const ss=situacaoFor(key,item); return '<span class="alert '+ss.cls+'">'+ss.label+'</span>'; }
+  function notices(key,item){
+    const ss=situacaoFor(key,item); let out='';
+    ss.blocked.forEach(p => out += '<div class="notice red"><b>Bloqueado:</b> '+esc(p.assunto)+'. '+esc(p.obs||'')+'</div>');
+    ss.pending.forEach(p => out += '<div class="notice yellow"><b>Pendente:</b> '+esc(p.assunto)+'. '+esc(p.obs||'')+'</div>');
+    if(item.obs) out += '<div class="notice yellow"><b>Atenção:</b> '+esc(item.obs)+'</div>';
+    return out;
+  }
+  function globalStageButtons(key,item){
+    const r=rowOfFor(key,item.id), bl=isBlockedFor(key,item);
+    return STAGES.map(st => {
+      const label=(item.kind==='ad'&&st==='publicado')?'No ar':STAGE_LABEL[st];
+      const dis=(st==='publicado'&&bl&&!r.publicado)?' disabled title="Bloqueado por pendência"':'';
+      return '<button class="btn stage" type="button" data-stage="'+st+'" data-id="'+item.id+'" data-campaign="'+key+'" aria-pressed="'+!!r[st]+'"'+dis+'>'+label+'</button>';
+    }).join('');
+  }
+  function card(x){
+    const key=x.key,item=x.item, ss=situacaoFor(key,item);
+    const turb=item.kind==='reel'?(item.turbinar?'Sim':'Não'):'Anúncio';
+    return '<div class="card today-card '+ss.cls+'">'
+      + '<div class="row1">'+campaignBadge(key)+'<span class="code">'+item.id+'</span>'+tipoChip(item)+situPill(key,item)+(item.turbinar?'<span class="tag boost">turbinar</span>':'')+dotsFor(key,item)+'</div>'
       + '<div class="tt">'+esc(item.titulo)+'</div>'
-      + '<div class="meta"><b>Quando</b><span>'+whenOf(item)+'</span><b>Próximo passo</b><span class="next-step">'+nextStep(item)+'</span>'
-      + (item.kind === 'reel' ? '<b>Turbinar</b><span>'+turb+'</span>' : '')
-      + '<b>CTA</b><span>'+esc(item.kind === 'reel' ? item.cta : 'WhatsApp · "'+item.whatsapp+'"')+'</span></div>'
-      + pendNotices(item)
-      + '<div class="btn-row"><button class="btn primary" type="button" data-open="'+item.id+'">Abrir '+(item.kind === 'ad' ? 'anúncio' : 'roteiro')+'</button>'
-      + '<button class="btn" type="button" data-tp="'+item.id+'">Teleprompter</button>'+stageButtons(item)+'</div>'
-      + '</div>';
+      + '<div class="meta"><b>Quando</b><span>'+whenOf(item)+'</span><b>Próximo passo</b><span class="next-step">'+nextStepFor(key,item)+'</span>'
+      + (item.kind==='reel'?'<b>Turbinar</b><span>'+turb+'</span>':'')
+      + '<b>CTA</b><span>'+esc(item.kind==='reel'?item.cta:'WhatsApp · "'+item.whatsapp+'"')+'</span></div>'
+      + notices(key,item)
+      + '<div class="btn-row"><button class="btn primary" type="button" data-open="'+item.id+'" data-campaign="'+key+'">Abrir '+(item.kind==='ad'?'anúncio':'roteiro')+'</button>'
+      + '<button class="btn" type="button" data-tp="'+item.id+'" data-campaign="'+key+'">Teleprompter</button>'+globalStageButtons(key,item)+'</div></div>';
   }
-  function compact(item){
-    return '<div class="card compact" data-open="'+item.id+'" role="button" tabindex="0"><span class="code">'+item.id+'</span><span class="tt">'+esc(item.titulo)+'</span><span class="tag">'+fmtDay(item.date)+'</span>'+alertPill(item)+dots(item)+'</div>';
-  }
+  function compact(x){ const key=x.key,item=x.item; return '<div class="card compact" data-open="'+item.id+'" data-campaign="'+key+'" role="button" tabindex="0">'+campaignBadge(key)+'<span class="code">'+item.id+'</span><span class="tt">'+esc(item.titulo)+'</span><span class="tag">'+fmtDay(item.date)+'</span>'+dotsFor(key,item)+'</div>'; }
 }
 
 /* ---------- VISÃO GERAL ---------- */
@@ -507,7 +597,7 @@ function renderNum(){
   let tables = '';
   if(N.tabelas && N.tabelas.length){
     tables = '<div class="num-tables">'+N.tabelas.map(t => '<div><h3>'+esc(t.titulo)+'</h3><div class="table-scroll"><table class="exec-table"><thead><tr>'+t.headers.map(h => '<th>'+esc(h)+'</th>').join('')+'</tr></thead><tbody>'
-      + t.rows.map(r => '<tr>'+r.map((v,i) => '<td class="n">'+(typeof v === 'number' ? money(v) : (i>0 && /^[\\d.]+,\\d{2}$/.test(String(v)) ? 'R$ '+esc(v) : esc(v)))+'</td>').join('')+'</tr>').join('')
+      + t.rows.map(r => '<tr>'+r.map((v,i) => '<td class="n">'+(typeof v === 'number' ? money(v) : (i>0 && /^[\d.]+,\d{2}$/.test(String(v)) ? 'R$ '+esc(v) : esc(v)))+'</td>').join('')+'</tr>').join('')
       + '</tbody></table></div></div>').join('')+'</div>';
   } else {
     tables = '<div class="num-tables">'
@@ -545,16 +635,21 @@ $('#pendBody').addEventListener('change', async e => {
 /* ---------- Cliques globais ---------- */
 document.addEventListener('click', e => {
   const st = e.target.closest('button[data-stage]');
-  if(st){ setStage(st.dataset.id, st.dataset.stage, st.getAttribute('aria-pressed') !== 'true'); return; }
+  if(st){
+    const key = st.dataset.campaign || campaignKey;
+    if(key === campaignKey) setStage(st.dataset.id, st.dataset.stage, st.getAttribute('aria-pressed') !== 'true');
+    else setStageFor(key, st.dataset.id, st.dataset.stage, st.getAttribute('aria-pressed') !== 'true');
+    return;
+  }
   const tg = e.target.closest('[data-toggle]');
   if(tg){ const id = tg.dataset.toggle; const card = tg.parentElement; const o = card.getAttribute('data-open') === 'true';
     card.setAttribute('data-open', String(!o)); if(o) openCards.delete(id); else openCards.add(id); return; }
   const cp = e.target.closest('[data-copy]');
   if(cp){ copyText(COPYSRC[cp.dataset.copy] || '', cp); return; }
-  const tp = e.target.closest('[data-tp]');
-  if(tp){ openTP(byId[tp.dataset.tp]); return; }
+  const tpBtn = e.target.closest('[data-tp]');
+  if(tpBtn){ const key=tpBtn.dataset.campaign||campaignKey; const item=(CAMPAIGNS[key].reels||[]).concat(CAMPAIGNS[key].ads||[]).find(i=>i.id===tpBtn.dataset.tp); openTP(item); return; }
   const op = e.target.closest('[data-open]');
-  if(op){ openCards.add(op.dataset.open); hideResults(); openItem(op.dataset.open); return; }
+  if(op){ const key=op.dataset.campaign||campaignKey; hideResults(); if(key!==campaignKey){ switchCampaign(key).then(()=>{ openCards.add(op.dataset.open); openItem(op.dataset.open); }); } else { openCards.add(op.dataset.open); openItem(op.dataset.open); } return; }
   if(!e.target.closest('.gsearch')) hideResults();
 });
 document.addEventListener('keydown', e => {
