@@ -4,6 +4,7 @@ const DATA_TRUCK = {
   campanha: {
     nome: 'Grupo 20.004',
     apelido: 'Caminhões',
+    selo: 'Caminhões',
     inicio: '2026-10-03',
     fim_taxa: '2026-10-30',
     fim_vendas: '2026-11-23',

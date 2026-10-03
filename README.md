@@ -9,7 +9,14 @@ Campanhas incluídas nesta versão:
 
 ## O que mudou
 
-No topo existe um seletor de campanha. Cada campanha tem seus próprios status, pendências e tabelas no Supabase, sem misturar Grupo 11.000 com Grupo 20.004.
+**Tela Hoje global.** A aba Hoje mostra todas as campanhas juntas, cada card com o selo
+IMÓVEIS ou CAMINHÕES, ordenado por data e prioridade:
+Bloqueados → Atrasados → Pra hoje → Anúncios que precisam estar rodando → Pra editar →
+Pra publicar → Pra gravar com antecedência → Próximos dias → Publicados hoje.
+Os botões Gravado / Editado / Publicado do card gravam na campanha certa. "Abrir roteiro"
+troca a campanha sozinho e abre o conteúdo.
+
+No topo existe um seletor de campanha (escondido na aba Hoje, que é global). Cada campanha tem seus próprios status, pendências e tabelas no Supabase, sem misturar Grupo 11.000 com Grupo 20.004.
 
 A navegação continua:
 
@@ -96,12 +103,3 @@ O status de cada campanha é independente. Trocar de campanha no seletor também
 - sincronização no Supabase.
 
 Com Supabase disponível, celular e computador veem as mesmas marcações em tempo real. Sem conexão, o painel usa backup local do navegador.
-
-## Ajustes desta versão
-
-- Tela **Hoje** agora é global: reúne conteúdos de Imóveis e Caminhões no mesmo painel, com selo por campanha.
-- Corrigida a exibição de `R$` nas parcelas do Grupo 20.004.
-- Restaurados os avisos do Grupo 11.000 sobre simulação bancária do dia e parcela pós-contemplação ainda não confirmada.
-- Proteção contra mistura de status ao trocar de campanha enquanto uma consulta do Supabase ainda está em andamento.
-- Adicionada a pendência sobre a regra do **lance exclusivo** no Grupo 20.004.
-- Mantida a campanha de caminhões apenas como base oficial, sem inventar roteiros ou anúncios antes da validação das regras.

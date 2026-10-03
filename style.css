@@ -406,7 +406,7 @@ footer{padding:24px clamp(16px,4vw,40px) 50px;color:var(--ink-soft);font-size:12
   header.top{align-items:stretch;}
   .top-actions{justify-content:stretch;}
   .gsearch{max-width:none;}
-  .today-card .meta{grid-template-columns:1fr;}
+  .today-card .meta{grid-template-columns:96px minmax(0,1fr);}
   .script-head{padding:12px 14px;}
 }
 
@@ -416,12 +416,10 @@ footer{padding:24px clamp(16px,4vw,40px) 50px;color:var(--ink-soft);font-size:12
 .campaign-switch select:focus{outline:2px solid var(--track);outline-offset:1px}
 @media(max-width:760px){.campaign-switch{width:100%;justify-content:space-between}.campaign-switch select{flex:1;min-width:0}.top-actions{flex-wrap:wrap}}
 
-/* Hoje global — identificação visual da campanha */
-.campaign-badge{
-  display:inline-flex;align-items:center;gap:5px;
-  padding:3px 8px;border-radius:999px;
-  font:700 10px var(--font-mono);letter-spacing:.06em;text-transform:uppercase;
-  border:1px solid var(--line);white-space:nowrap;
-}
-.campaign-badge.imovel{background:var(--alert-soft);color:var(--alert-ink);border-color:transparent;}
-.campaign-badge.caminhao{background:var(--track-soft);color:var(--track-ink);border-color:transparent;}
+/* selos de campanha (tela Hoje global) */
+.selo{display:inline-block;font-family:var(--font-mono);font-size:10.5px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;padding:3px 8px;border-radius:4px;white-space:nowrap;}
+.selo-g11000{background:var(--track);color:#fff;}
+.selo-g20004{background:var(--gold);color:#1b1406;}
+.selo:not(.selo-g11000):not(.selo-g20004){background:var(--ink);color:var(--paper);}
+body.on-hoje .campaign-switch{display:none;}
+.hoje-note{font-family:var(--font-mono);font-size:11px;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.06em;}

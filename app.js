@@ -29,25 +29,28 @@ function fallbackCopy(text, done){
 }
 
 /* ---------- Dados / campanhas ---------- */
-const CAMPAIGNS = window.CAMPAIGNS || {};
-if (!Object.keys(CAMPAIGNS).length) {
-  console.error('Nenhuma campanha carregada. Verifique data.js.');
-  const hb = document.querySelector('#hojeBody');
-  if (hb) hb.innerHTML = '<div class="notice red"><b>Erro ao carregar os dados.</b> O arquivo data.js não foi carregado corretamente.</div>';
-}
-let campaignKey = store.get('avaner-campaign', Object.keys(CAMPAIGNS)[0] || 'g11000');
-if(!CAMPAIGNS[campaignKey]) campaignKey = Object.keys(CAMPAIGNS)[0];
+const CAMPAIGNS = window.CAMPAIGNS;
+const CAMP_KEYS = Object.keys(CAMPAIGNS);
+let campaignKey = store.get('avaner-campaign', CAMP_KEYS[0] || 'g11000');
+if(!CAMPAIGNS[campaignKey]) campaignKey = CAMP_KEYS[0];
+// Cada item sabe de qual campanha é (_camp) e cada campanha tem seu índice por id.
+CAMP_KEYS.forEach(k => {
+  const d = CAMPAIGNS[k];
+  d._byId = {};
+  d.reels.concat(d.ads).forEach(it => { it._camp = k; d._byId[it.id] = it; });
+});
+function getItem(camp, id){ const d = CAMPAIGNS[camp]; return d ? d._byId[id] : null; }
+function campSelo(camp){ const c = CAMPAIGNS[camp].campanha; return c.selo || c.apelido || c.nome; }
 let ACTIVE_DATA = CAMPAIGNS[campaignKey];
 let ITEMS = [];
 let byId = {};
 let C = {};
-function storageKeyFor(key, suffix){ return 'avaner-'+key+'-'+suffix; }
-function storageKey(suffix){ return storageKeyFor(campaignKey, suffix); }
+function storageKey(suffix, camp){ return 'avaner-'+(camp || campaignKey)+'-'+suffix; }
 function rebuildCampaignRefs(){
   ACTIVE_DATA = CAMPAIGNS[campaignKey];
   C = ACTIVE_DATA.campanha;
   ITEMS = ACTIVE_DATA.reels.concat(ACTIVE_DATA.ads);
-  byId = {}; ITEMS.forEach(i => byId[i.id] = i);
+  byId = ACTIVE_DATA._byId;
 }
 rebuildCampaignRefs();
 
@@ -59,34 +62,22 @@ if (window.supabase && window.SUPABASE_CONFIG && window.SUPABASE_CONFIG.url && w
 }
 const STAGES = ['gravado','editado','publicado'];
 const STAGE_LABEL = {gravado:'Gravado', editado:'Editado', publicado:'Publicado'};
-let exec = {};
-let pendState = {};
-const stateByCampaign = {};
+// Estado separado por campanha. Toda resposta do Supabase grava na campanha que pediu,
+// nunca na "campanha ativa" — assim uma resposta atrasada não cai na campanha errada.
+const STATE = {};
+CAMP_KEYS.forEach(k => STATE[k] = {exec: store.get(storageKey('exec', k), {}), pend: store.get(storageKey('pend', k), {}), req: 0});
 function defRow(id){ return {item_id:id, gravado:false, gravado_em:null, editado:false, editado_em:null, publicado:false, publicado_em:null, notas:''}; }
-function stateFor(key){
-  if(!stateByCampaign[key]) stateByCampaign[key] = {
-    exec: store.get(storageKeyFor(key, 'exec'), {}),
-    pend: store.get(storageKeyFor(key, 'pend'), {})
-  };
-  return stateByCampaign[key];
-}
-function syncActiveState(){ const st = stateFor(campaignKey); exec = st.exec; pendState = st.pend; }
-function rowOfFor(key, id){ return stateFor(key).exec[id] || defRow(id); }
-function rowOf(id){ return rowOfFor(campaignKey, id); }
+function rowOf(id, camp){ return STATE[camp || campaignKey].exec[id] || defRow(id); }
+function rowItem(item){ return rowOf(item.id, item._camp); }
 function stageIdx(r){ let i = 0; STAGES.forEach((s,k) => { if(r[s]) i = k+1; }); return i; }
-function pendOfFor(key, pid){
-  const data = CAMPAIGNS[key] || {pendencias:[]};
-  const base = (data.pendencias || []).find(p => p.id === pid) || {};
-  return Object.assign({}, base, stateFor(key).pend[pid] || {});
+function pendOf(pid, camp){
+  const k = camp || campaignKey;
+  const base = CAMPAIGNS[k].pendencias.find(p => p.id === pid) || {};
+  return Object.assign({}, base, STATE[k].pend[pid] || {});
 }
-function pendOf(pid){ return pendOfFor(campaignKey, pid); }
-function execTableFor(key){ const c = CAMPAIGNS[key].campanha; return c.db_exec || ('camp_'+key+'_execucao'); }
-function pendTableFor(key){ const c = CAMPAIGNS[key].campanha; return c.db_pend || ('camp_'+key+'_pendencias'); }
-function execTable(){ return execTableFor(campaignKey); }
-function pendTable(){ return pendTableFor(campaignKey); }
+function execTable(camp){ const c = CAMPAIGNS[camp || campaignKey].campanha; return c.db_exec || ('camp_'+(camp || campaignKey)+'_execucao'); }
+function pendTable(camp){ const c = CAMPAIGNS[camp || campaignKey].campanha; return c.db_pend || ('camp_'+(camp || campaignKey)+'_pendencias'); }
 let syncChannel = null;
-let loadGeneration = 0;
-syncActiveState();
 
 function setConn(kind, text){
   const el = $('#connStatus');
@@ -95,41 +86,26 @@ function setConn(kind, text){
   if(kind === 'ok') setTimeout(() => { el.innerHTML = ''; el.className = 'conn-status'; }, 4000);
 }
 
+async function loadCampaign(camp){
+  const st = STATE[camp];
+  const reqId = ++st.req;
+  const [e1, e2] = await Promise.all([ sb.from(execTable(camp)).select('*'), sb.from(pendTable(camp)).select('*') ]);
+  if(reqId !== st.req) return true; // chegou uma resposta mais nova dessa campanha; descarta esta
+  if(e1.error || e2.error){ console.error(camp, e1.error || e2.error); return false; }
+  const ex = {}; (e1.data || []).forEach(r => ex[r.item_id] = Object.assign(defRow(r.item_id), r));
+  const pd = {}; (e2.data || []).forEach(r => pd[r.id] = {status:r.status, obs:r.obs});
+  st.exec = ex; st.pend = pd;
+  store.set(storageKey('exec', camp), ex); store.set(storageKey('pend', camp), pd);
+  return true;
+}
 async function loadAll(silent){
-  const generation = ++loadGeneration;
-  const keys = Object.keys(CAMPAIGNS);
-  let hadError = false;
   if(sb){
-    const results = await Promise.all(keys.map(async key => {
-      const [e1, e2] = await Promise.all([
-        sb.from(execTableFor(key)).select('*'),
-        sb.from(pendTableFor(key)).select('*')
-      ]);
-      return {key, e1, e2};
-    }));
-    if(generation !== loadGeneration) return;
-    results.forEach(({key,e1,e2}) => {
-      const st = stateFor(key);
-      if(e1.error || e2.error){
-        hadError = true;
-        console.error(e1.error || e2.error);
-        st.exec = store.get(storageKeyFor(key, 'exec'), {});
-        st.pend = store.get(storageKeyFor(key, 'pend'), {});
-      } else {
-        st.exec = {}; (e1.data || []).forEach(r => st.exec[r.item_id] = Object.assign(defRow(r.item_id), r));
-        st.pend = {}; (e2.data || []).forEach(r => st.pend[r.id] = {status:r.status, obs:r.obs});
-        store.set(storageKeyFor(key, 'exec'), st.exec);
-        store.set(storageKeyFor(key, 'pend'), st.pend);
-      }
-    });
-    if(hadError) setConn('warn', 'Uma das campanhas não sincronizou com o Supabase. Usando o backup deste navegador onde foi necessário.');
-    else if(!silent) setConn('ok', 'Sincronizado com o Supabase. Todos os aparelhos veem o mesmo status.');
+    const res = await Promise.all(CAMP_KEYS.map(loadCampaign));
+    if(res.every(Boolean)){ if(!silent) setConn('ok', 'Sincronizado com o Supabase. Todos os aparelhos veem o mesmo status.'); }
+    else setConn('warn', 'Não consegui falar com o Supabase agora. Usando o backup deste navegador.');
   } else {
-    keys.forEach(key => { const st = stateFor(key); st.exec = store.get(storageKeyFor(key, 'exec'), {}); st.pend = store.get(storageKeyFor(key, 'pend'), {}); });
     setConn('warn', (window.SUPABASE_CONFIG && window.SUPABASE_CONFIG.url && !window.supabase) ? 'Não consegui carregar o Supabase (sem internet?). Usando o backup deste navegador.' : 'Supabase não configurado. O status fica salvo só neste navegador (veja o README).');
   }
-  if(generation !== loadGeneration) return;
-  syncActiveState();
   renderAll();
 }
 
@@ -137,45 +113,38 @@ function subscribe(){
   if(!sb || !sb.channel) return;
   try{
     if(syncChannel && sb.removeChannel) sb.removeChannel(syncChannel);
-    const subscribedKey = campaignKey;
-    const execT = execTableFor(subscribedKey);
-    const pendT = pendTableFor(subscribedKey);
-    syncChannel = sb.channel('avaner-sync-'+subscribedKey)
-      .on('postgres_changes', {event:'*', schema:'public', table:execT}, p => {
-        if(subscribedKey !== campaignKey) return;
-        const r = p.new; if(r && r.item_id){ const st = stateFor(subscribedKey); st.exec[r.item_id] = Object.assign(defRow(r.item_id), r); store.set(storageKeyFor(subscribedKey,'exec'), st.exec); syncActiveState(); renderAll(); }
-      })
-      .on('postgres_changes', {event:'*', schema:'public', table:pendT}, p => {
-        if(subscribedKey !== campaignKey) return;
-        const r = p.new; if(r && r.id){ const st = stateFor(subscribedKey); st.pend[r.id] = {status:r.status, obs:r.obs}; store.set(storageKeyFor(subscribedKey,'pend'), st.pend); syncActiveState(); renderAll(); }
-      })
-      .subscribe();
+    let ch = sb.channel('avaner-sync');
+    CAMP_KEYS.forEach(k => {
+      ch = ch.on('postgres_changes', {event:'*', schema:'public', table:execTable(k)}, p => {
+        const r = p.new; if(r && r.item_id){ STATE[k].exec[r.item_id] = Object.assign(defRow(r.item_id), r); store.set(storageKey('exec', k), STATE[k].exec); renderAll(); }
+      }).on('postgres_changes', {event:'*', schema:'public', table:pendTable(k)}, p => {
+        const r = p.new; if(r && r.id){ STATE[k].pend[r.id] = {status:r.status, obs:r.obs}; store.set(storageKey('pend', k), STATE[k].pend); renderAll(); }
+      });
+    });
+    syncChannel = ch.subscribe();
   }catch(e){ console.error(e); }
 }
-
 document.addEventListener('visibilitychange', () => { if(document.visibilityState === 'visible') loadAll(true); });
 
-async function saveRow(row){
-  stateFor(campaignKey).exec = exec;
-  store.set(storageKey('exec'), exec);
+async function saveRow(row, camp){
+  store.set(storageKey('exec', camp), STATE[camp].exec);
   if(sb){
-    const {error} = await sb.from(execTable()).upsert(row, {onConflict:'item_id'});
+    const {error} = await sb.from(execTable(camp)).upsert(row, {onConflict:'item_id'});
     if(error){ console.error(error); toast('Não salvou no Supabase. Ficou só neste aparelho.'); }
   }
 }
-async function savePend(id){
-  stateFor(campaignKey).pend = pendState;
-  store.set(storageKey('pend'), pendState);
+async function savePend(id, camp){
+  store.set(storageKey('pend', camp), STATE[camp].pend);
   if(sb){
-    const p = pendOf(id);
-    const {error} = await sb.from(pendTable()).upsert({id, status:p.status, obs:p.obs, updated_at:new Date().toISOString()}, {onConflict:'id'});
+    const p = pendOf(id, camp);
+    const {error} = await sb.from(pendTable(camp)).upsert({id, status:p.status, obs:p.obs, updated_at:new Date().toISOString()}, {onConflict:'id'});
     if(error){ console.error(error); toast('Não salvou no Supabase. Ficou só neste aparelho.'); }
   }
 }
 
 /* ---------- Situação (alerta) ---------- */
-function situacaoFor(key, item){
-  const ps = (item.pend || []).map(pid => pendOfFor(key, pid));
+function situacao(item){
+  const ps = (item.pend || []).map(pid => pendOf(pid, item._camp));
   const blocked = ps.filter(p => p.status === 'BLOQUEADO');
   const pending = ps.filter(p => p.status === 'PENDENTE');
   if(blocked.length) return {cls:'red', label:'Bloqueado', blocked, pending};
@@ -184,28 +153,25 @@ function situacaoFor(key, item){
   if(start > todayISO()) return {cls:'gray', label:'Ainda não chegou', blocked, pending};
   return {cls:'green', label:'Liberado', blocked, pending};
 }
-function situacao(item){ return situacaoFor(campaignKey, item); }
 function alertPill(item){ const s = situacao(item); return '<span class="alert '+s.cls+'">'+s.label+'</span>'; }
-function isBlockedFor(key, item){ return situacaoFor(key, item).cls === 'red'; }
-function isBlocked(item){ return isBlockedFor(campaignKey, item); }
-function nextStepFor(key, item){
-  const r = rowOfFor(key, item.id);
-  if(isBlockedFor(key, item) && r.editado) return 'Aguardar liberação';
+function isBlocked(item){ return situacao(item).cls === 'red'; }
+function nextStep(item){
+  const r = rowItem(item);
+  if(isBlocked(item) && r.editado) return 'Aguardar liberação';
   if(!r.gravado) return item.kind === 'ad' ? 'Gravar' : 'Gravar';
   if(!r.editado) return 'Editar';
   if(!r.publicado) return item.kind === 'ad' ? 'Subir no Meta' : 'Publicar';
   return 'Feito';
 }
-function nextStep(item){ return nextStepFor(campaignKey, item); }
 
 /* ---------- Mudar etapa ---------- */
-async function setStage(id, stage, val){
-  const item = byId[id];
+async function setStage(camp, id, stage, val){
+  const item = getItem(camp, id); if(!item) return;
   if(stage === 'publicado' && val && isBlocked(item)){
-    toast(id+' está bloqueado. Libere a pendência antes de publicar.');
+    toast(id+' ('+campSelo(camp)+') está bloqueado. Libere a pendência antes de publicar.');
     renderAll(); return;
   }
-  const r = Object.assign(defRow(id), rowOf(id));
+  const r = Object.assign(defRow(id), rowOf(id, camp));
   const k = STAGES.indexOf(stage);
   if(val){
     for(let i=0;i<=k;i++){ const s = STAGES[i]; if(!r[s]){ r[s] = true; r[s+'_em'] = todayISO(); } }
@@ -213,26 +179,14 @@ async function setStage(id, stage, val){
     for(let i=k;i<STAGES.length;i++){ const s = STAGES[i]; r[s] = false; r[s+'_em'] = null; }
   }
   r.updated_at = new Date().toISOString();
-  exec[id] = r;
+  STATE[camp].exec[id] = r;
   renderAll();
-  await saveRow(r);
+  await saveRow(r, camp);
 }
-async function setStageFor(key, id, stage, val){
-  const data = CAMPAIGNS[key]; if(!data) return;
-  const item = (data.reels||[]).concat(data.ads||[]).find(i => i.id === id); if(!item) return;
-  const st = stateFor(key); const r = Object.assign(defRow(id), rowOfFor(key,id));
-  const k = STAGES.indexOf(stage);
-  if(stage === 'publicado' && val && isBlockedFor(key,item)){ toast(id+' está bloqueado. Libere a pendência antes de publicar.'); renderAll(); return; }
-  if(val){ for(let i=0;i<=k;i++){ const ss=STAGES[i]; if(!r[ss]){ r[ss]=true; r[ss+'_em']=todayISO(); } } }
-  else { for(let i=k;i<STAGES.length;i++){ const ss=STAGES[i]; r[ss]=false; r[ss+'_em']=null; } }
-  r.updated_at = new Date().toISOString(); st.exec[id]=r; store.set(storageKeyFor(key,'exec'),st.exec); renderAll();
-  if(sb){ const {error}=await sb.from(execTableFor(key)).upsert(r,{onConflict:'item_id'}); if(error){ console.error(error); toast('Não salvou no Supabase. Ficou só neste aparelho.'); } }
-}
-
-async function setNota(id, val){
-  const r = Object.assign(defRow(id), rowOf(id));
-  r.notas = val; r.updated_at = new Date().toISOString(); exec[id] = r;
-  await saveRow(r);
+async function setNota(camp, id, val){
+  const r = Object.assign(defRow(id), rowOf(id, camp));
+  r.notas = val; r.updated_at = new Date().toISOString(); STATE[camp].exec[id] = r;
+  await saveRow(r, camp);
 }
 
 /* ---------- Tema ---------- */
@@ -262,13 +216,12 @@ function renderCampaignChrome(){
   const geral = $('#geralEstrategia');
   geral.innerHTML = '<h3>Estratégia</h3>' + (ACTIVE_DATA.estrategia || '');
 }
-async function switchCampaign(key){
+function switchCampaign(key){
   if(!CAMPAIGNS[key] || key === campaignKey) return;
   campaignKey = key;
   store.set('avaner-campaign', key);
-  ++loadGeneration; // invalida qualquer leitura antiga ainda em voo
+  if(campaignSelect) campaignSelect.value = key;
   rebuildCampaignRefs();
-  syncActiveState();
   openCards.clear();
   execFilter = 'Todos';
   rotFilter = 'Todos';
@@ -278,8 +231,6 @@ async function switchCampaign(key){
   renderExecFilters();
   renderRotFilters();
   renderAll();
-  await loadAll(false);
-  subscribe();
 }
 if(campaignSelect){
   campaignSelect.innerHTML = Object.keys(CAMPAIGNS).map(k => '<option value="'+esc(k)+'">'+esc(campaignLabel(k))+'</option>').join('');
@@ -296,11 +247,14 @@ function goToView(view){
   if(b && b.scrollIntoView) b.scrollIntoView({block:'nearest', inline:'center'});
   window.scrollTo({top:0});
   store.set('avaner-tab', view);
+  document.body.classList.toggle('on-hoje', view === 'hoje');
 }
 tabs.forEach(b => b.addEventListener('click', () => goToView(b.dataset.view)));
 
-function openItem(id){
-  const item = byId[id]; if(!item) return;
+function openItem(id, camp){
+  const k = camp || campaignKey;
+  const item = getItem(k, id); if(!item) return;
+  if(k !== campaignKey) switchCampaign(k);
   const view = item.kind === 'ad' ? 'anuncios' : 'roteiros';
   if(view === 'roteiros'){ rotFilter = 'Todos'; $('#rotSearch').value = ''; renderRoteiros(); }
   goToView(view);
@@ -312,14 +266,13 @@ function openItem(id){
 
 /* ---------- Componentes ---------- */
 function tipoChip(item){ const t = item.kind === 'ad' ? 'Anúncio' : item.tipo; return '<span class="tipo t-'+t+'">'+t+'</span>'; }
-function dotsFor(key,item){ const r = rowOfFor(key,item.id); return '<span class="dots" title="Gravado · Editado · Publicado">'+STAGES.map(s => '<i class="'+(r[s]?'on':'')+'"></i>').join('')+'</span>'; }
-function dots(item){ return dotsFor(campaignKey,item); }
+function dots(item){ const r = rowItem(item); return '<span class="dots" title="Gravado · Editado · Publicado">'+STAGES.map(s => '<i class="'+(r[s]?'on':'')+'"></i>').join('')+'</span>'; }
 function stageButtons(item){
-  const r = rowOf(item.id); const bl = isBlocked(item);
+  const r = rowItem(item); const bl = isBlocked(item);
   return STAGES.map(s => {
     const label = (item.kind === 'ad' && s === 'publicado') ? 'No ar' : STAGE_LABEL[s];
     const dis = (s === 'publicado' && bl && !r.publicado) ? ' disabled title="Bloqueado por pendência"' : '';
-    return '<button class="btn stage" type="button" data-stage="'+s+'" data-id="'+item.id+'" aria-pressed="'+!!r[s]+'"'+dis+'>'+label+'</button>';
+    return '<button class="btn stage" type="button" data-stage="'+s+'" data-id="'+item.id+'" data-camp="'+item._camp+'" aria-pressed="'+!!r[s]+'"'+dis+'>'+label+'</button>';
   }).join('');
 }
 function whenOf(item){ return item.kind === 'reel' ? fmtDay(item.date) + (item.slot ? ' · '+item.slot : '') : fmtDate(item.inicio)+' a '+fmtDate(item.fim); }
@@ -331,77 +284,78 @@ function pendNotices(item){
   return h;
 }
 
-/* ---------- HOJE ---------- */
+/* ---------- HOJE (global: todas as campanhas) ---------- */
+function seloHTML(camp){ return '<span class="selo selo-'+esc(camp)+'">'+esc(campSelo(camp))+'</span>'; }
+function campLede(k){
+  const c = CAMPAIGNS[k].campanha; const n = daysTo(c.fim_taxa);
+  const lim = c.limite_hora && c.limite_hora !== 'a confirmar' ? ' (proposta até '+c.limite_hora+')' : '';
+  const txt = n > 1 ? n+' dias pro fim da taxa de '+c.taxa+lim : n === 1 ? 'Amanhã acaba a taxa de '+c.taxa+lim : n === 0 ? 'Hoje é o último dia da taxa de '+c.taxa+lim
+    : 'Taxa promocional encerrada. Vendas até '+fmtDate(c.fim_vendas)+', assembleia '+fmtDate(c.assembleia)+'.';
+  const nItems = CAMPAIGNS[k].reels.length + CAMPAIGNS[k].ads.length;
+  return '<div class="stat '+(n>=0 && n<=7 ? 'hot':'')+'"><div class="l">'+seloHTML(k)+' '+esc(c.nome)+'</div><div class="n tabular" style="font-size:26px;margin-top:6px">'+(n>=0 ? (n===0?'hoje':n+'d') : 'encerrada')+'</div><div class="s">'+esc(txt)+(nItems ? '' : ' · conteúdo em preparação')+'</div></div>';
+}
+function itemStart(it){ return it.kind === 'reel' ? it.date : it.inicio; }
 function renderHoje(){
   const t = todayISO();
-  $('#hojeEyebrow').textContent = 'Hoje · ' + fmtDay(t) + ' · todas as campanhas';
-  const activeKeys = Object.keys(CAMPAIGNS).filter(key => {
-    const c = CAMPAIGNS[key].campanha;
-    return t <= c.assembleia; // inclui campanhas que começam nos próximos dias
-  });
-  $('#hojeLede').textContent = activeKeys.length
-    ? activeKeys.length+' campanha'+(activeKeys.length>1?'s':'')+' ativa'+(activeKeys.length>1?'s':'')+' ou em preparação. Esta tela junta imóveis e caminhões; o seletor continua valendo para as outras abas.'
-    : 'Nenhuma campanha está dentro da janela ativa hoje.';
-
   const all = [];
-  activeKeys.forEach(key => {
-    const d = CAMPAIGNS[key];
-    (d.reels||[]).forEach(item => all.push({key,item}));
-    (d.ads||[]).forEach(item => all.push({key,item}));
-  });
-  const hoje = all.filter(x => x.item.kind === 'reel' && x.item.date === t);
-  const atras = all.filter(x => x.item.kind === 'reel' && x.item.date < t && !rowOfFor(x.key,x.item.id).publicado);
-  const adsAtivos = all.filter(x => x.item.kind === 'ad' && x.item.inicio <= t && x.item.fim >= t);
-  const adsPrep = all.filter(x => x.item.kind === 'ad' && x.item.inicio > t && x.item.inicio <= addDays(t,3) && !rowOfFor(x.key,x.item.id).editado);
-  const prox = all.filter(x => x.item.kind === 'reel' && x.item.date > t).sort((a,b) => a.item.date.localeCompare(b.item.date)).slice(0,8);
+  CAMP_KEYS.forEach(k => { const d = CAMPAIGNS[k]; d.reels.concat(d.ads).forEach(it => all.push(it)); });
+  const slotN = it => it.slot === 'noite' ? 1 : 0;
+  const byDate = (a,b) => (itemStart(a) < itemStart(b) ? -1 : itemStart(a) > itemStart(b) ? 1 : a._camp !== b._camp ? (a._camp < b._camp ? -1 : 1) : slotN(a) !== slotN(b) ? slotN(a) - slotN(b) : (a.id < b.id ? -1 : a.id > b.id ? 1 : 0));
+  const used = new Set(); const key = it => it._camp+':'+it.id;
+  const take = (arr) => { const out = arr.filter(it => !used.has(key(it))).sort(byDate); out.forEach(it => used.add(key(it))); return out; };
+  const pub = it => rowItem(it).publicado;
+  const soon = addDays(t, 3), week = addDays(t, 7);
+  const reelsAll = all.filter(it => it.kind === 'reel');
+  const adsAll = all.filter(it => it.kind === 'ad');
 
-  $('#hojeTitle').textContent = hoje.length ? (hoje.length === 1 ? '1 conteúdo pra hoje' : hoje.length+' conteúdos pra hoje') : 'Painel de hoje';
-  let h = '';
-  h += group('Pra fazer hoje', hoje.map(card).join('') || '<div class="empty-note">Nenhum Reel com data de hoje nas campanhas ativas.</div>');
-  if(atras.length) h += group('Atrasados (data passou e não foi publicado)', atras.sort(sortByDate).map(card).join(''));
-  if(adsAtivos.length) h += group('Anúncios que devem estar no ar', adsAtivos.map(card).join(''));
-  if(adsPrep.length) h += group('Anúncios pra preparar (começam nos próximos dias)', adsPrep.map(card).join(''));
-  if(prox.length) h += group('Próximos', prox.map(compact).join(''));
-  if(activeKeys.some(k => !(CAMPAIGNS[k].reels||[]).length && !(CAMPAIGNS[k].ads||[]).length)){
-    const empties = activeKeys.filter(k => !(CAMPAIGNS[k].reels||[]).length && !(CAMPAIGNS[k].ads||[]).length).map(k => campaignShort(k)).join(', ');
-    h += '<div class="notice yellow"><b>Conteúdo em preparação:</b> '+esc(empties)+'. A base da campanha já está no sistema, mas ainda não há roteiros/anúncios aprovados.</div>';
+  const bloqueados = take(all.filter(it => isBlocked(it) && !pub(it) && (itemStart(it) <= week || (it.kind === 'ad' && it.fim >= t))));
+  const atrasados  = take(reelsAll.filter(it => it.date < t && !pub(it)));
+  const hoje       = take(reelsAll.filter(it => it.date === t && !pub(it)));
+  const anuncios   = take(adsAll.filter(it => it.inicio <= t && it.fim >= t && !pub(it)));
+  const editar     = take(all.filter(it => rowItem(it).gravado && !rowItem(it).editado && itemStart(it) <= week));
+  const publicar   = take(all.filter(it => rowItem(it).editado && !pub(it) && itemStart(it) <= week));
+  const gravar     = take(all.filter(it => !rowItem(it).gravado && itemStart(it) > t && itemStart(it) <= soon));
+  const proximos   = take(all.filter(it => !pub(it) && itemStart(it) > t && itemStart(it) <= week));
+  const feitosHoje = all.filter(it => rowItem(it).publicado_em === t);
+
+  const urg = atrasados.length + hoje.length + anuncios.length;
+  $('#hojeEyebrow').textContent = 'Hoje · ' + fmtDay(t) + ' · todas as campanhas';
+  $('#hojeTitle').textContent = urg ? (urg === 1 ? '1 coisa pra resolver hoje' : urg+' coisas pra resolver hoje') : 'Nada urgente pra hoje';
+  $('#hojeLede').innerHTML = '';
+  let h = '<div class="stats">'+CAMP_KEYS.map(campLede).join('')+'</div>';
+  const group = (title, arr, render, note) => arr.length ? '<div class="today-group"><h3>'+title+' <span class="tag">'+arr.length+'</span></h3>'+(note ? '<p class="result-count">'+note+'</p>' : '')+arr.map(render).join('')+'</div>' : '';
+  h += group('Bloqueados', bloqueados, card, 'Não dá pra publicar até a pendência ser resolvida na aba Pendências da campanha.');
+  h += group('Atrasados', atrasados, card, 'A data já passou e ainda não foi publicado.');
+  h += group('Pra hoje', hoje, card);
+  h += group('Anúncios que precisam estar rodando', anuncios, card, 'Período de veiculação ativo e ainda não marcado como "No ar".');
+  h += group('Pra editar', editar, card, 'Já gravados, com data nos próximos 7 dias.');
+  h += group('Pra publicar', publicar, card, 'Editados e prontos, aguardando a data.');
+  h += group('Pra gravar com antecedência', gravar, card, 'Data nos próximos 3 dias e ainda não gravados.');
+  h += group('Próximos dias', proximos, compact);
+  if(!bloqueados.length && !atrasados.length && !hoje.length && !anuncios.length && !editar.length && !publicar.length && !gravar.length && !proximos.length){
+    const nxt = all.filter(it => !pub(it) && itemStart(it) > t).sort(byDate)[0];
+    h += '<div class="empty-note">Nada pendente nos próximos 7 dias.'+(nxt ? ' O próximo é '+nxt.id+' ('+esc(campSelo(nxt._camp))+', '+fmtDay(itemStart(nxt))+').' : '')+'</div>';
   }
+  if(feitosHoje.length) h += group('Publicados hoje', feitosHoje.sort(byDate), compact);
   $('#hojeBody').innerHTML = h;
 
-  function sortByDate(a,b){ return (a.item.date||a.item.inicio).localeCompare(b.item.date||b.item.inicio); }
-  function group(title, inner){ return '<div class="today-group"><h3>'+title+'</h3>'+inner+'</div>'; }
-  function campaignShort(key){ const d=CAMPAIGNS[key].campanha; return d.apelido || d.nome; }
-  function campaignBadge(key){ const d=CAMPAIGNS[key].campanha; const cls=key==='g11000'?'imovel':'caminhao'; return '<span class="campaign-badge '+cls+'">'+esc((d.apelido||d.nome).toUpperCase())+'</span>'; }
-  function situPill(key,item){ const ss=situacaoFor(key,item); return '<span class="alert '+ss.cls+'">'+ss.label+'</span>'; }
-  function notices(key,item){
-    const ss=situacaoFor(key,item); let out='';
-    ss.blocked.forEach(p => out += '<div class="notice red"><b>Bloqueado:</b> '+esc(p.assunto)+'. '+esc(p.obs||'')+'</div>');
-    ss.pending.forEach(p => out += '<div class="notice yellow"><b>Pendente:</b> '+esc(p.assunto)+'. '+esc(p.obs||'')+'</div>');
-    if(item.obs) out += '<div class="notice yellow"><b>Atenção:</b> '+esc(item.obs)+'</div>';
-    return out;
-  }
-  function globalStageButtons(key,item){
-    const r=rowOfFor(key,item.id), bl=isBlockedFor(key,item);
-    return STAGES.map(st => {
-      const label=(item.kind==='ad'&&st==='publicado')?'No ar':STAGE_LABEL[st];
-      const dis=(st==='publicado'&&bl&&!r.publicado)?' disabled title="Bloqueado por pendência"':'';
-      return '<button class="btn stage" type="button" data-stage="'+st+'" data-id="'+item.id+'" data-campaign="'+key+'" aria-pressed="'+!!r[st]+'"'+dis+'>'+label+'</button>';
-    }).join('');
-  }
-  function card(x){
-    const key=x.key,item=x.item, ss=situacaoFor(key,item);
-    const turb=item.kind==='reel'?(item.turbinar?'Sim':'Não'):'Anúncio';
-    return '<div class="card today-card '+ss.cls+'">'
-      + '<div class="row1">'+campaignBadge(key)+'<span class="code">'+item.id+'</span>'+tipoChip(item)+situPill(key,item)+(item.turbinar?'<span class="tag boost">turbinar</span>':'')+dotsFor(key,item)+'</div>'
+  function card(item){
+    const s = situacao(item); const r = rowItem(item);
+    return '<div class="card today-card '+s.cls+'">'
+      + '<div class="row1">'+seloHTML(item._camp)+'<span class="code">'+item.id+'</span>'+tipoChip(item)+alertPill(item)+(item.turbinar?'<span class="tag boost">turbinar</span>':'')+dots(item)+'</div>'
       + '<div class="tt">'+esc(item.titulo)+'</div>'
-      + '<div class="meta"><b>Quando</b><span>'+whenOf(item)+'</span><b>Próximo passo</b><span class="next-step">'+nextStepFor(key,item)+'</span>'
-      + (item.kind==='reel'?'<b>Turbinar</b><span>'+turb+'</span>':'')
-      + '<b>CTA</b><span>'+esc(item.kind==='reel'?item.cta:'WhatsApp · "'+item.whatsapp+'"')+'</span></div>'
-      + notices(key,item)
-      + '<div class="btn-row"><button class="btn primary" type="button" data-open="'+item.id+'" data-campaign="'+key+'">Abrir '+(item.kind==='ad'?'anúncio':'roteiro')+'</button>'
-      + '<button class="btn" type="button" data-tp="'+item.id+'" data-campaign="'+key+'">Teleprompter</button>'+globalStageButtons(key,item)+'</div></div>';
+      + '<div class="meta"><b>Quando</b><span>'+whenOf(item)+'</span><b>Próximo passo</b><span class="next-step">'+nextStep(item)+'</span>'
+      + (item.kind === 'reel' ? '<b>Turbinar</b><span>'+(item.turbinar ? 'Sim' : 'Não')+'</span>' : '')
+      + '<b>CTA</b><span>'+esc(item.kind === 'reel' ? (item.cta || 'Me chama no WhatsApp') : 'WhatsApp · "'+(item.whatsapp || '')+'"')+'</span>'
+      + (r.notas ? '<b>Notas</b><span>'+esc(r.notas)+'</span>' : '')+'</div>'
+      + pendNotices(item)
+      + '<div class="btn-row"><button class="btn primary" type="button" data-open="'+item.id+'" data-camp="'+item._camp+'">Abrir '+(item.kind === 'ad' ? 'anúncio' : 'roteiro')+'</button>'
+      + '<button class="btn" type="button" data-tp="'+item.id+'" data-camp="'+item._camp+'">Teleprompter</button>'+stageButtons(item)+'</div>'
+      + '</div>';
   }
-  function compact(x){ const key=x.key,item=x.item; return '<div class="card compact" data-open="'+item.id+'" data-campaign="'+key+'" role="button" tabindex="0">'+campaignBadge(key)+'<span class="code">'+item.id+'</span><span class="tt">'+esc(item.titulo)+'</span><span class="tag">'+fmtDay(item.date)+'</span>'+dotsFor(key,item)+'</div>'; }
+  function compact(item){
+    return '<div class="card compact" data-open="'+item.id+'" data-camp="'+item._camp+'" role="button" tabindex="0">'+seloHTML(item._camp)+'<span class="code">'+item.id+'</span><span class="tt">'+esc(item.titulo)+'</span><span class="tag">'+(item.kind === 'reel' ? fmtDay(item.date) : fmtDate(item.inicio)+'–'+fmtDate(item.fim))+'</span>'+alertPill(item)+dots(item)+'</div>';
+  }
 }
 
 /* ---------- VISÃO GERAL ---------- */
@@ -421,7 +375,7 @@ function renderGeral(){
   const names = ['Não iniciado','Gravado','Editado','Publicado'], cols = ['var(--wait)','var(--gold)','var(--track)','var(--positive)'];
   $('#geralBar').innerHTML = total ? buckets.map((c,i) => c ? '<span class="exec-seg" style="width:'+(c/total*100)+'%;background:'+cols[i]+'" title="'+names[i]+': '+c+'"></span>' : '').join('') : '<span class="result-count">Conteúdo ainda não cadastrado nesta campanha.</span>';
   $('#geralLegend').innerHTML = names.map((n,i) => '<span class="exec-legend-item"><i style="background:'+cols[i]+'"></i>'+n+' <span class="tabular">('+buckets[i]+')</span></span>').join('');
-  const abertas = ACTIVE_DATA.pendencias.map(p => pendOf(p.id)).filter(p => p.status !== 'CONFIRMADO');
+  const abertas = ACTIVE_DATA.pendencias.map(p => pendOf(p.id, campaignKey)).filter(p => p.status !== 'CONFIRMADO');
   $('#geralPend').innerHTML = abertas.length ? abertas.map(p => '<div class="notice '+(p.status === 'BLOQUEADO' ? 'red':'yellow')+'"><b>'+p.status+':</b> '+esc(p.assunto)+(p.afeta.length ? ' ('+p.afeta.join(', ')+')' : '')+'</div>').join('') : '<div class="empty-note">Nenhuma pendência aberta.</div>';
 }
 /* ---------- EXECUÇÃO ---------- */
@@ -449,17 +403,17 @@ function renderExec(){
   $('#execBody').innerHTML = list.map(i => {
     const r = rowOf(i.id); const bl = isBlocked(i);
     return '<tr><td class="exec-data tabular">'+whenOf(i)+'</td>'
-      + '<td><button class="linkcode" type="button" data-open="'+i.id+'">'+i.id+'</button></td>'
+      + '<td><button class="linkcode" type="button" data-open="'+i.id+'" data-camp="'+i._camp+'">'+i.id+'</button></td>'
       + '<td class="exec-titulo">'+esc(i.titulo)+' '+(i.turbinar?'<span class="tag boost">turbinar</span>':'')+'</td>'
       + '<td class="alert-cell">'+alertPill(i)+'</td>'
-      + STAGES.map(s => '<td class="exec-check"><input type="checkbox" data-stage="'+s+'" data-id="'+i.id+'" '+(r[s]?'checked':'')+((s==='publicado' && bl && !r.publicado)?' disabled title="Bloqueado por pendência"':'')+' aria-label="'+STAGE_LABEL[s]+' '+i.id+'"></td>').join('')
+      + STAGES.map(s => '<td class="exec-check"><input type="checkbox" data-stage="'+s+'" data-id="'+i.id+'" data-camp="'+i._camp+'" '+(r[s]?'checked':'')+((s==='publicado' && bl && !r.publicado)?' disabled title="Bloqueado por pendência"':'')+' aria-label="'+STAGE_LABEL[s]+' '+i.id+'"></td>').join('')
       + '<td><input type="text" class="exec-notes" data-nota="'+i.id+'" placeholder="Notas..." value="'+esc(r.notas||'')+'"></td></tr>';
   }).join('') || '<tr><td colspan="8" style="color:var(--ink-soft);text-align:center;padding:24px;">Nada encontrado.</td></tr>';
 }
 $('#execSearch').addEventListener('input', renderExec);
 $('#execBody').addEventListener('change', e => {
-  const cb = e.target.closest('input[type=checkbox][data-stage]'); if(cb){ setStage(cb.dataset.id, cb.dataset.stage, cb.checked); return; }
-  const nt = e.target.closest('input[data-nota]'); if(nt) setNota(nt.dataset.nota, nt.value);
+  const cb = e.target.closest('input[type=checkbox][data-stage]'); if(cb){ setStage(cb.dataset.camp, cb.dataset.id, cb.dataset.stage, cb.checked); return; }
+  const nt = e.target.closest('input[data-nota]'); if(nt) setNota(campaignKey, nt.dataset.nota, nt.value);
 });
 
 /* ---------- CALENDÁRIO ---------- */
@@ -487,7 +441,7 @@ function renderCal(){
       const mark = marks[iso];
       h += '<div class="cday'+(iso===t?' today':'')+(!items.length && !mark ? ' empty':'')+'"><div class="dn"><span><span class="wdl">'+WD[new Date(y,m,d).getDay()]+' · </span>'+pad(d)+'/'+pad(m+1)+'</span>'+(iso===t?'<span>hoje</span>':'')+'</div>'
         + (mark ? '<div class="mark">'+esc(mark)+'</div>' : '')
-        + items.map(it => { const st = situacao(it); return '<button class="citem '+st.cls+'" type="button" data-open="'+it.id+'" title="'+esc(st.label)+'"><i class="sd" style="background:'+STAGE_COL[stageIdx(rowOf(it.id))]+'"></i><span class="c">'+it.id+'</span><span class="t">'+esc(it.titulo)+(it.slot?' ('+it.slot+')':'')+'</span></button>'; }).join('')
+        + items.map(it => { const st = situacao(it); return '<button class="citem '+st.cls+'" type="button" data-open="'+it.id+'" data-camp="'+it._camp+'" title="'+esc(st.label)+'"><i class="sd" style="background:'+STAGE_COL[stageIdx(rowOf(it.id))]+'"></i><span class="c">'+it.id+'</span><span class="t">'+esc(it.titulo)+(it.slot?' ('+it.slot+')':'')+'</span></button>'; }).join('')
         + '</div>';
     }
     return h + '</div></div>';
@@ -519,7 +473,7 @@ const COPYSRC = {};
 function reelCard(r, idx){
   const open = openCards.has(r.id);
   COPYSRC[r.id+':roteiro'] = r.roteiro.join('\n\n'); COPYSRC[r.id+':legenda'] = r.legenda;
-  const pends = (r.pend||[]).map(pendOf);
+  const pends = (r.pend||[]).map(pid => pendOf(pid, r._camp));
   return '<div class="card script-card" data-id="'+r.id+'" data-open="'+open+'">'
     + '<div class="script-head" data-toggle="'+r.id+'"><span class="idx tabular">'+r.id+'</span>'+tipoChip(r)+'<span class="titulo">'+esc(r.titulo)+'</span>'
     + '<span class="meta-r"><span class="tag">'+fmtDay(r.date)+(r.slot?' · '+r.slot:'')+'</span>'+alertPill(r)+(r.turbinar?'<span class="tag boost">turbinar</span>':'')+(r.serie?'<span class="tag">série</span>':'')+(r.fala_livre?'<span class="tag">fala livre</span>':'')+dots(r)+'</span><span class="chevron">&#9662;</span></div>'
@@ -536,7 +490,7 @@ function reelCard(r, idx){
     + (r.whatsapp ? field('Mensagem pré-preenchida (se turbinar)', '"'+esc(r.whatsapp)+'"', 'msg') : '')
     + (pends.length ? field('Regras confirmadas ligadas a este vídeo', pends.map(p => '<p><b>'+p.status+'</b> · '+esc(p.assunto)+': '+esc(p.obs||'')+'</p>').join(''), 'wide') : '')
     + '</div>'
-    + '<div class="btn-row"><button class="btn primary" type="button" data-tp="'+r.id+'">Teleprompter</button>'+stageButtons(r)+'</div>'
+    + '<div class="btn-row"><button class="btn primary" type="button" data-tp="'+r.id+'" data-camp="'+r._camp+'">Teleprompter</button>'+stageButtons(r)+'</div>'
     + '</div></div>';
 }
 const openCards = new Set();
@@ -574,7 +528,7 @@ function adCard(a){
     + field('Mensagem pré-preenchida do WhatsApp', '"'+esc(a.whatsapp)+'"', 'msg', a.id+':msg')
     + field('Interesse provável', esc(a.interesse))
     + '</div>'
-    + '<div class="btn-row"><button class="btn primary" type="button" data-tp="'+a.id+'">Teleprompter</button>'+stageButtons(a)+'</div>'
+    + '<div class="btn-row"><button class="btn primary" type="button" data-tp="'+a.id+'" data-camp="'+a._camp+'">Teleprompter</button>'+stageButtons(a)+'</div>'
     + '</div></div>';
 }
 function renderAds(){ $('#adList').innerHTML = ACTIVE_DATA.ads.length ? ACTIVE_DATA.ads.map(adCard).join('') : '<div class="empty-note">Anúncios ainda não cadastrados nesta campanha.</div>'; }
@@ -584,7 +538,7 @@ function renderWA(){
   const groups = {}; ACTIVE_DATA.entradas.forEach(e => (groups[e.grupo] = groups[e.grupo] || []).push(e));
   const keys = Object.keys(groups);
   $('#waBody').innerHTML = keys.length ? keys.map(g => '<div class="wa-group"><h3>'+esc(g)+'</h3>'
-    + groups[g].map(e => { COPYSRC['wa:'+e.id] = e.mensagem; const it = byId[e.id];
+    + groups[g].map(e => { COPYSRC['wa:'+e.id] = e.mensagem; const it = getItem(campaignKey, e.id);
       return '<div class="card wa-row"><div class="src"><span class="code">'+e.id+'</span>'+esc(e.nome)+(it && isBlocked(it) ? ' <span class="alert red">Bloqueado</span>' : '')+'</div>'
         + '<div><div class="m">"'+esc(e.mensagem)+'"<button class="copy-btn" type="button" data-copy="wa:'+e.id+'">copiar</button></div><div class="i">Interesse provável: '+esc(e.interesse)+'</div></div></div>'; }).join('')
     + '</div>').join('') : '<div class="empty-note">Mensagens de entrada serão adicionadas quando os anúncios/Reels desta campanha forem aprovados.</div>';
@@ -615,7 +569,7 @@ function renderNum(){
 }
 /* ---------- PENDÊNCIAS ---------- */
 function renderPend(){
-  const list = ACTIVE_DATA.pendencias.map(p => pendOf(p.id));
+  const list = ACTIVE_DATA.pendencias.map(p => pendOf(p.id, campaignKey));
   const abertas = list.filter(p => p.status !== 'CONFIRMADO').length;
   $('#pendBadge').textContent = abertas ? String(abertas) : '';
   const order = {BLOQUEADO:0, PENDENTE:1, CONFIRMADO:2};
@@ -627,29 +581,24 @@ function renderPend(){
 }
 $('#pendBody').addEventListener('change', async e => {
   const sel = e.target.closest('select[data-pend]');
-  if(sel){ const id = sel.dataset.pend; pendState[id] = Object.assign({}, pendState[id], {status:sel.value, obs:pendOf(id).obs}); renderAll(); toast('Pendência marcada como '+sel.value); await savePend(id); return; }
+  if(sel){ const k = campaignKey, id = sel.dataset.pend, P = STATE[k].pend; P[id] = Object.assign({}, P[id], {status:sel.value, obs:pendOf(id, k).obs}); renderAll(); toast('Pendência marcada como '+sel.value); await savePend(id, k); return; }
   const ta = e.target.closest('textarea[data-pendobs]');
-  if(ta){ const id = ta.dataset.pendobs; pendState[id] = Object.assign({}, pendState[id], {status:pendOf(id).status, obs:ta.value}); await savePend(id); toast('Observação salva'); }
+  if(ta){ const k = campaignKey, id = ta.dataset.pendobs, P = STATE[k].pend; P[id] = Object.assign({}, P[id], {status:pendOf(id, k).status, obs:ta.value}); await savePend(id, k); toast('Observação salva'); }
 });
 
 /* ---------- Cliques globais ---------- */
 document.addEventListener('click', e => {
   const st = e.target.closest('button[data-stage]');
-  if(st){
-    const key = st.dataset.campaign || campaignKey;
-    if(key === campaignKey) setStage(st.dataset.id, st.dataset.stage, st.getAttribute('aria-pressed') !== 'true');
-    else setStageFor(key, st.dataset.id, st.dataset.stage, st.getAttribute('aria-pressed') !== 'true');
-    return;
-  }
+  if(st){ setStage(st.dataset.camp || campaignKey, st.dataset.id, st.dataset.stage, st.getAttribute('aria-pressed') !== 'true'); return; }
   const tg = e.target.closest('[data-toggle]');
   if(tg){ const id = tg.dataset.toggle; const card = tg.parentElement; const o = card.getAttribute('data-open') === 'true';
     card.setAttribute('data-open', String(!o)); if(o) openCards.delete(id); else openCards.add(id); return; }
   const cp = e.target.closest('[data-copy]');
   if(cp){ copyText(COPYSRC[cp.dataset.copy] || '', cp); return; }
-  const tpBtn = e.target.closest('[data-tp]');
-  if(tpBtn){ const key=tpBtn.dataset.campaign||campaignKey; const item=(CAMPAIGNS[key].reels||[]).concat(CAMPAIGNS[key].ads||[]).find(i=>i.id===tpBtn.dataset.tp); openTP(item); return; }
+  const tp = e.target.closest('[data-tp]');
+  if(tp){ openTP(getItem(tp.dataset.camp || campaignKey, tp.dataset.tp)); return; }
   const op = e.target.closest('[data-open]');
-  if(op){ const key=op.dataset.campaign||campaignKey; hideResults(); if(key!==campaignKey){ switchCampaign(key).then(()=>{ openCards.add(op.dataset.open); openItem(op.dataset.open); }); } else { openCards.add(op.dataset.open); openItem(op.dataset.open); } return; }
+  if(op){ const k = op.dataset.camp || campaignKey; if(!getItem(k, op.dataset.open)) return; openCards.add(op.dataset.open); hideResults(); openItem(op.dataset.open, k); return; }
   if(!e.target.closest('.gsearch')) hideResults();
 });
 document.addEventListener('keydown', e => {
@@ -671,7 +620,7 @@ gInput.addEventListener('input', () => {
   ACTIVE_DATA.pendencias.forEach(p => { if((p.assunto+' '+p.obs).toLowerCase().includes(q)) hits.push({pend:p}); });
   gRes.innerHTML = hits.slice(0, 12).map(h => h.pend
     ? '<button type="button" data-goto="pendencias"><span class="code">PEND</span><span>'+esc(h.pend.assunto)+'</span></button>'
-    : '<button type="button" data-open="'+h.i.id+'"><span class="code">'+h.i.id+'</span><span>'+esc(h.i.titulo)+'<span class="snip">…'+esc(h.snip)+'…</span></span></button>').join('') || '<div class="empty">Nada encontrado.</div>';
+    : '<button type="button" data-open="'+h.i.id+'" data-camp="'+h.i._camp+'"><span class="code">'+h.i.id+'</span><span>'+esc(h.i.titulo)+'<span class="snip">…'+esc(h.snip)+'…</span></span></button>').join('') || '<div class="empty">Nada encontrado.</div>';
   gRes.hidden = false;
 });
 gRes.addEventListener('click', e => { const g = e.target.closest('[data-goto]'); if(g){ hideResults(); goToView(g.dataset.goto); } });
@@ -708,5 +657,5 @@ function renderAll(){
 renderCampaignChrome();
 renderExecFilters(); renderRotFilters();
 renderAll();
-const savedTab = store.get('avaner-tab', 'hoje'); if(savedTab !== 'hoje' && document.getElementById('view-'+savedTab)) goToView(savedTab);
+const savedTab = store.get('avaner-tab', 'hoje'); if(savedTab !== 'hoje' && document.getElementById('view-'+savedTab)) goToView(savedTab); else document.body.classList.add('on-hoje');
 loadAll(false).then(subscribe);
