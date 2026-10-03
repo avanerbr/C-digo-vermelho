@@ -1,110 +1,31 @@
-# Central de Campanhas AVANER
+# Central de Campanhas AVANER — v4 final
 
-Painel estático (HTML/CSS/JS) inspirado no Código Vermelho, agora preparado para várias campanhas no mesmo sistema.
-
-Campanhas incluídas nesta versão:
-
-- **Grupo 11.000 · Imóveis** — campanha completa, com 20 Reels, 8 anúncios, WhatsApp, números e pendências.
-- **Grupo 20.004 · Caminhões** — base oficial carregada (números, regras, estratégia inicial e pendências). Os roteiros e anúncios ainda não foram inventados: entram quando forem aprovados.
-
-## O que mudou
-
-No topo existe um seletor de campanha. Cada campanha tem seus próprios status, pendências e tabelas no Supabase, sem misturar Grupo 11.000 com Grupo 20.004.
-
-A navegação continua:
-
-**Hoje → Visão geral → Execução → Calendário → Roteiros → Anúncios → WhatsApp → Números → Pendências**
+Baseada na versão v3 que ficou operante, com o Grupo 11.000 e a campanha completa do Grupo 20.004.
 
 ## Arquivos
+- `index.html`
+- `central-v4.css`
+- `central-v4.bundle.js`
+- `supabase/schema.sql`
+- `README.md`
 
-- `index.html` — página principal
-- `style.css` — visual
-- `data.js` — conteúdo aprovado do Grupo 11.000
-- `data-trucks.js` — base do Grupo 20.004
-- `app.js` — lógica multi-campanha
-- `supabase-config.js` — configuração já existente do Supabase
-- `supabase/schema.sql` — tabelas das duas campanhas
+## Instalação
+1. Substitua os arquivos da raiz do repositório por estes arquivos.
+2. Rode `supabase/schema.sql` no SQL Editor do mesmo projeto Supabase. É idempotente e também grava as confirmações finais do Grupo 20.004.
+3. Commit + Push.
+4. Aguarde o deploy no Coolify.
+5. No rodapé, confirme `build 2026.10.02-v4`.
 
-## 1. Supabase
+## Grupo 20.004 — regras finais aplicadas
+- taxa 10,85% até 30/10; depois 15,5% até 23/11, salvo nova campanha;
+- proposta até 20h em 30/10;
+- lance exclusivo sem embutido e sem parcelamento;
+- lance fixo 25% sobre crédito integral + taxa;
+- embutido até 30% sobre crédito integral + taxa, nos lances livre e fixo;
+- caminhão novo ou usado até 10 anos, veículos leves e implementos;
+- CNPJ permitido;
+- parcela da tabela inclui seguro prestamista e o seguro pode ser retirado;
+- diluição segue a mesma sistemática do imobiliário.
 
-Abra o projeto atual no Supabase:
-
-**SQL Editor → New query → cole `supabase/schema.sql` → Run**
-
-O SQL é idempotente: pode ser executado mesmo se `g11_execucao` e `g11_pendencias` já existirem.
-
-Ele mantém/cria:
-
-- `g11_execucao`
-- `g11_pendencias`
-- `g20004_execucao`
-- `g20004_pendencias`
-
-Também liga as quatro tabelas ao Realtime sem tentar adicioná-las duas vezes.
-
-## 2. GitHub
-
-Se este sistema vai substituir o repositório da Central atual:
-
-1. Faça backup do repositório atual.
-2. Substitua os arquivos da raiz pelos arquivos deste zip.
-3. Faça commit e push.
-4. Aguarde o deploy normal do projeto.
-
-Não há build: é um site estático.
-
-## 3. Grupo 11.000
-
-A regra final de lance já está aplicada:
-
-- Base do lance fixo: crédito integral + taxa.
-- Carta de R$ 1 milhão: base R$ 1.157.500.
-- Lance fixo de 30%: R$ 347.250.
-- Embutido máximo: 30% do crédito nominal = R$ 300.000.
-- Complemento do cliente: R$ 47.250.
-- Crédito líquido: R$ 700.000.
-
-O valor incorreto de R$ 652.750 não está no sistema.
-
-## 4. Grupo 20.004 · Caminhões
-
-A base foi criada a partir da tabela oficial fornecida:
-
-- crédito de R$ 200 mil a R$ 400 mil;
-- 120 meses;
-- 720 participantes;
-- taxa promocional 10,85% (era 15,5%);
-- promoção até 30/10/2026;
-- vendas/vencimento até 23/11/2026;
-- assembleia em 26/11/2026;
-- tabela de parcelas completa;
-- regras gerais de contemplação e lance descritas na tabela oficial.
-
-Como ainda faltam confirmações para transformar algumas regras de lance em exemplos comerciais, elas aparecem em **Pendências**. Nenhum roteiro foi criado automaticamente.
-
-## 5. Uso diário
-
-O status de cada campanha é independente. Trocar de campanha no seletor também troca:
-
-- execução;
-- calendário;
-- roteiros;
-- anúncios;
-- WhatsApp;
-- números;
-- pendências;
-- sincronização no Supabase.
-
-Com Supabase disponível, celular e computador veem as mesmas marcações em tempo real. Sem conexão, o painel usa backup local do navegador.
-
-## Ajustes desta versão
-
-- Tela **Hoje** agora é global: reúne conteúdos de Imóveis e Caminhões no mesmo painel, com selo por campanha.
-- Corrigida a exibição de `R$` nas parcelas do Grupo 20.004.
-- Restaurados os avisos do Grupo 11.000 sobre simulação bancária do dia e parcela pós-contemplação ainda não confirmada.
-- Proteção contra mistura de status ao trocar de campanha enquanto uma consulta do Supabase ainda está em andamento.
-- Adicionada a pendência sobre a regra do **lance exclusivo** no Grupo 20.004.
-- Mantida a campanha de caminhões apenas como base oficial, sem inventar roteiros ou anúncios antes da validação das regras.
-
-## Build v3 — correção de carregamento
-Esta versão usa arquivos com nomes novos (`central-v3.bundle.js` e `central-v3.css`) para impedir que Safari/Coolify reaproveitem JavaScript antigo. A interface carrega primeiro; o Supabase conecta depois, de forma assíncrona. O rodapé mostra `build 2026.10.02-v3` para confirmar o deploy.
+## Exemplo V10
+Carta R$ 300.000 + taxa 10,85% = base R$ 332.550. Lance fixo 25% = R$ 83.137,50. Embutido máximo 30% = R$ 99.765.
