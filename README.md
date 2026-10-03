@@ -1,99 +1,98 @@
-# Central Código Vermelho — sistema de execução
+# Central de Campanhas AVANER
 
-Site estático (HTML/CSS/JS puro, sem build) com o calendário de 30 dias, os 60 roteiros
-completos, o mapa de crédito, dores e desejos, o sistema de viralização e um **painel de
-execução** (gravado / editado / programado / publicado) que persiste no Supabase — assim
-todo o time vê o mesmo status, de qualquer aparelho.
+Painel estático (HTML/CSS/JS) inspirado no Código Vermelho, agora preparado para várias campanhas no mesmo sistema.
 
-Todos os arquivos deste zip são **novos** — é um projeto novo, não uma atualização de algo
-que você já tinha.
+Campanhas incluídas nesta versão:
 
-## Estrutura de arquivos
+- **Grupo 11.000 · Imóveis** — campanha completa, com 20 Reels, 8 anúncios, WhatsApp, números e pendências.
+- **Grupo 20.004 · Caminhões** — base oficial carregada (números, regras, estratégia inicial e pendências). Os roteiros e anúncios ainda não foram inventados: entram quando forem aprovados.
 
-- `index.html` — a página
-- `style.css` — todo o visual
-- `data.js` — o conteúdo (roteiros, calendário, dores/desejos, mapa de crédito)
-- `supabase-config.js` — chaves de conexão do Supabase (você preenche, passo 2)
-- `app.js` — toda a lógica (abas, filtros, busca, painel de execução, sincronização)
-- `supabase/schema.sql` — script que cria a tabela de execução no Supabase
+## O que mudou
 
-## 1. Ver localmente, sem configurar nada
+No topo existe um seletor de campanha. Cada campanha tem seus próprios status, pendências e tabelas no Supabase, sem misturar Grupo 11.000 com Grupo 20.004.
 
-Dê duplo clique no `index.html` e ele abre no navegador. Funciona sem servidor e sem
-internet (exceto pelas fontes do Google Fonts). Sem o Supabase configurado, o painel de
-Execução ainda funciona — mas o status fica salvo só no seu navegador, e ninguém mais do
-time vê as marcações.
+A navegação continua:
 
-## 2. Configurar o Supabase (pra persistir e compartilhar com o time)
+**Hoje → Visão geral → Execução → Calendário → Roteiros → Anúncios → WhatsApp → Números → Pendências**
 
-1. Crie uma conta em [supabase.com](https://supabase.com) e um novo projeto (o plano
-   gratuito atende de sobra esse uso).
-2. No painel do projeto, vá em **SQL Editor → New query**, cole o conteúdo do arquivo
-   `supabase/schema.sql` e clique em **Run**. Isso cria a tabela `execucao`.
-3. Vá em **Project Settings → API**. Copie o **Project URL** e a chave **anon public**.
-4. Abra o arquivo `supabase-config.js` num editor de texto e cole os dois valores:
+## Arquivos
 
-   ```js
-   window.SUPABASE_CONFIG = {
-     url: "https://xxxxxxxxxxxx.supabase.co",
-     anonKey: "eyJhbGciOi..."
-   };
-   ```
-5. Salve e suba os arquivos pro GitHub (passo 3). Ao abrir o site publicado, a faixa no
-   topo da aba Execução deve mudar de "Supabase não configurado" pra "Sincronizando com
-   Supabase".
+- `index.html` — página principal
+- `style.css` — visual
+- `data.js` — conteúdo aprovado do Grupo 11.000
+- `data-trucks.js` — base do Grupo 20.004
+- `app.js` — lógica multi-campanha
+- `supabase-config.js` — configuração já existente do Supabase
+- `supabase/schema.sql` — tabelas das duas campanhas
 
-**Nota de segurança:** a chave `anon public` é feita pra ficar exposta no navegador — não
-é uma senha secreta, é assim que o Supabase funciona em qualquer site estático. O
-`schema.sql` já vem com Row Level Security habilitada e uma política aberta: qualquer
-pessoa com o link do site pode ler e gravar o status de execução. Isso é adequado pra um
-painel interno de equipe pequena. Se um dia você quiser exigir login antes de editar, me
-chama que eu adiciono autenticação por e-mail do Supabase.
+## 1. Supabase
 
-## 3. Subir pro GitHub
+Abra o projeto atual no Supabase:
 
-Como você já usa o GitHub Desktop:
+**SQL Editor → New query → cole `supabase/schema.sql` → Run**
 
-1. Crie um repositório novo (ex: `avaner-codigo-vermelho`) no GitHub.com — pode ser
-   privado.
-2. No GitHub Desktop: **File → Add Local Repository** → selecione a pasta que você
-   descompactou deste zip.
-3. Faça o commit inicial ("Primeira versão do site") e clique em **Publish repository**.
+O SQL é idempotente: pode ser executado mesmo se `g11_execucao` e `g11_pendencias` já existirem.
 
-## 4. Publicar o site (escolha uma opção)
+Ele mantém/cria:
 
-### Opção A — GitHub Pages (mais simples, grátis)
+- `g11_execucao`
+- `g11_pendencias`
+- `g20004_execucao`
+- `g20004_pendencias`
 
-1. No repositório no GitHub.com, vá em **Settings → Pages**.
-2. Em "Source", selecione a branch `main` e a pasta `/(root)`. Salve.
-3. Em alguns minutos o site fica no ar em
-   `https://SEU-USUARIO.github.io/NOME-DO-REPO/`
+Também liga as quatro tabelas ao Realtime sem tentar adicioná-las duas vezes.
 
-### Opção B — Vercel ou Netlify (atualiza sozinho a cada mudança)
+## 2. GitHub
 
-1. Crie conta em [vercel.com](https://vercel.com) ou [netlify.com](https://netlify.com)
-   com seu GitHub.
-2. "Add new project" / "Add new site" → selecione o repositório.
-3. Não precisa configurar build command nem output directory (é um site estático) —
-   clique em **Deploy**.
-4. A cada push no GitHub, o site atualiza sozinho.
+Se este sistema vai substituir o repositório da Central atual:
 
-## 5. Atualizar o conteúdo depois
+1. Faça backup do repositório atual.
+2. Substitua os arquivos da raiz pelos arquivos deste zip.
+3. Faça commit e push.
+4. Aguarde o deploy normal do projeto.
 
-Todo o conteúdo (roteiros, calendário, mapa de crédito, dores/desejos) está em `data.js` —
-é um objeto JavaScript, dá pra editar o texto direto ali se for um ajuste pontual. Pra uma
-atualização maior (trocar notícias, adicionar vídeos, mudar o calendário), me peça que eu
-gero uma nova versão completa dos arquivos.
+Não há build: é um site estático.
 
-## 6. Time — como usar no dia a dia
+## 3. Grupo 11.000
 
-1. Abra o link do site (o do GitHub Pages, Vercel ou Netlify).
-2. Aba **Execução**: marque as caixinhas conforme grava, edita, programa e publica cada
-   vídeo. Marcar uma etapa mais avançada (ex: Programado) já marca as anteriores
-   automaticamente (Gravado, Editado).
-3. Aba **Calendário**: a bolinha ao lado do horário mostra o status de cada vídeo com a
-   mesma cor da aba Execução — cinza (não iniciado), dourado (gravado), verde (editado),
-   azul (programado), preto/branco (publicado).
-4. Tudo sincroniza pelo Supabase — não precisa recarregar a página pra outra pessoa ver a
-   atualização de status, mas se alguém já estava com a aba aberta antes da mudança, um
-   F5 atualiza a visão dela.
+A regra final de lance já está aplicada:
+
+- Base do lance fixo: crédito integral + taxa.
+- Carta de R$ 1 milhão: base R$ 1.157.500.
+- Lance fixo de 30%: R$ 347.250.
+- Embutido máximo: 30% do crédito nominal = R$ 300.000.
+- Complemento do cliente: R$ 47.250.
+- Crédito líquido: R$ 700.000.
+
+O valor incorreto de R$ 652.750 não está no sistema.
+
+## 4. Grupo 20.004 · Caminhões
+
+A base foi criada a partir da tabela oficial fornecida:
+
+- crédito de R$ 200 mil a R$ 400 mil;
+- 120 meses;
+- 720 participantes;
+- taxa promocional 10,85% (era 15,5%);
+- promoção até 30/10/2026;
+- vendas/vencimento até 23/11/2026;
+- assembleia em 26/11/2026;
+- tabela de parcelas completa;
+- regras gerais de contemplação e lance descritas na tabela oficial.
+
+Como ainda faltam confirmações para transformar algumas regras de lance em exemplos comerciais, elas aparecem em **Pendências**. Nenhum roteiro foi criado automaticamente.
+
+## 5. Uso diário
+
+O status de cada campanha é independente. Trocar de campanha no seletor também troca:
+
+- execução;
+- calendário;
+- roteiros;
+- anúncios;
+- WhatsApp;
+- números;
+- pendências;
+- sincronização no Supabase.
+
+Com Supabase disponível, celular e computador veem as mesmas marcações em tempo real. Sem conexão, o painel usa backup local do navegador.

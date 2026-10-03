@@ -1,394 +1,617 @@
-/* Central Código Vermelho — lógica da página (abas, filtros, calendário, execução) */
+/* Central AVANER — lógica multi-campanha (abas, Hoje, execução, calendário, roteiros, anúncios, pendências) */
+
+/* ---------- Utilidades ---------- */
+const $ = s => document.querySelector(s);
+const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const WD = ['dom','seg','ter','qua','qui','sex','sáb'];
+function pad(n){ return String(n).padStart(2,'0'); }
+function todayISO(){ const t = new Date(); return t.getFullYear()+'-'+pad(t.getMonth()+1)+'-'+pad(t.getDate()); }
+function parseISO(iso){ const [y,m,d] = iso.split('-').map(Number); return new Date(y, m-1, d); }
+function fmtDate(iso){ return iso.slice(8,10)+'/'+iso.slice(5,7); }
+function fmtDay(iso){ return WD[parseISO(iso).getDay()]+' · '+fmtDate(iso); }
+function daysTo(iso){ const t = parseISO(todayISO()); return Math.round((parseISO(iso) - t)/864e5); }
+function addDays(iso, n){ const d = parseISO(iso); d.setDate(d.getDate()+n); return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate()); }
+function toast(msg){ const t = $('#toast'); t.textContent = msg; t.hidden = false; clearTimeout(toast._t); toast._t = setTimeout(() => t.hidden = true, 2600); }
+const store = {
+  get(k, d){ try{ const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; }catch(e){ return d; } },
+  set(k, v){ try{ localStorage.setItem(k, JSON.stringify(v)); }catch(e){} }
+};
+function copyText(text, btn){
+  const done = () => { if(btn){ const o = btn.textContent; btn.textContent = 'Copiado'; btn.classList.add('ok'); setTimeout(() => { btn.textContent = o; btn.classList.remove('ok'); }, 1400); } else toast('Copiado'); };
+  try{ navigator.clipboard.writeText(text).then(done).catch(() => fallbackCopy(text, done)); }
+  catch(e){ fallbackCopy(text, done); }
+}
+function fallbackCopy(text, done){
+  const ta = document.createElement('textarea'); ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+  document.body.appendChild(ta); ta.select();
+  try{ document.execCommand('copy'); done(); }catch(e){ toast('Não consegui copiar. Selecione o texto manualmente.'); }
+  ta.remove();
+}
+
+/* ---------- Dados / campanhas ---------- */
+const CAMPAIGNS = window.CAMPAIGNS;
+let campaignKey = store.get('avaner-campaign', Object.keys(CAMPAIGNS)[0] || 'g11000');
+if(!CAMPAIGNS[campaignKey]) campaignKey = Object.keys(CAMPAIGNS)[0];
+let ACTIVE_DATA = CAMPAIGNS[campaignKey];
+let ITEMS = [];
+let byId = {};
+let C = {};
+function storageKey(suffix){ return 'avaner-'+campaignKey+'-'+suffix; }
+function rebuildCampaignRefs(){
+  ACTIVE_DATA = CAMPAIGNS[campaignKey];
+  C = ACTIVE_DATA.campanha;
+  ITEMS = ACTIVE_DATA.reels.concat(ACTIVE_DATA.ads);
+  byId = {}; ITEMS.forEach(i => byId[i.id] = i);
+}
+rebuildCampaignRefs();
 
 /* ---------- Supabase ---------- */
-let supabaseClient = null;
+let sb = null;
 if (window.supabase && window.SUPABASE_CONFIG && window.SUPABASE_CONFIG.url && window.SUPABASE_CONFIG.anonKey) {
-  try {
-    supabaseClient = window.supabase.createClient(window.SUPABASE_CONFIG.url, window.SUPABASE_CONFIG.anonKey);
-  } catch (e) { console.error('Falha ao iniciar Supabase:', e); }
+  try { sb = window.supabase.createClient(window.SUPABASE_CONFIG.url, window.SUPABASE_CONFIG.anonKey); }
+  catch (e) { console.error('Falha ao iniciar Supabase:', e); }
+}
+const STAGES = ['gravado','editado','publicado'];
+const STAGE_LABEL = {gravado:'Gravado', editado:'Editado', publicado:'Publicado'};
+let exec = {};
+let pendState = {};
+function defRow(id){ return {item_id:id, gravado:false, gravado_em:null, editado:false, editado_em:null, publicado:false, publicado_em:null, notas:''}; }
+function rowOf(id){ return exec[id] || defRow(id); }
+function stageIdx(r){ let i = 0; STAGES.forEach((s,k) => { if(r[s]) i = k+1; }); return i; }
+function pendOf(pid){
+  const base = ACTIVE_DATA.pendencias.find(p => p.id === pid) || {};
+  return Object.assign({}, base, pendState[pid] || {});
 }
 
-/* ---------- Theme toggle ---------- */
-const themeBtn = document.getElementById('themeToggle');
+function execTable(){ return C.db_exec || ('camp_'+campaignKey+'_execucao'); }
+function pendTable(){ return C.db_pend || ('camp_'+campaignKey+'_pendencias'); }
+let syncChannel = null;
+
+function setConn(kind, text){
+  const el = $('#connStatus');
+  el.className = 'conn-status ' + (kind === 'ok' ? 'ok' : 'warn');
+  el.innerHTML = '<span class="'+(kind === 'ok' ? 'conn-ok' : 'conn-warn')+'">&#9679; '+esc(text)+'</span>';
+  if(kind === 'ok') setTimeout(() => { el.innerHTML = ''; el.className = 'conn-status'; }, 4000);
+}
+
+async function loadAll(silent){
+  if(sb){
+    const [e1, e2] = await Promise.all([
+      sb.from(execTable()).select('*'),
+      sb.from(pendTable()).select('*')
+    ]);
+    if(e1.error || e2.error){
+      console.error(e1.error || e2.error);
+      setConn('warn', 'Não consegui falar com o Supabase agora. Usando o backup deste navegador.');
+      exec = store.get(storageKey('exec'), {}); pendState = store.get(storageKey('pend'), {});
+    } else {
+      exec = {}; (e1.data || []).forEach(r => exec[r.item_id] = Object.assign(defRow(r.item_id), r));
+      pendState = {}; (e2.data || []).forEach(r => pendState[r.id] = {status:r.status, obs:r.obs});
+      store.set(storageKey('exec'), exec); store.set(storageKey('pend'), pendState);
+      if(!silent) setConn('ok', 'Sincronizado com o Supabase. Todos os aparelhos veem o mesmo status.');
+    }
+  } else {
+    setConn('warn', (window.SUPABASE_CONFIG && window.SUPABASE_CONFIG.url && !window.supabase) ? 'Não consegui carregar o Supabase (sem internet?). Usando o backup deste navegador.' : 'Supabase não configurado. O status fica salvo só neste navegador (veja o README).');
+    exec = store.get(storageKey('exec'), {}); pendState = store.get(storageKey('pend'), {});
+  }
+  renderAll();
+}
+
+function subscribe(){
+  if(!sb || !sb.channel) return;
+  try{
+    if(syncChannel && sb.removeChannel) sb.removeChannel(syncChannel);
+    syncChannel = sb.channel('avaner-sync-'+campaignKey)
+      .on('postgres_changes', {event:'*', schema:'public', table:execTable()}, p => {
+        const r = p.new; if(r && r.item_id){ exec[r.item_id] = Object.assign(defRow(r.item_id), r); store.set(storageKey('exec'), exec); renderAll(); }
+      })
+      .on('postgres_changes', {event:'*', schema:'public', table:pendTable()}, p => {
+        const r = p.new; if(r && r.id){ pendState[r.id] = {status:r.status, obs:r.obs}; store.set(storageKey('pend'), pendState); renderAll(); }
+      })
+      .subscribe();
+  }catch(e){ console.error(e); }
+}
+document.addEventListener('visibilitychange', () => { if(document.visibilityState === 'visible') loadAll(true); });
+
+async function saveRow(row){
+  store.set(storageKey('exec'), exec);
+  if(sb){
+    const {error} = await sb.from(execTable()).upsert(row, {onConflict:'item_id'});
+    if(error){ console.error(error); toast('Não salvou no Supabase. Ficou só neste aparelho.'); }
+  }
+}
+async function savePend(id){
+  store.set(storageKey('pend'), pendState);
+  if(sb){
+    const p = pendOf(id);
+    const {error} = await sb.from(pendTable()).upsert({id, status:p.status, obs:p.obs, updated_at:new Date().toISOString()}, {onConflict:'id'});
+    if(error){ console.error(error); toast('Não salvou no Supabase. Ficou só neste aparelho.'); }
+  }
+}
+
+/* ---------- Situação (alerta) ---------- */
+function situacao(item){
+  const ps = (item.pend || []).map(pendOf);
+  const blocked = ps.filter(p => p.status === 'BLOQUEADO');
+  const pending = ps.filter(p => p.status === 'PENDENTE');
+  if(blocked.length) return {cls:'red', label:'Bloqueado', blocked, pending};
+  if(pending.length || item.obs) return {cls:'yellow', label:'Atenção', blocked, pending};
+  const start = item.kind === 'reel' ? item.date : item.inicio;
+  if(start > todayISO()) return {cls:'gray', label:'Ainda não chegou', blocked, pending};
+  return {cls:'green', label:'Liberado', blocked, pending};
+}
+function alertPill(item){ const s = situacao(item); return '<span class="alert '+s.cls+'">'+s.label+'</span>'; }
+function isBlocked(item){ return situacao(item).cls === 'red'; }
+function nextStep(item){
+  const r = rowOf(item.id);
+  if(isBlocked(item) && r.editado) return 'Aguardar liberação';
+  if(!r.gravado) return item.kind === 'ad' ? 'Gravar' : 'Gravar';
+  if(!r.editado) return 'Editar';
+  if(!r.publicado) return item.kind === 'ad' ? 'Subir no Meta' : 'Publicar';
+  return 'Feito';
+}
+
+/* ---------- Mudar etapa ---------- */
+async function setStage(id, stage, val){
+  const item = byId[id];
+  if(stage === 'publicado' && val && isBlocked(item)){
+    toast(id+' está bloqueado. Libere a pendência antes de publicar.');
+    renderAll(); return;
+  }
+  const r = Object.assign(defRow(id), rowOf(id));
+  const k = STAGES.indexOf(stage);
+  if(val){
+    for(let i=0;i<=k;i++){ const s = STAGES[i]; if(!r[s]){ r[s] = true; r[s+'_em'] = todayISO(); } }
+  } else {
+    for(let i=k;i<STAGES.length;i++){ const s = STAGES[i]; r[s] = false; r[s+'_em'] = null; }
+  }
+  r.updated_at = new Date().toISOString();
+  exec[id] = r;
+  renderAll();
+  await saveRow(r);
+}
+async function setNota(id, val){
+  const r = Object.assign(defRow(id), rowOf(id));
+  r.notas = val; r.updated_at = new Date().toISOString(); exec[id] = r;
+  await saveRow(r);
+}
+
+/* ---------- Tema ---------- */
+const themeBtn = $('#themeToggle');
+let theme = store.get('avaner-theme', 'system');
 function applyTheme(t){
-  const root = document.documentElement;
-  if(t === 'system'){ root.removeAttribute('data-theme'); }
-  else{ root.setAttribute('data-theme', t); }
+  if(t === 'system') document.documentElement.removeAttribute('data-theme'); else document.documentElement.setAttribute('data-theme', t);
   themeBtn.textContent = 'Tema: ' + (t === 'system' ? 'sistema' : t === 'dark' ? 'escuro' : 'claro');
 }
-let savedTheme = 'system';
-try{ savedTheme = localStorage.getItem('avaner-theme') || 'system'; }catch(e){}
-applyTheme(savedTheme);
-themeBtn.addEventListener('click', () => {
-  const order = ['system','light','dark'];
-  const next = order[(order.indexOf(savedTheme)+1) % order.length];
-  savedTheme = next;
-  applyTheme(next);
-  try{ localStorage.setItem('avaner-theme', next); }catch(e){}
-});
+applyTheme(theme);
+themeBtn.addEventListener('click', () => { const o = ['system','light','dark']; theme = o[(o.indexOf(theme)+1)%3]; applyTheme(theme); store.set('avaner-theme', theme); });
 
-/* ---------- Tabs ---------- */
-const tabButtons = document.querySelectorAll('nav.tabs button');
-tabButtons.forEach(btn => {
-  btn.addEventListener('click', () => {
-    tabButtons.forEach(b => b.setAttribute('aria-selected','false'));
-    btn.setAttribute('aria-selected','true');
-    document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-    document.getElementById('view-' + btn.dataset.view).classList.add('active');
-    window.scrollTo({top:0, behavior:'instant'});
-  });
-});
+/* ---------- Seletor de campanha ---------- */
+const campaignSelect = $('#campaignSelect');
+function campaignLabel(key){
+  const d = CAMPAIGNS[key] && CAMPAIGNS[key].campanha;
+  return d ? d.nome + (d.apelido ? ' · '+d.apelido : '') : key;
+}
+function renderCampaignChrome(){
+  const title = C.nome || 'Campanha';
+  $('#brandTitle').innerHTML = title.includes('Grupo ') ? 'Grupo <em>'+esc(title.replace('Grupo ',''))+'</em>' : esc(title);
+  $('#brandSub').textContent = (C.apelido ? C.apelido+' · ' : '')+'Central de campanha · Avaner · Consórcio Yamaha';
+  $('#footerText').textContent = title+' · Avaner · uso interno';
+  $('#reelsEyebrow').textContent = ACTIVE_DATA.reels.length ? ACTIVE_DATA.reels.length+' Reels' : 'Conteúdo em preparação';
+  $('#adsLede').textContent = C.ad_notice || 'Um argumento por anúncio. Todo tráfego leva direto ao WhatsApp do Michael.';
+  $('#calEyebrow').textContent = 'Calendário · '+title;
+  const geral = $('#geralEstrategia');
+  geral.innerHTML = '<h3>Estratégia</h3>' + (ACTIVE_DATA.estrategia || '');
+}
+async function switchCampaign(key){
+  if(!CAMPAIGNS[key] || key === campaignKey) return;
+  campaignKey = key;
+  store.set('avaner-campaign', key);
+  rebuildCampaignRefs();
+  exec = {};
+  pendState = {};
+  openCards.clear();
+  execFilter = 'Todos';
+  rotFilter = 'Todos';
+  $('#execSearch').value = '';
+  $('#rotSearch').value = '';
+  renderCampaignChrome();
+  renderExecFilters();
+  renderRotFilters();
+  renderAll();
+  await loadAll(false);
+  subscribe();
+}
+if(campaignSelect){
+  campaignSelect.innerHTML = Object.keys(CAMPAIGNS).map(k => '<option value="'+esc(k)+'">'+esc(campaignLabel(k))+'</option>').join('');
+  campaignSelect.value = campaignKey;
+  campaignSelect.addEventListener('change', () => switchCampaign(campaignSelect.value));
+}
+
+/* ---------- Abas ---------- */
+const tabs = document.querySelectorAll('nav.tabs button');
 function goToView(view){
-  document.querySelector('nav.tabs button[data-view="'+view+'"]').click();
+  tabs.forEach(b => b.setAttribute('aria-selected', String(b.dataset.view === view)));
+  document.querySelectorAll('.view').forEach(v => v.classList.toggle('active', v.id === 'view-'+view));
+  const b = document.querySelector('nav.tabs button[data-view="'+view+'"]');
+  if(b && b.scrollIntoView) b.scrollIntoView({block:'nearest', inline:'center'});
+  window.scrollTo({top:0});
+  store.set('avaner-tab', view);
 }
+tabs.forEach(b => b.addEventListener('click', () => goToView(b.dataset.view)));
 
-/* ---------- Pilar colors ---------- */
-const PILAR_COLOR = {
-  "Alavancagem Patrimonial": {bg:"var(--gold-soft)", fg:"var(--gold-ink)", bar:"var(--gold)"},
-  "Alavancagem Financeira": {bg:"var(--positive-soft)", fg:"var(--positive-ink)", bar:"var(--positive)"},
-  "Alavancagem de Capital": {bg:"var(--gold-soft)", fg:"var(--gold-ink)", bar:"var(--gold)"},
-  "Projeções": {bg:"var(--positive-soft)", fg:"var(--positive-ink)", bar:"var(--positive)"},
-  "Código Vermelho": {bg:"var(--alert-soft)", fg:"var(--alert-ink)", bar:"var(--alert)"},
-  "Mitos & Educação": {bg:"var(--paper-raised)", fg:"var(--ink-soft)", bar:"var(--ink-soft)"},
-  "Cases & Prova Social": {bg:"var(--paper-raised)", fg:"var(--ink-soft)", bar:"var(--ink-soft)"},
-  "CTA Direto": {bg:"var(--alert-soft)", fg:"var(--alert-ink)", bar:"var(--alert)"},
-};
-function pilarChip(pilar){
-  const c = PILAR_COLOR[pilar] || {bg:"var(--paper-raised)", fg:"var(--ink-soft)"};
-  return '<span class="pilar-chip" style="background:'+c.bg+';color:'+c.fg+'">'+pilar+'</span>';
-}
-
-/* ---------- Ticker ---------- */
-const tickerFacts = [
-  '<span><b>83,9 mi</b> de brasileiros inadimplentes — recorde (jul/2026)</span>',
-  '<span><b>436%</b> a.a. no rotativo do cartão (pico de 451%)</span>',
-  '<span><b>321%</b> a.a. no cheque especial — recorde desde 1994</span>',
-  '<span><b>14%</b> Selic ao ano — 13,75% projetado pra dez/2026</span>',
-  '<span><b>3º tri/2026</b>: bancos vão restringir crédito, confirma o BC</span>',
-  '<span><b>25%</b> é a projeção de crescimento do consórcio de imóveis em 2026</span>',
-  '<span><b>12,85 mi</b> de brasileiros já estão no consórcio</span>',
-  '<span><b>60</b> roteiros · <b>30</b> dias · <b>1</b> meta: alavancagem</span>',
-];
-document.getElementById('ticker').innerHTML = (tickerFacts.concat(tickerFacts)).join('<span aria-hidden="true">&mdash;</span>');
-
-/* ---------- Visão geral ---------- */
-const counts = {};
-DATA.scripts.forEach(s => counts[s.pilar] = (counts[s.pilar]||0)+1);
-document.getElementById('statsRow').innerHTML = [
-  ['60','Roteiros completos'],
-  ['30','Dias de calendário'],
-  ['8','Pilares de conteúdo'],
-  [String(DATA.dores.length + DATA.desejos.length), 'Dores + desejos mapeados'],
-].map(([n,l]) => '<div class="stat"><div class="n tabular">'+n+'</div><div class="l">'+l+'</div></div>').join('');
-
-const pilarOrder = PILAR_ORDER;
-const maxCount = Math.max(...pilarOrder.map(p => counts[p]||0));
-document.getElementById('pilarBars').innerHTML = pilarOrder.map(p => {
-  const c = counts[p]||0;
-  const color = (PILAR_COLOR[p]||{}).bar || 'var(--ink-soft)';
-  return '<div class="pilar-bar-row"><span>'+p+'</span><span class="pilar-bar-track"><span class="pilar-bar-fill tabular" style="width:'+(c/maxCount*100)+'%;background:'+color+'"></span></span><span class="n tabular">'+c+'</span></div>';
-}).join('');
-
-/* ---------- Dores & desejos ---------- */
-document.getElementById('doresGrid').innerHTML = DATA.dores.map(d =>
-  '<div class="pain-card dor"><div class="tag">Dor</div><div class="t">'+d.nome+'</div><div class="d">'+d.desc+'</div></div>'
-).join('');
-document.getElementById('desejosGrid').innerHTML = DATA.desejos.map(d =>
-  '<div class="pain-card desejo"><div class="tag">Desejo</div><div class="t">'+d.nome+'</div><div class="d">'+d.desc+'</div></div>'
-).join('');
-
-/* ---------- Mapa de crédito ---------- */
-document.getElementById('creditBody').innerHTML = DATA.mapa_credito.map(c =>
-  '<tr><td class="tipo">'+c.tipo+'</td><td class="taxa tabular">'+c.taxa+'</td><td>'+c.nota+'</td><td class="fonte">'+c.fonte+'</td></tr>'
-).join('');
-
-/* ---------- Dados compartilhados de calendário/roteiro ---------- */
-const scriptById = {};
-DATA.scripts.forEach(s => scriptById[s.id] = s);
-const calByScriptId = {};
-DATA.calendario.forEach(row => { calByScriptId[row.script_id] = row; });
-
-function fmtDate(iso){
-  const [y,m,d] = iso.split('-');
-  return d+'/'+m;
-}
-
-/* =====================================================================
-   EXECUÇÃO — status de produção (gravado/editado/programado/publicado)
-   Sincroniza com Supabase quando configurado; senão usa localStorage.
-   ===================================================================== */
-const STAGES = ['gravado','editado','programado','publicado'];
-const STAGE_NAMES = ['Não iniciado','Gravado','Editado','Programado','Publicado'];
-const STAGE_COLORS = ['var(--ink-soft)','var(--gold)','var(--positive)','var(--track)','var(--ink)'];
-
-let execucaoState = {};
-
-function defaultExecRow(id){
-  return {video_id:id, gravado:false, gravado_em:null, editado:false, editado_em:null,
-           programado:false, programado_em:null, publicado:false, publicado_em:null, notas:''};
-}
-function todayISO(){ return new Date().toISOString().slice(0,10); }
-
-function loadExecucaoLocal(){
-  try{ return JSON.parse(localStorage.getItem('avaner-execucao')||'{}'); }catch(e){ return {}; }
-}
-function saveExecucaoLocal(){
-  try{ localStorage.setItem('avaner-execucao', JSON.stringify(execucaoState)); }catch(e){}
-}
-
-async function loadExecucao(){
-  DATA.scripts.forEach(s => { execucaoState[s.id] = defaultExecRow(s.id); });
-  const connEl = document.getElementById('execConnStatus');
-  if(supabaseClient){
-    connEl.className = 'conn-status ok';
-    connEl.innerHTML = '<span class="conn-ok">&#9679; Sincronizando com Supabase — todo o time vê este status</span>';
-    const {data, error} = await supabaseClient.from('execucao').select('*');
-    if(error){
-      console.error('Erro ao carregar execução do Supabase:', error);
-      connEl.className = 'conn-status warn';
-      connEl.innerHTML = '<span class="conn-warn">&#9679; Não consegui falar com o Supabase agora — usando o backup local deste navegador</span>';
-      Object.assign(execucaoState, loadExecucaoLocal());
-    } else if(data){
-      data.forEach(row => { execucaoState[row.video_id] = Object.assign(defaultExecRow(row.video_id), row); });
-    }
-  } else {
-    connEl.className = 'conn-status warn';
-    connEl.innerHTML = '<span class="conn-warn">&#9679; Supabase não configurado — status salvo só neste navegador (veja README.md)</span>';
-    Object.assign(execucaoState, loadExecucaoLocal());
-    DATA.scripts.forEach(s => { if(!execucaoState[s.id]) execucaoState[s.id] = defaultExecRow(s.id); });
-  }
-  renderExecucao();
-  renderCalendario();
-}
-
-async function updateExecucao(videoId, field, value){
-  const row = execucaoState[videoId] || defaultExecRow(videoId);
-  row[field] = value;
-  if(STAGES.includes(field)){
-    row[field+'_em'] = value ? (row[field+'_em'] || todayISO()) : row[field+'_em'];
-    if(value){
-      const idx = STAGES.indexOf(field);
-      for(let i=0;i<idx;i++){
-        const earlier = STAGES[i];
-        if(!row[earlier]){ row[earlier] = true; row[earlier+'_em'] = row[earlier+'_em'] || todayISO(); }
-      }
-    }
-  }
-  row.updated_at = new Date().toISOString();
-  execucaoState[videoId] = row;
-  renderExecucao();
-  renderCalendario();
-  if(supabaseClient){
-    const {error} = await supabaseClient.from('execucao').upsert(row, {onConflict:'video_id'});
-    if(error) console.error('Erro ao salvar no Supabase:', error);
-  } else {
-    saveExecucaoLocal();
-  }
-}
-
-function stageIndex(row){
-  let idx = 0;
-  STAGES.forEach((s,i) => { if(row[s]) idx = i+1; });
-  return idx;
-}
-
-let execStatusFilter = 'Todos';
-
-function renderExecFilters(){
-  const opts = ['Todos','Pendente','Em andamento','Programado','Publicado'];
-  const box = document.getElementById('execFilters');
-  box.querySelectorAll('.chip').forEach(c => c.remove());
-  const frag = document.createDocumentFragment();
-  opts.forEach(o => {
-    const btn = document.createElement('button');
-    btn.className = 'chip';
-    btn.type = 'button';
-    btn.textContent = o;
-    btn.setAttribute('aria-pressed', String(o === execStatusFilter));
-    btn.addEventListener('click', () => { execStatusFilter = o; renderExecFilters(); renderExecucao(); });
-    frag.appendChild(btn);
+function openItem(id){
+  const item = byId[id]; if(!item) return;
+  const view = item.kind === 'ad' ? 'anuncios' : 'roteiros';
+  if(view === 'roteiros'){ rotFilter = 'Todos'; $('#rotSearch').value = ''; renderRoteiros(); }
+  goToView(view);
+  requestAnimationFrame(() => {
+    const card = document.querySelector('.script-card[data-id="'+id+'"]');
+    if(card){ card.setAttribute('data-open','true'); card.scrollIntoView({behavior:'smooth', block:'start'}); }
   });
-  box.insertBefore(frag, document.getElementById('execSearchBox'));
 }
 
-function renderExecucao(){
-  const rows = DATA.scripts.map(s => ({script:s, exec: execucaoState[s.id] || defaultExecRow(s.id)}));
-  const total = rows.length;
-  const bucketCounts = [0,0,0,0,0];
-  rows.forEach(r => bucketCounts[stageIndex(r.exec)]++);
-
-  document.getElementById('execStats').innerHTML = [
-    ['Gravados', rows.filter(r=>r.exec.gravado).length],
-    ['Editados', rows.filter(r=>r.exec.editado).length],
-    ['Programados', rows.filter(r=>r.exec.programado).length],
-    ['Publicados', rows.filter(r=>r.exec.publicado).length],
-  ].map(([l,n]) => '<div class="stat"><div class="n tabular">'+n+'<span style="font-size:15px;color:var(--ink-soft)">/'+total+'</span></div><div class="l">'+l+'</div></div>').join('');
-
-  document.getElementById('execProgressBar').innerHTML = STAGE_NAMES.map((name,i) => {
-    const c = bucketCounts[i];
-    if(!c) return '';
-    return '<span class="exec-seg" style="width:'+(c/total*100)+'%;background:'+STAGE_COLORS[i]+'" title="'+name+': '+c+'"></span>';
+/* ---------- Componentes ---------- */
+function tipoChip(item){ const t = item.kind === 'ad' ? 'Anúncio' : item.tipo; return '<span class="tipo t-'+t+'">'+t+'</span>'; }
+function dots(item){ const r = rowOf(item.id); return '<span class="dots" title="Gravado · Editado · Publicado">'+STAGES.map(s => '<i class="'+(r[s]?'on':'')+'"></i>').join('')+'</span>'; }
+function stageButtons(item){
+  const r = rowOf(item.id); const bl = isBlocked(item);
+  return STAGES.map(s => {
+    const label = (item.kind === 'ad' && s === 'publicado') ? 'No ar' : STAGE_LABEL[s];
+    const dis = (s === 'publicado' && bl && !r.publicado) ? ' disabled title="Bloqueado por pendência"' : '';
+    return '<button class="btn stage" type="button" data-stage="'+s+'" data-id="'+item.id+'" aria-pressed="'+!!r[s]+'"'+dis+'>'+label+'</button>';
   }).join('');
-  document.getElementById('execProgressLegend').innerHTML = STAGE_NAMES.map((name,i) =>
-    '<span class="exec-legend-item"><i style="background:'+STAGE_COLORS[i]+'"></i>'+name+' <span class="tabular">('+bucketCounts[i]+')</span></span>'
-  ).join('');
+}
+function whenOf(item){ return item.kind === 'reel' ? fmtDay(item.date) + (item.slot ? ' · '+item.slot : '') : fmtDate(item.inicio)+' a '+fmtDate(item.fim); }
+function pendNotices(item){
+  const s = situacao(item); let h = '';
+  s.blocked.forEach(p => h += '<div class="notice red"><b>Bloqueado:</b> '+esc(p.assunto)+'. '+esc(p.obs||'')+'</div>');
+  s.pending.forEach(p => h += '<div class="notice yellow"><b>Pendente:</b> '+esc(p.assunto)+'. '+esc(p.obs||'')+'</div>');
+  if(item.obs) h += '<div class="notice yellow"><b>Atenção:</b> '+esc(item.obs)+'</div>';
+  return h;
+}
 
-  let filtered = rows;
-  if(execStatusFilter !== 'Todos'){
-    const map = {'Pendente':[0],'Em andamento':[1,2],'Programado':[3],'Publicado':[4]};
-    const v = map[execStatusFilter];
-    filtered = filtered.filter(r => v.includes(stageIndex(r.exec)));
+/* ---------- HOJE ---------- */
+function renderHoje(){
+  const t = todayISO();
+  $('#hojeEyebrow').textContent = 'Hoje · ' + fmtDay(t);
+  const dTaxa = daysTo(C.fim_taxa);
+  const limite = C.limite_hora && C.limite_hora !== 'a confirmar' ? ', proposta até '+C.limite_hora : '';
+  $('#hojeLede').textContent = dTaxa > 0 ? 'Faltam '+dTaxa+' dia'+(dTaxa>1?'s':'')+' pro fim da condição de '+C.taxa+' ('+fmtDate(C.fim_taxa)+limite+').'
+    : dTaxa === 0 ? 'Hoje é o último dia da condição de '+C.taxa+(C.limite_hora && C.limite_hora !== 'a confirmar' ? '. Proposta até '+C.limite_hora+'.' : '.') 
+    : (C.pos_taxa_text || 'A condição promocional acabou em '+fmtDate(C.fim_taxa)+'. Vendas do grupo até '+fmtDate(C.fim_vendas)+'.');
+  const reels = ACTIVE_DATA.reels;
+  const hoje = reels.filter(r => r.date === t);
+  const atras = reels.filter(r => r.date < t && !rowOf(r.id).publicado);
+  const prox = reels.filter(r => r.date > t).slice(0, 4);
+  const adsAtivos = ACTIVE_DATA.ads.filter(a => a.inicio <= t && a.fim >= t);
+  const adsPrep = ACTIVE_DATA.ads.filter(a => a.inicio > t && a.inicio <= addDays(t, 3) && !rowOf(a.id).editado);
+  $('#hojeTitle').textContent = hoje.length ? (hoje.length === 1 ? '1 conteúdo pra hoje' : hoje.length+' conteúdos pra hoje') : (t < C.inicio ? 'A campanha começa em '+fmtDate(C.inicio) : 'Nenhum Reel marcado pra hoje');
+  let h = '';
+  h += group('Pra fazer hoje', hoje.map(card).join('') || '<div class="empty-note">Nenhum Reel com data de hoje.'+(prox[0] ? ' O próximo é o '+prox[0].id+' ('+fmtDay(prox[0].date)+').' : '')+'</div>');
+  if(atras.length) h += group('Atrasados (data passou e não foi publicado)', atras.map(card).join(''));
+  if(adsAtivos.length) h += group('Anúncios que devem estar no ar', adsAtivos.map(card).join(''));
+  if(adsPrep.length) h += group('Anúncios pra preparar (começam nos próximos dias)', adsPrep.map(card).join(''));
+  if(prox.length) h += group('Próximos', prox.map(compact).join(''));
+  $('#hojeBody').innerHTML = h;
+  function group(title, inner){ return '<div class="today-group"><h3>'+title+'</h3>'+inner+'</div>'; }
+  function card(item){
+    const s = situacao(item);
+    const turb = item.kind === 'reel' ? (item.turbinar ? 'Sim' : 'Não') : 'Anúncio';
+    return '<div class="card today-card '+s.cls+'">'
+      + '<div class="row1"><span class="code">'+item.id+'</span>'+tipoChip(item)+alertPill(item)+(item.turbinar?'<span class="tag boost">turbinar</span>':'')+dots(item)+'</div>'
+      + '<div class="tt">'+esc(item.titulo)+'</div>'
+      + '<div class="meta"><b>Quando</b><span>'+whenOf(item)+'</span><b>Próximo passo</b><span class="next-step">'+nextStep(item)+'</span>'
+      + (item.kind === 'reel' ? '<b>Turbinar</b><span>'+turb+'</span>' : '')
+      + '<b>CTA</b><span>'+esc(item.kind === 'reel' ? item.cta : 'WhatsApp · "'+item.whatsapp+'"')+'</span></div>'
+      + pendNotices(item)
+      + '<div class="btn-row"><button class="btn primary" type="button" data-open="'+item.id+'">Abrir '+(item.kind === 'ad' ? 'anúncio' : 'roteiro')+'</button>'
+      + '<button class="btn" type="button" data-tp="'+item.id+'">Teleprompter</button>'+stageButtons(item)+'</div>'
+      + '</div>';
   }
-  const q = (document.getElementById('execSearchBox').value || '').trim().toLowerCase();
-  if(q){
-    filtered = filtered.filter(r => (r.script.titulo+' '+r.script.pilar).toLowerCase().includes(q));
+  function compact(item){
+    return '<div class="card compact" data-open="'+item.id+'" role="button" tabindex="0"><span class="code">'+item.id+'</span><span class="tt">'+esc(item.titulo)+'</span><span class="tag">'+fmtDay(item.date)+'</span>'+alertPill(item)+dots(item)+'</div>';
   }
-  document.getElementById('execResultCount').textContent = filtered.length + ' de ' + total + ' vídeos';
+}
 
-  document.getElementById('execTableBody').innerHTML = filtered.map(r => {
-    const s = r.script, ex = r.exec;
-    const calRow = calByScriptId[s.id];
-    const dataStr = calRow ? fmtDate(calRow.data)+' · '+calRow.horario : '—';
-    return '<tr data-id="'+s.id+'">'
-      + '<td class="exec-data tabular">'+dataStr+'</td>'
-      + '<td>'+pilarChip(s.pilar)+'</td>'
-      + '<td class="exec-titulo">'+s.titulo+'</td>'
-      + STAGES.map(st => '<td class="exec-check"><input type="checkbox" '+(ex[st]?'checked':'')+' onchange="updateExecucao(\''+s.id+'\',\''+st+'\',this.checked)" aria-label="'+st+'"></td>').join('')
-      + '<td><input type="text" class="exec-notes" placeholder="Notas..." value="'+String(ex.notas||'').replace(/"/g,'&quot;')+'" onchange="updateExecucao(\''+s.id+'\',\'notas\',this.value)"></td>'
-      + '</tr>';
+/* ---------- VISÃO GERAL ---------- */
+function renderGeral(){
+  const vendaSub = C.pos_taxa_text || (C.taxa_depois ? 'condição seguinte: '+C.taxa_depois : '');
+  const dates = [[C.fim_taxa,'Fim da condição '+C.taxa,(C.limite_hora && C.limite_hora !== 'a confirmar') ? 'proposta até '+C.limite_hora : 'horário limite a confirmar'],[C.fim_vendas,'Fim das vendas',vendaSub],[C.assembleia,'1ª assembleia','']];
+  $('#geralDates').innerHTML = '<div class="stat"><div class="n tabular">'+esc(C.taxa)+'</div><div class="l">Taxa de administração atual</div><div class="s">'+(C.taxa_anterior ? 'era '+esc(C.taxa_anterior) : '')+'</div></div>'
+    + dates.map(([d,l,sub]) => { const n = daysTo(d); const txt = n > 1 ? n+' dias' : n === 1 ? 'amanhã' : n === 0 ? 'hoje' : 'encerrado';
+      return '<div class="stat '+(n>=0 && n<=7 ? 'hot':'')+'"><div class="n tabular">'+txt+'</div><div class="l">'+esc(l)+' · '+fmtDate(d)+'</div>'+(sub?'<div class="s">'+esc(sub)+'</div>':'')+'</div>'; }).join('');
+  const total = ITEMS.length;
+  const cnt = st => ITEMS.filter(i => rowOf(i.id)[st]).length;
+  const done = ITEMS.reduce((a,i) => a + stageIdx(rowOf(i.id)), 0);
+  const pct = total ? Math.round(done/(total*3)*100) : 0;
+  $('#geralStats').innerHTML = [['Conteúdos', total, ACTIVE_DATA.reels.length+' Reels · '+ACTIVE_DATA.ads.length+' anúncios'],['Gravados', cnt('gravado')+'/'+total,''],['Editados', cnt('editado')+'/'+total,''],['Publicados', cnt('publicado')+'/'+total,''],['Andamento', pct+'%','das etapas concluídas']]
+    .map(([l,n,sub]) => '<div class="stat"><div class="n tabular">'+n+'</div><div class="l">'+l+'</div>'+(sub?'<div class="s">'+sub+'</div>':'')+'</div>').join('');
+  const buckets = [0,0,0,0]; ITEMS.forEach(i => buckets[stageIdx(rowOf(i.id))]++);
+  const names = ['Não iniciado','Gravado','Editado','Publicado'], cols = ['var(--wait)','var(--gold)','var(--track)','var(--positive)'];
+  $('#geralBar').innerHTML = total ? buckets.map((c,i) => c ? '<span class="exec-seg" style="width:'+(c/total*100)+'%;background:'+cols[i]+'" title="'+names[i]+': '+c+'"></span>' : '').join('') : '<span class="result-count">Conteúdo ainda não cadastrado nesta campanha.</span>';
+  $('#geralLegend').innerHTML = names.map((n,i) => '<span class="exec-legend-item"><i style="background:'+cols[i]+'"></i>'+n+' <span class="tabular">('+buckets[i]+')</span></span>').join('');
+  const abertas = ACTIVE_DATA.pendencias.map(p => pendOf(p.id)).filter(p => p.status !== 'CONFIRMADO');
+  $('#geralPend').innerHTML = abertas.length ? abertas.map(p => '<div class="notice '+(p.status === 'BLOQUEADO' ? 'red':'yellow')+'"><b>'+p.status+':</b> '+esc(p.assunto)+(p.afeta.length ? ' ('+p.afeta.join(', ')+')' : '')+'</div>').join('') : '<div class="empty-note">Nenhuma pendência aberta.</div>';
+}
+/* ---------- EXECUÇÃO ---------- */
+let execFilter = 'Todos';
+const EXEC_FILTERS = ['Todos','Reels','Anúncios','Turbinar','Bloqueado','Atenção','Não publicados'];
+function renderExecFilters(){
+  const box = $('#execFilters'); box.querySelectorAll('.chip').forEach(c => c.remove());
+  EXEC_FILTERS.forEach(f => { const b = document.createElement('button'); b.className = 'chip'; b.type = 'button'; b.textContent = f; b.setAttribute('aria-pressed', String(f === execFilter));
+    b.addEventListener('click', () => { execFilter = f; renderExecFilters(); renderExec(); }); box.insertBefore(b, $('#execSearch')); });
+}
+function passFilter(item, f){
+  const s = situacao(item);
+  if(f === 'Reels') return item.kind === 'reel';
+  if(f === 'Anúncios') return item.kind === 'ad';
+  if(f === 'Turbinar') return !!item.turbinar;
+  if(f === 'Bloqueado') return s.cls === 'red';
+  if(f === 'Atenção') return s.cls === 'yellow';
+  if(f === 'Não publicados') return !rowOf(item.id).publicado;
+  return true;
+}
+function renderExec(){
+  const q = ($('#execSearch').value || '').trim().toLowerCase();
+  const list = ITEMS.filter(i => passFilter(i, execFilter) && (!q || (i.id+' '+i.titulo).toLowerCase().includes(q)));
+  $('#execCount').textContent = list.length+' de '+ITEMS.length+' conteúdos';
+  $('#execBody').innerHTML = list.map(i => {
+    const r = rowOf(i.id); const bl = isBlocked(i);
+    return '<tr><td class="exec-data tabular">'+whenOf(i)+'</td>'
+      + '<td><button class="linkcode" type="button" data-open="'+i.id+'">'+i.id+'</button></td>'
+      + '<td class="exec-titulo">'+esc(i.titulo)+' '+(i.turbinar?'<span class="tag boost">turbinar</span>':'')+'</td>'
+      + '<td class="alert-cell">'+alertPill(i)+'</td>'
+      + STAGES.map(s => '<td class="exec-check"><input type="checkbox" data-stage="'+s+'" data-id="'+i.id+'" '+(r[s]?'checked':'')+((s==='publicado' && bl && !r.publicado)?' disabled title="Bloqueado por pendência"':'')+' aria-label="'+STAGE_LABEL[s]+' '+i.id+'"></td>').join('')
+      + '<td><input type="text" class="exec-notes" data-nota="'+i.id+'" placeholder="Notas..." value="'+esc(r.notas||'')+'"></td></tr>';
   }).join('') || '<tr><td colspan="8" style="color:var(--ink-soft);text-align:center;padding:24px;">Nada encontrado.</td></tr>';
 }
-document.getElementById('execSearchBox').addEventListener('input', renderExecucao);
-renderExecFilters();
-
-/* ---------- Calendário ---------- */
-const byDate = {};
-DATA.calendario.forEach(row => { (byDate[row.data] = byDate[row.data]||[]).push(row); });
-const p0 = DATA.periodo;
-document.getElementById('calPeriodo').textContent = 'Período · ' + fmtDate(p0.inicio)+'/'+p0.inicio.slice(0,4) + ' a ' + fmtDate(p0.fim)+'/'+p0.fim.slice(0,4);
-
-function renderCalendario(){
-  const calDates = Object.keys(byDate).sort();
-  document.getElementById('calGrid').innerHTML = calDates.map(date => {
-    const rows = byDate[date];
-    const slots = rows.map(r => {
-      const s = scriptById[r.script_id];
-      const ex = execucaoState[s.id] || defaultExecRow(s.id);
-      const idx = stageIndex(ex);
-      return '<div class="cal-slot" data-sid="'+s.id+'">'
-        + '<span class="stage-dot" style="background:'+STAGE_COLORS[idx]+'" title="'+STAGE_NAMES[idx]+'"></span>'
-        + '<span class="time tabular">'+r.horario+'</span>'
-        + '<div class="info">'+pilarChip(s.pilar)+'<div class="titulo">'+s.titulo+'</div></div>'
-        + '</div>';
-    }).join('');
-    return '<div class="card cal-day"><div class="date"><span>'+rows[0].dia_semana+'</span><span class="tabular">'+fmtDate(date)+'</span></div>'+slots+'</div>';
-  }).join('');
-}
-
-document.getElementById('calGrid').addEventListener('click', (e) => {
-  const slot = e.target.closest('.cal-slot');
-  if(!slot) return;
-  openScriptFromCalendar(slot.dataset.sid);
+$('#execSearch').addEventListener('input', renderExec);
+$('#execBody').addEventListener('change', e => {
+  const cb = e.target.closest('input[type=checkbox][data-stage]'); if(cb){ setStage(cb.dataset.id, cb.dataset.stage, cb.checked); return; }
+  const nt = e.target.closest('input[data-nota]'); if(nt) setNota(nt.dataset.nota, nt.value);
 });
-function openScriptFromCalendar(sid){
-  goToView('roteiros');
-  document.getElementById('searchBox').value = '';
-  activePilarFilter = 'Todos';
-  renderFilters();
-  renderScripts();
-  requestAnimationFrame(() => {
-    const card = document.querySelector('.script-card[data-id="'+sid+'"]');
-    if(card){
-      card.setAttribute('data-open','true');
-      card.scrollIntoView({behavior:'smooth', block:'start'});
+
+/* ---------- CALENDÁRIO ---------- */
+const STAGE_COL = ['var(--wait)','var(--gold)','var(--track)','var(--positive)'];
+function calendarMarks(){
+  const m = {};
+  m[C.fim_taxa] = 'Fim da condição '+C.taxa+(C.limite_hora && C.limite_hora !== 'a confirmar' ? ' · '+C.limite_hora : '');
+  m[C.fim_vendas] = 'Fim das vendas';
+  m[C.assembleia] = '1ª assembleia';
+  return m;
+}
+function renderCal(){
+  $('#calLegend').innerHTML = ['Não iniciado','Gravado','Editado','Publicado'].map((n,i) => '<span class="exec-legend-item"><i style="background:'+STAGE_COL[i]+'"></i>'+n+'</span>').join('')
+    + '<span class="exec-legend-item"><span class="alert green">Liberado</span></span><span class="exec-legend-item"><span class="alert yellow">Atenção</span></span><span class="exec-legend-item"><span class="alert red">Bloqueado</span></span><span class="exec-legend-item"><span class="alert gray">Ainda não chegou</span></span>';
+  const byDate = {}; ACTIVE_DATA.reels.forEach(r => (byDate[r.date] = byDate[r.date] || []).push(r));
+  const marks = calendarMarks();
+  const t = todayISO();
+  const month = (y, m, last, title) => {
+    const first = new Date(y, m, 1).getDay();
+    let h = '<div class="month"><h3>'+title+'</h3><div class="cal7">'+WD.map(w => '<div class="wd">'+w+'</div>').join('');
+    for(let i=0;i<first;i++) h += '<div class="cday pad"></div>';
+    for(let d=1; d<=last; d++){
+      const iso = y+'-'+pad(m+1)+'-'+pad(d);
+      const items = byDate[iso] || [];
+      const mark = marks[iso];
+      h += '<div class="cday'+(iso===t?' today':'')+(!items.length && !mark ? ' empty':'')+'"><div class="dn"><span><span class="wdl">'+WD[new Date(y,m,d).getDay()]+' · </span>'+pad(d)+'/'+pad(m+1)+'</span>'+(iso===t?'<span>hoje</span>':'')+'</div>'
+        + (mark ? '<div class="mark">'+esc(mark)+'</div>' : '')
+        + items.map(it => { const st = situacao(it); return '<button class="citem '+st.cls+'" type="button" data-open="'+it.id+'" title="'+esc(st.label)+'"><i class="sd" style="background:'+STAGE_COL[stageIdx(rowOf(it.id))]+'"></i><span class="c">'+it.id+'</span><span class="t">'+esc(it.titulo)+(it.slot?' ('+it.slot+')':'')+'</span></button>'; }).join('')
+        + '</div>';
     }
-  });
+    return h + '</div></div>';
+  };
+  const a = parseISO(C.inicio), b = parseISO(C.assembleia);
+  let y = a.getFullYear(), m = a.getMonth(), out = '';
+  while(y < b.getFullYear() || (y === b.getFullYear() && m <= b.getMonth())){
+    const lastFull = new Date(y, m+1, 0).getDate();
+    const last = (y === b.getFullYear() && m === b.getMonth()) ? b.getDate() : lastFull;
+    const title = new Intl.DateTimeFormat('pt-BR',{month:'long',year:'numeric'}).format(new Date(y,m,1));
+    out += month(y,m,last,title.charAt(0).toUpperCase()+title.slice(1));
+    m++; if(m>11){m=0;y++;}
+  }
+  $('#calBody').innerHTML = out;
 }
-
-/* ---------- Roteiros ---------- */
-let activePilarFilter = 'Todos';
-function renderFilters(){
-  const chips = ['Todos'].concat(pilarOrder);
-  document.getElementById('filters').querySelectorAll('.chip').forEach(c => c.remove());
-  const frag = document.createDocumentFragment();
-  chips.forEach(p => {
-    const btn = document.createElement('button');
-    btn.className = 'chip';
-    btn.type = 'button';
-    btn.textContent = p + (p !== 'Todos' ? ' ('+(counts[p]||0)+')' : ' ('+DATA.scripts.length+')');
-    btn.setAttribute('aria-pressed', String(p === activePilarFilter));
-    btn.addEventListener('click', () => { activePilarFilter = p; renderFilters(); renderScripts(); });
-    frag.appendChild(btn);
-  });
-  document.getElementById('filters').insertBefore(frag, document.getElementById('searchBox'));
+/* ---------- ROTEIROS ---------- */
+let rotFilter = 'Todos';
+const ROT_FILTERS = ['Todos','Comercial','Estratégia','Simulação','Objeção','Autoridade','Turbinar','Atenção','Bloqueado'];
+function renderRotFilters(){
+  const box = $('#rotFilters'); box.querySelectorAll('.chip').forEach(c => c.remove());
+  ROT_FILTERS.forEach(f => { const b = document.createElement('button'); b.className = 'chip'; b.type = 'button'; b.textContent = f; b.setAttribute('aria-pressed', String(f === rotFilter));
+    b.addEventListener('click', () => { rotFilter = f; renderRotFilters(); renderRoteiros(); }); box.insertBefore(b, $('#rotSearch')); });
 }
-
-function scriptField(label, value, cls){
-  return '<div class="field '+(cls||'')+'"><div class="fl">'+label+'</div><div class="fv">'+value+'</div></div>';
+function field(label, html, cls, copy){
+  return '<div class="field '+(cls||'')+'"><div class="fl">'+label+(copy ? '<button class="copy-btn" type="button" data-copy="'+copy+'">copiar</button>' : '')+'</div><div class="fv">'+html+'</div></div>';
 }
-
-function renderScripts(){
-  const q = document.getElementById('searchBox').value.trim().toLowerCase();
-  const list = DATA.scripts.filter(s => {
-    if(activePilarFilter !== 'Todos' && s.pilar !== activePilarFilter) return false;
+const paras = arr => arr.map(p => '<p>'+esc(p)+'</p>').join('');
+const COPYSRC = {};
+function reelCard(r, idx){
+  const open = openCards.has(r.id);
+  COPYSRC[r.id+':roteiro'] = r.roteiro.join('\n\n'); COPYSRC[r.id+':legenda'] = r.legenda;
+  const pends = (r.pend||[]).map(pendOf);
+  return '<div class="card script-card" data-id="'+r.id+'" data-open="'+open+'">'
+    + '<div class="script-head" data-toggle="'+r.id+'"><span class="idx tabular">'+r.id+'</span>'+tipoChip(r)+'<span class="titulo">'+esc(r.titulo)+'</span>'
+    + '<span class="meta-r"><span class="tag">'+fmtDay(r.date)+(r.slot?' · '+r.slot:'')+'</span>'+alertPill(r)+(r.turbinar?'<span class="tag boost">turbinar</span>':'')+(r.serie?'<span class="tag">série</span>':'')+(r.fala_livre?'<span class="tag">fala livre</span>':'')+dots(r)+'</span><span class="chevron">&#9662;</span></div>'
+    + '<div class="script-body">'
+    + pendNotices(r)
+    + '<div class="field-grid">'
+    + field('Gancho de tela', esc(r.gancho), 'tela wide')
+    + field(r.fala_livre ? 'Tópicos (fala livre)' : 'Roteiro', r.fala_livre ? '<ul>'+r.roteiro.map(x => '<li>'+esc(x)+'</li>').join('')+'</ul>' : paras(r.roteiro), 'wide', r.id+':roteiro')
+    + (r.gancho_alt ? field('Gancho alternativo (regravar se performar)', esc(r.gancho_alt)) : '')
+    + field('CTA', esc(r.cta))
+    + field('Direção de fala', esc(r.direcao), 'falar')
+    + field('Edição', esc(r.edicao), 'editar')
+    + field('Legenda', esc(r.legenda), 'legenda wide', r.id+':legenda')
+    + (r.whatsapp ? field('Mensagem pré-preenchida (se turbinar)', '"'+esc(r.whatsapp)+'"', 'msg') : '')
+    + (pends.length ? field('Regras confirmadas ligadas a este vídeo', pends.map(p => '<p><b>'+p.status+'</b> · '+esc(p.assunto)+': '+esc(p.obs||'')+'</p>').join(''), 'wide') : '')
+    + '</div>'
+    + '<div class="btn-row"><button class="btn primary" type="button" data-tp="'+r.id+'">Teleprompter</button>'+stageButtons(r)+'</div>'
+    + '</div></div>';
+}
+const openCards = new Set();
+function renderRoteiros(){
+  const q = ($('#rotSearch').value || '').trim().toLowerCase();
+  const list = ACTIVE_DATA.reels.filter(r => {
+    const s = situacao(r);
+    if(rotFilter === 'Turbinar' && !r.turbinar) return false;
+    if(rotFilter === 'Atenção' && s.cls !== 'yellow') return false;
+    if(rotFilter === 'Bloqueado' && s.cls !== 'red') return false;
+    if(['Comercial','Estratégia','Simulação','Objeção','Autoridade'].includes(rotFilter) && r.tipo !== rotFilter) return false;
     if(!q) return true;
-    const hay = (s.titulo+' '+s.gancho+' '+s.corpo+' '+s.virada+' '+s.dor+' '+s.desejo+' '+s.fonte).toLowerCase();
-    return hay.includes(q);
+    return (r.id+' '+r.titulo+' '+r.gancho+' '+r.roteiro.join(' ')+' '+r.legenda).toLowerCase().includes(q);
   });
-  document.getElementById('resultCount').textContent = list.length + ' roteiro' + (list.length===1?'':'s');
-  document.getElementById('scriptList').innerHTML = list.map((s, i) => {
-    const capa = s.capa ? scriptField('Capa / frame de abertura', s.capa) : '';
-    const fonte = s.fonte ? '<div class="fonte-line">Fonte: '+s.fonte+'</div>' : '';
-    return '<div class="card script-card" data-id="'+s.id+'">'
-      + '<div class="script-head" onclick="toggleCard(this.parentElement)">'
-        + '<span class="idx tabular">'+String(i+1).padStart(2,'0')+'</span>'
-        + pilarChip(s.pilar)
-        + '<span class="titulo">'+s.titulo+'</span>'
-        + '<span class="chevron">&#9662;</span>'
-      + '</div>'
-      + '<div class="script-body">'
-        + '<div class="gancho-line">&ldquo;'+s.gancho+'&rdquo;</div>'
-        + '<div class="field-grid">'
-          + scriptField('Corpo (desenvolvimento)', s.corpo)
-          + scriptField('Virada pro consórcio', s.virada)
-          + scriptField('CTA', s.cta)
-          + scriptField('Como falar', s.como_falar, 'falar')
-          + scriptField('Como editar', s.como_editar, 'editar')
-          + capa
-        + '</div>'
-        + '<div class="tag-row">'
-          + '<span class="pill dor">Dor: '+s.dor+'</span>'
-          + '<span class="pill desejo">Desejo: '+s.desejo+'</span>'
-        + '</div>'
-        + fonte
-      + '</div>'
-    + '</div>';
-  }).join('') || '<p style="color:var(--ink-soft)">Nada encontrado.</p>';
+  $('#rotCount').textContent = list.length+' roteiro'+(list.length === 1 ? '' : 's');
+  $('#rotList').innerHTML = list.map(reelCard).join('') || '<p style="color:var(--ink-soft)">Nada encontrado.</p>';
 }
-function toggleCard(card){
-  const open = card.getAttribute('data-open') === 'true';
-  card.setAttribute('data-open', String(!open));
+$('#rotSearch').addEventListener('input', renderRoteiros);
+
+/* ---------- ANÚNCIOS ---------- */
+function adCard(a){
+  const open = openCards.has(a.id);
+  COPYSRC[a.id+':roteiro'] = a.roteiro.join('\n\n'); COPYSRC[a.id+':copy'] = a.copy; COPYSRC[a.id+':msg'] = a.whatsapp;
+  return '<div class="card script-card" data-id="'+a.id+'" data-open="'+open+'">'
+    + '<div class="script-head" data-toggle="'+a.id+'"><span class="idx tabular">'+a.id+'</span>'+tipoChip(a)+'<span class="titulo">'+esc(a.nome)+'</span>'
+    + '<span class="meta-r"><span class="tag">'+esc(a.duracao)+'</span><span class="tag">'+esc(a.plano)+'</span>'+alertPill(a)+dots(a)+'</span><span class="chevron">&#9662;</span></div>'
+    + '<div class="script-body">'
+    + pendNotices(a)
+    + '<div class="field-grid">'
+    + field('Gancho de tela', esc(a.gancho), 'tela wide')
+    + field('Roteiro', paras(a.roteiro), 'wide', a.id+':roteiro')
+    + (a.gancho_alt ? field('Gancho alternativo', esc(a.gancho_alt)) : '')
+    + field('Veiculação', esc(a.periodo))
+    + field('Copy do anúncio (texto principal no Meta)', esc(a.copy), 'legenda wide', a.id+':copy')
+    + field('Mensagem pré-preenchida do WhatsApp', '"'+esc(a.whatsapp)+'"', 'msg', a.id+':msg')
+    + field('Interesse provável', esc(a.interesse))
+    + '</div>'
+    + '<div class="btn-row"><button class="btn primary" type="button" data-tp="'+a.id+'">Teleprompter</button>'+stageButtons(a)+'</div>'
+    + '</div></div>';
 }
-document.getElementById('searchBox').addEventListener('input', renderScripts);
-renderFilters();
-renderScripts();
+function renderAds(){ $('#adList').innerHTML = ACTIVE_DATA.ads.length ? ACTIVE_DATA.ads.map(adCard).join('') : '<div class="empty-note">Anúncios ainda não cadastrados nesta campanha.</div>'; }
 
-/* ---------- Sistema de viralização ---------- */
-const viralRules = [
-  ['Regra dos 3 segundos', 'Se em 3 segundos não tiver um número específico, uma afirmação polêmica ou uma pergunta que dói, o vídeo já perdeu metade da audiência. Nunca abra com contexto — abra no meio da informação mais forte que você tem.'],
-  ['5 fórmulas de gancho', 'Número solto sem contexto ("7,8%. Guarda esse número"). Autoridade institucional ("Isso não é opinião minha, é o Banco Central"). Pergunta que incomoda ("Até quando você vai esperar a Selic cair?"). Confissão pessoal ("Eu queria não ter que gravar esse vídeo"). Lista com promessa ("Você pode fazer tudo certo e ainda ser negado. Óh os motivos"). Alterne — nunca repita a mesma fórmula 2 vídeos seguidos.'],
-  ['Ritmo de corte', 'A cada 1,5-2s para urgência/lista. A cada 3-4s para o ritmo padrão do formato cortes. A cada 4-5s para tom grave ou confidencial. Quebrar o padrão com um plano fixo no início é o recurso mais forte pra parecer diferente do resto do feed — use no máximo 1x por semana.'],
-  ['Texto na tela', 'Só o dado central — número, palavra-chave — em caixa alta, cor de destaque, some no corte seguinte. Texto demais compete com sua fala; de menos perde quem assiste sem som.'],
-  ['Som e trilha', 'Efeito seco/impacto ao revelar um dado ruim. Efeito positivo só nos vídeos de boa notícia (Projeções) — reserve, perde força se usar toda hora. Trilha de tensão no Código Vermelho; mais neutra em Projeções; silêncio nos vídeos de tom pessoal.'],
-  ['Capa / thumbnail', 'O primeiro frame é sua capa mesmo antes do play. Um número gigante, uma palavra de impacto, ou sua expressão mais forte — nunca o rosto neutro sorrindo, isso não para o scroll.'],
-  ['Estrutura de retenção', 'Gancho (0-3s) → Corpo com dado real e fonte citada (3-20s) → Virada que reenquadra o problema (20-30s) → CTA com palavra-código (30-40s). A virada é o ponto mais fácil de errar — ela precisa mudar a perspectiva, não só empurrar produto.'],
-  ['CTA que gera comentário', '"Comenta X" funciona melhor que "me chama no direct" porque comentário público alimenta o alcance — o algoritmo entende como conversa, não só consumo. Reserve "link na bio" pros fechamentos de semana.'],
-  ['1 ideia por vídeo', 'Um vídeo, um dado, uma virada, um CTA. Se sentir vontade de encaixar 2 dados fortes no mesmo roteiro, são 2 vídeos, não 1.'],
-  ['Checklist antes de gravar', 'Meu gancho funciona mudo, só com o texto na tela? O dado tem fonte real? Eu disse isso do jeito que eu falo, ou do jeito que eu escrevo? Tem virada clara pro consórcio? O CTA pede ação específica?'],
-];
-document.getElementById('viralList').innerHTML = viralRules.map((r,i) =>
-  '<div class="viral-item"><div class="viral-num tabular">'+String(i+1).padStart(2,'0')+'</div><div><h4>'+r[0]+'</h4><p>'+r[1]+'</p></div></div>'
-).join('');
+/* ---------- WHATSAPP ---------- */
+function renderWA(){
+  const groups = {}; ACTIVE_DATA.entradas.forEach(e => (groups[e.grupo] = groups[e.grupo] || []).push(e));
+  const keys = Object.keys(groups);
+  $('#waBody').innerHTML = keys.length ? keys.map(g => '<div class="wa-group"><h3>'+esc(g)+'</h3>'
+    + groups[g].map(e => { COPYSRC['wa:'+e.id] = e.mensagem; const it = byId[e.id];
+      return '<div class="card wa-row"><div class="src"><span class="code">'+e.id+'</span>'+esc(e.nome)+(it && isBlocked(it) ? ' <span class="alert red">Bloqueado</span>' : '')+'</div>'
+        + '<div><div class="m">"'+esc(e.mensagem)+'"<button class="copy-btn" type="button" data-copy="wa:'+e.id+'">copiar</button></div><div class="i">Interesse provável: '+esc(e.interesse)+'</div></div></div>'; }).join('')
+    + '</div>').join('') : '<div class="empty-note">Mensagens de entrada serão adicionadas quando os anúncios/Reels desta campanha forem aprovados.</div>';
+}
 
-/* ---------- Boot ---------- */
-loadExecucao();
+/* ---------- NÚMEROS ---------- */
+function money(n){ return 'R$ '+n.toLocaleString('pt-BR'); }
+function renderNum(){
+  const N = ACTIVE_DATA.numeros;
+  let tables = '';
+  if(N.tabelas && N.tabelas.length){
+    tables = '<div class="num-tables">'+N.tabelas.map(t => '<div><h3>'+esc(t.titulo)+'</h3><div class="table-scroll"><table class="exec-table"><thead><tr>'+t.headers.map(h => '<th>'+esc(h)+'</th>').join('')+'</tr></thead><tbody>'
+      + t.rows.map(r => '<tr>'+r.map((v,i) => '<td class="n">'+(typeof v === 'number' ? money(v) : (i>0 && /^[\\d.]+,\\d{2}$/.test(String(v)) ? 'R$ '+esc(v) : esc(v)))+'</td>').join('')+'</tr>').join('')
+      + '</tbody></table></div></div>').join('')+'</div>';
+  } else {
+    tables = '<div class="num-tables">'
+      + '<div><h3>Plano Parcela Reduzida</h3><div class="table-scroll"><table class="exec-table"><thead><tr><th>Crédito integral</th><th>Reduzido</th><th>Parcela reduzida</th><th>Parcela integral</th></tr></thead><tbody>'
+      + (N.reduzido||[]).map(r => '<tr><td class="n">'+money(r[0])+'</td><td class="n">'+money(r[1])+'</td><td class="n">R$ '+r[2]+'</td><td class="n">R$ '+r[3]+'</td></tr>').join('')+'</tbody></table></div></div>'
+      + '<div><h3>Plano Integral</h3><div class="table-scroll"><table class="exec-table"><thead><tr><th>Crédito</th><th>Parcela</th></tr></thead><tbody>'
+      + (N.integral||[]).map(r => '<tr><td class="n">'+money(r[0])+'</td><td class="n">R$ '+r[1]+'</td></tr>').join('')+'</tbody></table></div></div>'
+      + '</div>';
+  }
+  $('#numBody').innerHTML = '<div class="section-block prose"><h3>Regras do grupo</h3><ul>'+N.regras.map(r => '<li>'+esc(r)+'</li>').join('')+'</ul></div>'
+    + tables
+    + '<div class="section-block"><h3>Contas de referência</h3><div class="table-scroll"><table class="exec-table"><tbody>'
+    + N.contas.map(c => '<tr><td>'+esc(c[0])+'</td><td class="n">'+esc(c[1])+'</td></tr>').join('')+'</tbody></table></div>'
+    + (N.nota ? '<p class="result-count" style="margin-top:10px">'+esc(N.nota)+'</p>' : '')+'</div>';
+}
+/* ---------- PENDÊNCIAS ---------- */
+function renderPend(){
+  const list = ACTIVE_DATA.pendencias.map(p => pendOf(p.id));
+  const abertas = list.filter(p => p.status !== 'CONFIRMADO').length;
+  $('#pendBadge').textContent = abertas ? String(abertas) : '';
+  const order = {BLOQUEADO:0, PENDENTE:1, CONFIRMADO:2};
+  $('#pendBody').innerHTML = list.slice().sort((a,b) => order[a.status]-order[b.status]).map(p =>
+    '<div class="card pend-card '+p.status+'"><div class="row1"><span class="as">'+esc(p.assunto)+'</span>'
+    + '<select data-pend="'+p.id+'" aria-label="Status da pendência">'+['PENDENTE','CONFIRMADO','BLOQUEADO'].map(s => '<option'+(s===p.status?' selected':'')+'>'+s+'</option>').join('')+'</select></div>'
+    + '<div class="af">Conteúdo afetado: '+(p.afeta.length ? p.afeta.map(id => '<button class="linkcode" type="button" data-open="'+id+'">'+id+'</button>').join('') : 'nenhum diretamente')+'</div>'
+    + '<textarea data-pendobs="'+p.id+'" aria-label="Observação">'+esc(p.obs||'')+'</textarea></div>').join('');
+}
+$('#pendBody').addEventListener('change', async e => {
+  const sel = e.target.closest('select[data-pend]');
+  if(sel){ const id = sel.dataset.pend; pendState[id] = Object.assign({}, pendState[id], {status:sel.value, obs:pendOf(id).obs}); renderAll(); toast('Pendência marcada como '+sel.value); await savePend(id); return; }
+  const ta = e.target.closest('textarea[data-pendobs]');
+  if(ta){ const id = ta.dataset.pendobs; pendState[id] = Object.assign({}, pendState[id], {status:pendOf(id).status, obs:ta.value}); await savePend(id); toast('Observação salva'); }
+});
+
+/* ---------- Cliques globais ---------- */
+document.addEventListener('click', e => {
+  const st = e.target.closest('button[data-stage]');
+  if(st){ setStage(st.dataset.id, st.dataset.stage, st.getAttribute('aria-pressed') !== 'true'); return; }
+  const tg = e.target.closest('[data-toggle]');
+  if(tg){ const id = tg.dataset.toggle; const card = tg.parentElement; const o = card.getAttribute('data-open') === 'true';
+    card.setAttribute('data-open', String(!o)); if(o) openCards.delete(id); else openCards.add(id); return; }
+  const cp = e.target.closest('[data-copy]');
+  if(cp){ copyText(COPYSRC[cp.dataset.copy] || '', cp); return; }
+  const tp = e.target.closest('[data-tp]');
+  if(tp){ openTP(byId[tp.dataset.tp]); return; }
+  const op = e.target.closest('[data-open]');
+  if(op){ openCards.add(op.dataset.open); hideResults(); openItem(op.dataset.open); return; }
+  if(!e.target.closest('.gsearch')) hideResults();
+});
+document.addEventListener('keydown', e => {
+  if(e.key === 'Enter'){ const op = e.target.closest && e.target.closest('.compact[data-open]'); if(op) op.click(); }
+});
+
+/* ---------- Busca global ---------- */
+const gInput = $('#globalSearch'), gRes = $('#globalResults');
+function hideResults(){ gRes.hidden = true; }
+gInput.addEventListener('input', () => {
+  const q = gInput.value.trim().toLowerCase();
+  if(q.length < 2){ hideResults(); return; }
+  const hits = [];
+  ITEMS.forEach(i => {
+    const hay = [i.id, i.titulo, i.gancho || '', (i.roteiro||[]).join(' '), i.legenda || '', i.copy || '', i.whatsapp || ''].join(' ');
+    const k = hay.toLowerCase().indexOf(q);
+    if(k >= 0) hits.push({i, snip: hay.slice(Math.max(0,k-40), k+60)});
+  });
+  ACTIVE_DATA.pendencias.forEach(p => { if((p.assunto+' '+p.obs).toLowerCase().includes(q)) hits.push({pend:p}); });
+  gRes.innerHTML = hits.slice(0, 12).map(h => h.pend
+    ? '<button type="button" data-goto="pendencias"><span class="code">PEND</span><span>'+esc(h.pend.assunto)+'</span></button>'
+    : '<button type="button" data-open="'+h.i.id+'"><span class="code">'+h.i.id+'</span><span>'+esc(h.i.titulo)+'<span class="snip">…'+esc(h.snip)+'…</span></span></button>').join('') || '<div class="empty">Nada encontrado.</div>';
+  gRes.hidden = false;
+});
+gRes.addEventListener('click', e => { const g = e.target.closest('[data-goto]'); if(g){ hideResults(); goToView(g.dataset.goto); } });
+gInput.addEventListener('keydown', e => { if(e.key === 'Escape'){ gInput.value = ''; hideResults(); } });
+
+/* ---------- Teleprompter ---------- */
+const tp = {on:false, speed:3, size:store.get('avaner-tpsize', 38), raf:0, last:0, acc:0, lock:null};
+function applyTP(){ $('#tpText').style.fontSize = tp.size+'px'; $('#tpSpd').textContent = 'vel '+tp.speed; $('#tpPlay').textContent = tp.on ? '❚❚ Pausar' : '▶ Rolar'; }
+function openTP(item){
+  if(!item) return;
+  $('#tpText').innerHTML = '<p style="opacity:.55;font-size:.6em">'+esc(item.id+' · '+item.titulo)+'</p>'+item.roteiro.map(p => '<p>'+esc(p)+'</p>').join('');
+  $('#tp').hidden = false; document.body.style.overflow = 'hidden'; $('#tpScroll').scrollTop = 0; applyTP();
+  try{ navigator.wakeLock && navigator.wakeLock.request('screen').then(l => tp.lock = l).catch(() => {}); }catch(e){}
+}
+function closeTP(){ stopTP(); $('#tp').hidden = true; document.body.style.overflow = ''; try{ tp.lock && tp.lock.release(); }catch(e){} }
+function stepTP(ts){ if(!tp.on) return; if(tp.last){ tp.acc += (ts-tp.last)*tp.speed*0.012; const px = Math.floor(tp.acc); if(px > 0){ $('#tpScroll').scrollTop += px; tp.acc -= px; } } tp.last = ts; tp.raf = requestAnimationFrame(stepTP); }
+function startTP(){ tp.on = true; tp.last = 0; tp.raf = requestAnimationFrame(stepTP); applyTP(); }
+function stopTP(){ tp.on = false; cancelAnimationFrame(tp.raf); applyTP(); }
+$('#tpPlay').onclick = () => tp.on ? stopTP() : startTP();
+$('#tpFast').onclick = () => { tp.speed = Math.min(10, tp.speed+1); applyTP(); };
+$('#tpSlow').onclick = () => { tp.speed = Math.max(1, tp.speed-1); applyTP(); };
+$('#tpBig').onclick = () => { tp.size = Math.min(80, tp.size+4); store.set('avaner-tpsize', tp.size); applyTP(); };
+$('#tpSmall').onclick = () => { tp.size = Math.max(22, tp.size-4); store.set('avaner-tpsize', tp.size); applyTP(); };
+$('#tpMirror').onclick = () => $('#tp').classList.toggle('mirror');
+$('#tpTop').onclick = () => { $('#tpScroll').scrollTop = 0; };
+$('#tpClose').onclick = closeTP;
+$('#tpScroll').addEventListener('click', () => tp.on ? stopTP() : startTP());
+document.addEventListener('keydown', e => { if($('#tp').hidden) return; if(e.key === 'Escape') closeTP(); if(e.key === ' '){ e.preventDefault(); tp.on ? stopTP() : startTP(); } });
+
+/* ---------- Render ---------- */
+function renderAll(){
+  renderHoje(); renderGeral(); renderExec(); renderCal(); renderRoteiros(); renderAds(); renderWA(); renderNum(); renderPend();
+}
+renderCampaignChrome();
+renderExecFilters(); renderRotFilters();
+renderAll();
+const savedTab = store.get('avaner-tab', 'hoje'); if(savedTab !== 'hoje' && document.getElementById('view-'+savedTab)) goToView(savedTab);
+loadAll(false).then(subscribe);

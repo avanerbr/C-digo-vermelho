@@ -1,1384 +1,1201 @@
-// Conteúdo completo do calendário — gerado automaticamente. Não edite à mão se for regenerar depois.
+// Conteúdo da Central Grupo 11.000. Para mudar um texto aprovado, edite aqui.
 const DATA = {
-  "dores": [
+  "campanha": {
+    "nome": "Grupo 11.000",
+    "inicio": "2026-10-03",
+    "fim_taxa": "2026-10-30",
+    "fim_vendas": "2026-11-16",
+    "assembleia": "2026-11-19",
+    "taxa": "15,75%",
+    "taxa_anterior": "21%",
+    "taxa_depois": "21%",
+    "limite_hora": "20h",
+    "pos_taxa_text": "De 31/10 a 16/11, a taxa volta para 21%.",
+    "db_exec": "g11_execucao",
+    "db_pend": "g11_pendencias",
+    "ad_notice": "Um argumento por anúncio. Rodapé em todos: Contemplação por sorteio ou lance. Condições conforme regulamento do grupo 11.000. Pause o que fala de 30/10 às 18h do dia 30 (limite da proposta: 20h)."
+  },
+  "estrategia": "<h3>A ideia do mês</h3>\n<p>A campanha fala de dinheiro, patrimônio e estratégia. A promoção entra como o motivo pra agir agora, e o assunto de cada vídeo é o que o cliente pode fazer com uma carta de R$ 700 mil a R$ 1 milhão. Setembro foi muito sobre características do plano; outubro abre pela situação do cliente e explica o produto depois.</p>\n<h3>Os 3 níveis do Método Avaner no grupo 11.000</h3>\n<ul>\n<li><b>Nível 1 · Patrimonial:</b> contemplar, comprar, alugar e deixar o aluguel ajudar a pagar a parcela (V11).</li>\n<li><b>Nível 2 · Financeira:</b> pouco capital até a contemplação e venda da carta com ágio. O plano reduzido e o lance embutido favorecem essa conta (V13, V05, V06).</li>\n<li><b>Nível 3 · Sobre o crédito:</b> crédito corrigido pelo INCC mantendo o poder de compra (V16).</li>\n</ul>\n<h3>5 tipos de vídeo, misturados no calendário</h3>\n<ul><li><b>Comercial (6):</b> condição, prazo, chamada pro WhatsApp.</li><li><b>Estratégia (5):</b> uso do crédito, lance, renda, venda de carta.</li><li><b>Simulação (3):</b> conta com número real e premissas.</li><li><b>Objeção (4):</b> série Yamaha de imóvel e medos.</li><li><b>Autoridade (2):</b> pra quem não serve, INCC.</li></ul>\n<p>20 Reels: 5 por semana até 26/10 e um por dia na reta final, com dois no dia 30. Menos vídeos, cada um com cara de conversa diferente. Se um tema performar, regrave com o <b>gancho alternativo</b> que está em cada card. O pico do meio do mês é o V12 (22/10): chama quem está olhando crédito de imóvel pra conversar direto com o Michael no WhatsApp.</p>\n<h3>4 eixos, nenhum dominando</h3><ul><li><b>Taxa:</b> R$ 52.500, banco x consórcio, prazo.</li><li><b>Planejamento:</b> contemplação futura, lance, reduzido, INCC.</li><li><b>Uso do crédito:</b> construir, comprar, Yamaha de imóvel.</li><li><b>Estratégia:</b> renda, venda de carta, análise individual.</li></ul>\n<h3>Escassez que a gente usa</h3>\n<ul><li>Taxa de 15,75% só até 30/10. Depois acaba.</li><li>Venda de cotas fecha em 16/11. Primeira assembleia em 19/11: quem entra agora participa desde a primeira.</li><li>Já foi prorrogado uma vez; não contar com outra.</li></ul>\n<p><b>Fora:</b> número de cotas restantes. Sem um dado oficial, não usamos.</p>\n<h3>Regras de escrita</h3>\n<ul>\n<li>Todo vídeo e anúncio termina levando pro WhatsApp do Michael, de forma simples: \"me chama no WhatsApp\", \"me manda grupo 11 mil\" ou \"me fala o valor que você tá pensando\". Sem formulário e sem pedir várias informações.</li>\n<li>Raciocínio em voz alta, como conversa com cliente. Menos frase de efeito pronta.</li><li>Estruturas variadas: caso de cliente, conta no papel, resposta a pergunta, lista de quem não deve entrar. Nem todo vídeo termina com ressalva + CTA.</li><li>O V09 vem em tópicos (fala livre): fale com suas palavras.</li><li>Falar como você fala: \"carta\", \"me chama\". Frases curtas.</li>\n<li>Evitar a estrutura repetida \"não é isso, é aquilo\".</li>\n<li>Taxa sempre como \"15,75% de taxa total em 240 meses\". O \"0,79% ao ano\" não vira headline.</li>\n<li>Nunca prometer contemplação, prazo, ágio ou valor de aluguel. Contemplação: \"a lógica do grupo é que as cotas ativas sejam contempladas ao longo do prazo, conforme as regras\".</li><li>Aluguel \"ajuda a compor\" a parcela. INCC tem os dois lados: corrige a parcela e o crédito.</li><li>Comparação com banco sempre com premissas na tela (entrada, prazo, sistema, taxa e data).</li>\n<li>Plano reduzido sempre com a migração explicada: a parcela é recalculada na contemplação e o lance é calculado sobre o crédito integral + taxa.</li>\n<li>Anúncio do reduzido: R$ 700 mil a R$ 1 milhão. Integral: R$ 500 mil a R$ 1 milhão. Não misturar as faixas.</li>\n<li>Não usar a parcela pós-contemplação com lance (≈ R$ 3.727) em nenhum conteúdo até a Yamaha confirmar a fórmula.</li>\n</ul>\n<h3>Turbinar</h3>\n<p>V01, V02, V03, V04, V05, V06, V08, V12, V15 e V19 estão marcados. Comece com R$ 20 a 30/dia em 3 deles, mantenha os que trouxerem conversa no WhatsApp.</p>\n",
+  "reels": [
     {
-      "id": "d1",
-      "nome": "Medo de ficar pra trás",
-      "desc": "Ver amigos e concorrentes comprando, crescendo, subindo de padrão de vida — enquanto você segue no mesmo lugar."
+      "id": "V01",
+      "kind": "reel",
+      "date": "2026-10-03",
+      "slot": "",
+      "tipo": "Comercial",
+      "eixo": "Taxa",
+      "titulo": "Chegou o e-mail da Yamaha",
+      "turbinar": true,
+      "serie": "",
+      "fala_livre": false,
+      "gancho": "PRORROGOU ATÉ 30/10",
+      "roteiro": [
+        "Chegou um e-mail da Yamaha aqui essa semana que eu preciso te contar.",
+        "Lembra do grupo de imóveis que eu falei em setembro? O 11.000, aquele de carta até 1 milhão? Eles prorrogaram.",
+        "A taxa de administração desse grupo, que era 21%, continua em 15,75% até o dia 30 de outubro.",
+        "Eu sei que teve gente que me chamou no fim de setembro achando que tinha acabado. Então, quem ficou de fora tem mais esse mês.",
+        "Eu não sei se vai ter outra prorrogação. Sinceramente, eu não contaria com isso.",
+        "Se você tinha começado a olhar e parou, me chama que a gente retoma de onde parou."
+      ],
+      "gancho_alt": "Quem achou que perdeu essa condição em setembro, presta atenção.",
+      "direcao": "Pode gravar segurando o celular com o e-mail aberto e mostrar rapidinho. Tom de quem tá dando uma notícia, sem exagero.",
+      "edicao": "Inserir print do e-mail por 1s. Texto PRORROGOU no gancho. Corte seco no final.",
+      "legenda": "A Yamaha prorrogou o grupo 11.000 até 30/10. Taxa de 15,75%. Me chama no WhatsApp (link no perfil).",
+      "cta": "Se você tinha começado a olhar e parou, me chama que a gente retoma de onde parou.",
+      "obs": "A frase \"teve gente que me chamou no fim de setembro\" só se for verdade. Se não foi, corte ela.",
+      "pend": [],
+      "whatsapp": "Oi! Vi o vídeo da prorrogação do grupo 11.000."
     },
     {
-      "id": "d2",
-      "nome": "Vergonha de não ter patrimônio",
-      "desc": "Faturar bem, viver bem no dia a dia, mas não ter nada estruturado 'no nome' — um fracasso disfarçado de sucesso."
+      "id": "V02",
+      "kind": "reel",
+      "date": "2026-10-06",
+      "slot": "",
+      "tipo": "Estratégia",
+      "eixo": "Planejamento",
+      "titulo": "Mas eu não quero comprar imóvel agora",
+      "turbinar": true,
+      "serie": "",
+      "fala_livre": false,
+      "gancho": "\"Mas eu não quero comprar imóvel agora\"",
+      "roteiro": [
+        "Tem cliente que me fala assim: Michael, eu gostei desse grupo, mas eu nem tô pensando em comprar imóvel agora.",
+        "Tudo bem.",
+        "Às vezes o cara vai construir mais pra frente. Às vezes tá esperando vender um imóvel. Às vezes sabe que vai ter um dinheiro entrando e quer preparar o lance com antecedência.",
+        "Eu olho muito por esse lado.",
+        "Se você já sabe que vai precisar de um crédito alto lá na frente, pode fazer sentido entrar numa condição boa agora e ir organizando o restante com calma.",
+        "Hoje essa taxa tá em 15,75% até dia 30.",
+        "Se você estiver numa situação parecida, me chama que eu vejo com você."
+      ],
+      "gancho_alt": "Você pode entrar num consórcio de imóvel sem ter imóvel nenhum escolhido.",
+      "direcao": "Contar como se fosse uma conversa que aconteceu. Pode olhar pro lado na primeira frase, como quem lembra, e voltar pra câmera.",
+      "edicao": "Pouca edição. Legenda dinâmica. Sem música ou música bem baixa.",
+      "legenda": "Consórcio de imóvel é pra quem vai usar o crédito lá na frente. Me chama pra gente ver se faz sentido pra você.",
+      "cta": "Se você estiver numa situação parecida, me chama que eu vejo com você.",
+      "obs": "",
+      "pend": [],
+      "whatsapp": "Oi! Vi o vídeo sobre consórcio de imóvel pra usar mais pra frente."
     },
     {
-      "id": "d3",
-      "nome": "Raiva de pagar juro",
-      "desc": "A sensação de trabalhar boa parte do mês só pra pagar juro de banco, não pra construir algo próprio."
+      "id": "V03",
+      "kind": "reel",
+      "date": "2026-10-07",
+      "slot": "",
+      "tipo": "Objeção",
+      "eixo": "Uso do crédito",
+      "titulo": "Yamaha de imóvel? (ep. 1)",
+      "turbinar": true,
+      "serie": "Yamaha de imóvel?",
+      "fala_livre": false,
+      "gancho": "YAMAHA… DE IMÓVEL?",
+      "roteiro": [
+        "Mandei a simulação desse grupo pra um cliente e a primeira resposta dele foi: Yamaha? Da moto?",
+        "Da moto, é. A Yamaha tem administradora de consórcio própria, autorizada pelo Banco Central, e ela tem grupo de imóvel também.",
+        "Eu entendo o estranhamento. Eu também ia achar estranho se não trabalhasse com isso.",
+        "Mas quando eu escolho um grupo pra indicar, eu olho a regra do grupo. Taxa, como funciona o lance, o que cobra e o que não cobra.",
+        "E nesse grupo a regra é boa: não tem taxa de adesão, não tem fundo de reserva, e a taxa de administração tá em 15,75% até o fim do mês.",
+        "Vou fazer uns vídeos respondendo as dúvidas que mais aparecem sobre isso. Se tiver alguma dúvida sobre isso, me chama no WhatsApp."
+      ],
+      "gancho_alt": "Toda vez que eu mando essa proposta acontece a mesma coisa: Yamaha? Da moto?",
+      "direcao": "Primeira frase com um meio sorriso. \"Da moto, é\" bem natural.",
+      "edicao": "Gancho com texto grande. Marcar \"Ep. 1\" no canto.",
+      "legenda": "Yamaha de imóvel? Sim. Ep. 1. Dúvida? Me chama no WhatsApp (link no perfil).",
+      "cta": "Vou fazer uns vídeos respondendo as dúvidas que mais aparecem sobre isso. Se tiver alguma dúvida sobre isso, me chama no WhatsApp.",
+      "obs": "Use o gancho alternativo só se \"toda vez\" for verdade.",
+      "pend": [],
+      "whatsapp": "Oi! Vi o vídeo da Yamaha de imóvel."
     },
     {
-      "id": "d4",
-      "nome": "Medo do imprevisto",
-      "desc": "O negócio ou a vida pessoal quebrarem porque não existe nada estruturado fora do risco do dia a dia."
+      "id": "V04",
+      "kind": "reel",
+      "date": "2026-10-09",
+      "slot": "",
+      "tipo": "Simulação",
+      "eixo": "Taxa",
+      "titulo": "A conta dos R$ 52.500",
+      "turbinar": true,
+      "serie": "",
+      "fala_livre": false,
+      "gancho": "21% → 15,75% em reais",
+      "roteiro": [
+        "Deixa eu colocar essa taxa em dinheiro, porque aí fica mais fácil de enxergar.",
+        "Pega uma carta de 1 milhão.",
+        "Com taxa de 21%, são 210 mil de taxa ao longo do plano.",
+        "Nessa condição de 15,75%, são 157 mil e 500.",
+        "Então você tá falando de uma diferença de 52 mil e 500 reais.",
+        "É por isso que eu tô falando tanto desse grupo esse mês.",
+        "Quando aparece uma condição de taxa que eu considero boa, principalmente pra quem já pensa em imóvel ou em construir mais pra frente, eu acho que vale pelo menos fazer a conta.",
+        "Essa condição vai até dia 30.",
+        "Se quiser essa conta no valor que você tá pensando, me chama no WhatsApp."
+      ],
+      "gancho_alt": "Sabe quanto 5,25 pontos de taxa representam numa carta de 1 milhão?",
+      "direcao": "Gravar com papel e caneta ou calculadora, fazendo a conta de verdade. Olhar pro papel e pra câmera alternando.",
+      "edicao": "Close no papel. Números aparecendo na tela conforme você fala.",
+      "legenda": "21% x 15,75% em reais: R$ 52.500 numa carta de R$ 1 milhão. Até 30/10. Me chama no WhatsApp (link no perfil).",
+      "cta": "Se quiser essa conta no valor que você tá pensando, me chama no WhatsApp.",
+      "obs": "",
+      "pend": [],
+      "whatsapp": "Oi! Vi o vídeo da conta dos R$ 52.500."
     },
     {
-      "id": "d5",
-      "nome": "Medo de ser negado",
-      "desc": "Fazer tudo 'certo' e ainda assim ser recusado — pelo banco, pela análise, pela burocracia que ninguém explica direito."
+      "id": "V05",
+      "kind": "reel",
+      "date": "2026-10-10",
+      "slot": "",
+      "tipo": "Simulação",
+      "eixo": "Planejamento",
+      "titulo": "O plano reduzido, explicado direito",
+      "turbinar": true,
+      "serie": "",
+      "fala_livre": false,
+      "gancho": "Carta de R$ 1 milhão · R$ 3.727 até contemplar",
+      "roteiro": [
+        "Deixa eu te explicar o plano reduzido do jeito que eu explicaria numa reunião.",
+        "Na carta de 1 milhão, a parcela integral hoje é 5.174.",
+        "No reduzido, você começa pagando 3.727 até a contemplação.",
+        "Só que presta atenção nessa parte: quando contempla, o crédito passa pro 1 milhão completo e a parcela é recalculada. Aquilo que você deixou de pagar antes é distribuído nas parcelas que faltam.",
+        "E se você for ofertar lance, a conta é feita sobre o crédito integral mais a taxa.",
+        "Então eu gosto do reduzido principalmente pra quem quer preservar caixa antes da contemplação.",
+        "Agora, tem que entrar entendendo a regra inteira. Eu não venderia isso olhando só a parcela de 3.727.",
+        "Se quiser ver no seu valor, me chama no WhatsApp."
+      ],
+      "gancho_alt": "Essa parcela de R$ 3.727 é boa. Só que eu não quero que você entre olhando só pra ela.",
+      "direcao": "Tom de explicação pra cliente, sem pressa. A parte da parcela subindo é a que gera confiança: falar com a mesma naturalidade do resto.",
+      "edicao": "Na tela: 5.174 → 3.727 (até contemplar) → recalculada na contemplação. Rodapé: \"Lance calculado sobre o crédito integral + taxa\".",
+      "legenda": "Plano reduzido do grupo 11.000: o que é bom e o que você precisa saber antes. Me chama no WhatsApp (link no perfil).",
+      "cta": "Se quiser ver no seu valor, me chama no WhatsApp.",
+      "obs": "",
+      "pend": [],
+      "whatsapp": "Oi! Vi o vídeo do plano reduzido."
     },
     {
-      "id": "d6",
-      "nome": "Ansiedade com dinheiro parado",
-      "desc": "Saber que o dinheiro devia estar rendendo ou trabalhando, e não saber ao certo o que fazer com ele."
+      "id": "V06",
+      "kind": "reel",
+      "date": "2026-10-13",
+      "slot": "",
+      "tipo": "Estratégia",
+      "eixo": "Planejamento",
+      "titulo": "Você não precisa ter os 350 mil hoje",
+      "turbinar": true,
+      "serie": "",
+      "fala_livre": false,
+      "gancho": "Lance de 347 mil, até 300 mil saindo da própria carta",
+      "roteiro": [
+        "Uma coisa que trava muita gente é o lance.",
+        "O cara olha uma carta de 1 milhão e pensa: Michael, eu não tenho 350 mil parado pra colocar nisso agora.",
+        "Nesse grupo o lance fixo é de 30%, calculado sobre o crédito mais a taxa. Numa carta de 1 milhão, dá 347 mil.",
+        "Só que você pode usar até 300 mil da própria carta como lance embutido.",
+        "Então o que sai do seu bolso é a diferença, uns 47 mil.",
+        "Se for contemplado nessa modalidade, ficam 700 mil de crédito pra usar.",
+        "E o lance ainda pode ser parcelado em quatro vezes sem juros.",
+        "Agora, contemplação ninguém pode te prometer.",
+        "O que dá pra fazer é montar a estratégia antes.",
+        "Se quiser entender como isso funciona, me chama no WhatsApp."
+      ],
+      "gancho_alt": "Se você acha que precisa ter R$ 350 mil na conta pra pensar numa carta de R$ 1 milhão, olha essa regra.",
+      "direcao": "Explicar com as mãos: 30 aqui, 30 ali. A parte do \"ninguém pode te prometer\" com tom normal, sem cara de letra miúda.",
+      "edicao": "Na tela, em sequência: crédito R$ 1.000.000 + taxa R$ 157.500 = base R$ 1.157.500 → lance fixo 30% = R$ 347.250 → até R$ 300.000 da própria carta + R$ 47.250 do cliente → crédito pra usar R$ 700.000.",
+      "legenda": "Lance fixo de 30% (sobre crédito + taxa): até R$ 300 mil podem sair da própria carta como embutido. Contemplação não é garantida. Me chama no WhatsApp (link no perfil).",
+      "cta": "Se quiser entender como isso funciona, me chama no WhatsApp.",
+      "obs": "",
+      "pend": [
+        "P3",
+        "P4"
+      ],
+      "whatsapp": "Oi! Vi o vídeo sobre o lance."
     },
     {
-      "id": "d7",
-      "nome": "Desconfiança de vendedor disfarçado de consultor",
-      "desc": "O medo de ser 'mais um cliente convencido' por alguém que só quer bater meta, não resolver seu problema."
+      "id": "V07",
+      "kind": "reel",
+      "date": "2026-10-14",
+      "slot": "",
+      "tipo": "Objeção",
+      "eixo": "Uso do crédito",
+      "titulo": "E se der problema com a administradora? (ep. 2)",
+      "turbinar": false,
+      "serie": "Yamaha de imóvel?",
+      "fala_livre": false,
+      "gancho": "E se a administradora quebrar?",
+      "roteiro": [
+        "Pergunta que chegou aqui depois do último vídeo: e se a administradora tiver algum problema? Meu dinheiro some?",
+        "Boa pergunta, e vale pra qualquer consórcio, não só Yamaha.",
+        "Consórcio no Brasil tem lei própria e é fiscalizado pelo Banco Central. E pela lei, os recursos e o patrimônio do grupo ficam separados do patrimônio da administradora.",
+        "O que eu faço com todo cliente, e você pode fazer sozinho: entra no site do Banco Central e confere se a administradora é autorizada. Leva dois minutos.",
+        "Se alguém te oferecer consórcio de uma administradora que não aparece lá, sai fora.",
+        "Se quiser ajuda pra conferir, me chama no WhatsApp."
+      ],
+      "gancho_alt": "Se a administradora tiver problema, o dinheiro do grupo vai junto?",
+      "direcao": "Calmo e firme. Assunto de medo, a energia é de segurança.",
+      "edicao": "Gravar a tela fazendo a consulta no site do Banco Central. Marcar \"Ep. 2\".",
+      "legenda": "Consórcio é regulado pela Lei 11.795/08 e fiscalizado pelo Banco Central. Confira sempre a administradora. Me chama no WhatsApp (link no perfil).",
+      "cta": "Se quiser ajuda pra conferir, me chama no WhatsApp.",
+      "obs": "Ajuste a primeira frase se ninguém tiver perguntado isso de fato (ex.: \"Uma pergunta que sempre aparece\").",
+      "pend": [],
+      "whatsapp": ""
     },
     {
-      "id": "d8",
-      "nome": "Culpa por não ter começado antes",
-      "desc": "'Eu devia ter feito isso há 5 anos' — a sensação de atraso que pesa mais quanto mais tempo passa."
+      "id": "V08",
+      "kind": "reel",
+      "date": "2026-10-16",
+      "slot": "",
+      "tipo": "Simulação",
+      "eixo": "Taxa",
+      "titulo": "Financiamento x consórcio, com as premissas na mesa",
+      "turbinar": true,
+      "serie": "",
+      "fala_livre": false,
+      "gancho": "Imóvel de R$ 1 milhão: banco x consórcio",
+      "roteiro": [
+        "Vou fazer uma comparação, mas com as premissas na mesa, senão vira propaganda.",
+        "Fiz uma simulação hoje. Imóvel de 1 milhão, entrada de 200 mil e 800 mil financiados em 240 meses, no SAC.",
+        "A primeira parcela ficou em [VALOR DA 1ª PARCELA] e o custo da operação ficou em [CUSTO TOTAL DA SIMULAÇÃO].",
+        "No consórcio, uma carta de 800 mil nesse grupo tem parcela integral de 4.139. O custo do plano, crédito mais taxa, fica em 926 mil, sem seguro e sem a correção.",
+        "Agora, a diferença principal: no banco você pega o imóvel hoje. No consórcio você planeja e depende de contemplação ou de lance.",
+        "Pra quem precisa morar no mês que vem, financiamento resolve. Pra quem consegue planejar, vale colocar as duas contas lado a lado. Se quiser essa comparação com os seus números, me chama."
+      ],
+      "gancho_alt": "Fiz uma simulação de financiamento hoje. Olha a diferença.",
+      "direcao": "Tom de análise, quase de planilha. A parte que reconhece a vantagem do financiamento é o que dá credibilidade: não pular.",
+      "edicao": "Print da simulação bancária do dia na tela, com data. Premissas no rodapé: entrada R$ 200 mil · R$ 800 mil · 240 meses · SAC. Tela dividida banco | consórcio.",
+      "legenda": "Banco x consórcio num imóvel de R$ 1 milhão, com simulação real feita no dia da gravação. Me chama no WhatsApp (link no perfil).",
+      "cta": "Pra quem precisa morar no mês que vem, financiamento resolve. Pra quem consegue planejar, vale colocar as duas contas lado a lado. Se quiser essa comparação com os seus números, me chama.",
+      "obs": "Preencha os [VALORES] com a simulação real do dia (site da Caixa ou do seu banco). Sem a simulação, não grave.",
+      "pend": [],
+      "whatsapp": "Oi! Vi o vídeo de financiamento x consórcio."
+    },
+    {
+      "id": "V09",
+      "kind": "reel",
+      "date": "2026-10-17",
+      "slot": "",
+      "tipo": "Estratégia",
+      "eixo": "Uso do crédito",
+      "titulo": "O cliente que vai construir daqui a dois anos",
+      "turbinar": false,
+      "serie": "",
+      "fala_livre": true,
+      "gancho": "Vai construir daqui a 2 anos?",
+      "roteiro": [
+        "Abra como cenário (ou caso real, se tiver): alguém tem terreno ou vai comprar, e pensa em construir mais pra frente.",
+        "O que normalmente acontece: espera, junta dinheiro, e quando chega a hora a obra ficou mais cara.",
+        "O que dá pra fazer: entrar agora com a taxa de 15,75% e ir se preparando pro lance nesse tempo.",
+        "Como funciona na construção: depois de contemplado, você apresenta o projeto e o cronograma físico-financeiro da obra.",
+        "A Yamaha libera o dinheiro por etapas, pelo menos três, conforme a obra avança. O valor cai na sua conta e você executa a obra seguindo o projeto.",
+        "Não precisa ter o dinheiro do lance hoje. Dá pra montar aos poucos: parcela antecipada vira lance, lance pode ser parcelado em 4x, pode usar parte da carta.",
+        "Sua opinião: pra quem já sabe o que vai fazer daqui a um ou dois anos, é onde esse grupo mais encaixa.",
+        "Feche: se você tá nessa situação, me chama no WhatsApp."
+      ],
+      "gancho_alt": "Se você já sabe que vai construir mais pra frente, eu não esperaria chegar a obra pra pensar no crédito.",
+      "direcao": "Fala livre em cima dos tópicos. Se tiver um caso real, conte sem dar nome. Se não tiver, fale como cenário: \"Vamos supor que você tenha um terreno e pensa em construir mais pra frente…\"",
+      "edicao": "Imagem de obra ou terreno de fundo nos primeiros segundos.",
+      "legenda": "Pra quem vai construir lá na frente: a estratégia começa antes. Me chama no WhatsApp (link no perfil).",
+      "cta": "Feche: se você tá nessa situação, me chama no WhatsApp.",
+      "obs": "",
+      "pend": [
+        "P8"
+      ],
+      "whatsapp": ""
+    },
+    {
+      "id": "V10",
+      "kind": "reel",
+      "date": "2026-10-20",
+      "slot": "",
+      "tipo": "Autoridade",
+      "eixo": "Planejamento",
+      "titulo": "Quando eu falo pro cliente não entrar",
+      "turbinar": false,
+      "serie": "",
+      "fala_livre": false,
+      "gancho": "\"Hoje eu não entraria no seu lugar\"",
+      "roteiro": [
+        "Tem um perfil de cliente que eu já falo logo de cara: eu olharia outra solução.",
+        "Se você precisa comprar o imóvel imediatamente e não pode esperar contemplação nem trabalhar uma estratégia de lance, provavelmente o consórcio não vai atender o que você precisa hoje.",
+        "Agora, quando o cliente fala pra mim: Michael, eu tô pensando em comprar ou construir mais pra frente. Tenho capacidade de parcela e quero ir preparando isso.",
+        "Aí eu começo a olhar com outros olhos.",
+        "Porque aí eu consigo montar valor de carta, plano e lance pensando no prazo dele.",
+        "Eu trabalho com isso há 13 anos. Prefiro falar isso antes da assinatura do que explicar depois.",
+        "Se você tá nesse segundo perfil, me chama no WhatsApp."
+      ],
+      "gancho_alt": "Tem cliente que eu mesmo falo: hoje eu não entraria nesse consórcio no seu lugar.",
+      "direcao": "Tom de consultor, calmo. A fala do cliente com voz de cliente.",
+      "edicao": "Fundo neutro, sem música. \"13 anos\" na tela no fim.",
+      "legenda": "Consórcio é pra quem pensa em médio e longo prazo. Me chama no WhatsApp (link no perfil).",
+      "cta": "Se você tá nesse segundo perfil, me chama no WhatsApp.",
+      "obs": "",
+      "pend": [],
+      "whatsapp": ""
+    },
+    {
+      "id": "V11",
+      "kind": "reel",
+      "date": "2026-10-21",
+      "slot": "",
+      "tipo": "Estratégia",
+      "eixo": "Estratégia",
+      "titulo": "Imóvel pra alugar: a conta pé no chão",
+      "turbinar": false,
+      "serie": "",
+      "fala_livre": false,
+      "gancho": "Comprar pra alugar com consórcio",
+      "roteiro": [
+        "Tem cliente que olha consórcio de imóvel pensando em comprar pra alugar.",
+        "E aí eu sempre faço uma conta antes.",
+        "Quanto esse imóvel realmente aluga naquela região? Tem condomínio? Manutenção? Quanto tempo ele pode ficar vazio?",
+        "Porque o aluguel pode ajudar bastante no pagamento da parcela, mas eu não conto com ele como se fosse dinheiro garantido todo mês.",
+        "Quando a conta faz sentido, aí sim eu gosto da estratégia.",
+        "Você usa o crédito pra comprar o imóvel, coloca pra renda, e uma parte do que entra todo mês começa a ajudar no próprio projeto.",
+        "Se você pensa em comprar um imóvel pra renda, me chama. Eu olho essa conta com você antes de você entrar."
+      ],
+      "gancho_alt": "Comprar imóvel pra alugar com consórcio pode fazer sentido. Mas eu faço três contas antes.",
+      "direcao": "Tom de análise. A parte \"se a conta não fecha, eu falo\" com firmeza.",
+      "edicao": "Perguntas na tela conforme você fala: aluguel real · condomínio e manutenção · tempo vazio.",
+      "legenda": "Consórcio pra renda: o aluguel ajuda, mas a conta vem antes. Me chama que eu faço essa conta com você.",
+      "cta": "Se você pensa em comprar um imóvel pra renda, me chama. Eu olho essa conta com você antes de você entrar.",
+      "obs": "",
+      "pend": [],
+      "whatsapp": ""
+    },
+    {
+      "id": "V12",
+      "kind": "reel",
+      "date": "2026-10-22",
+      "slot": "",
+      "tipo": "Comercial",
+      "eixo": "Planejamento",
+      "titulo": "Qual plano é melhor? Depende do seu cenário",
+      "turbinar": true,
+      "serie": "",
+      "fala_livre": false,
+      "gancho": "Integral, reduzido, lance… qual é o melhor pra você?",
+      "roteiro": [
+        "Tem muita gente me chamando e perguntando qual dessas opções faz mais sentido: integral, reduzido, esperar pra dar lance, usar embutido…",
+        "E a resposta depende muito do seu cenário.",
+        "Se você quer mais previsibilidade, talvez eu vá por um caminho. Se quer preservar caixa antes da contemplação, posso olhar outro.",
+        "E às vezes nem faz sentido falar em 1 milhão se 700 ou 800 mil já resolve o seu projeto.",
+        "O que eu tô fazendo esse mês é pegar o cenário de cada pessoa e montar a estratégia em cima dele.",
+        "Se você tá pensando em comprar, construir ou só preparar esse crédito pro futuro, me chama no WhatsApp.",
+        "Me fala o valor de crédito que você tá pensando. A gente começa por aí."
+      ],
+      "gancho_alt": "Qual plano é melhor nesse grupo? Depende do que você quer fazer com o crédito.",
+      "direcao": "Tom de conversa, como quem responde várias mensagens de uma vez. É o vídeo-chave do meio do mês pra gerar conversa.",
+      "edicao": "Legenda dinâmica. No fim, card: \"Me chama no WhatsApp\".",
+      "legenda": "Qual plano faz sentido pra você? Me fala no WhatsApp o valor de crédito que você tá pensando.",
+      "cta": "Me fala o valor de crédito que você tá pensando. A gente começa por aí.",
+      "obs": "\"Tem muita gente me chamando\" só se for verdade. Se não for, abra com: \"A pergunta que eu mais respondo sobre esse grupo é qual plano escolher.\"",
+      "pend": [],
+      "whatsapp": "Oi! Quero ver qual plano faz sentido pra mim."
+    },
+    {
+      "id": "V13",
+      "kind": "reel",
+      "date": "2026-10-23",
+      "slot": "",
+      "tipo": "Estratégia",
+      "eixo": "Estratégia",
+      "titulo": "Como eu analiso a venda de uma carta contemplada",
+      "turbinar": false,
+      "serie": "",
+      "fala_livre": false,
+      "gancho": "Vender carta contemplada: como eu analiso",
+      "roteiro": [
+        "Tem cliente que me pergunta se vale entrar numa carta pensando em vender depois da contemplação. Vou te mostrar como eu olho pra isso.",
+        "Primeiro: quanto você já colocou na carta até a contemplação. No plano reduzido desse grupo, por exemplo, você paga menos até contemplar, e isso muda a conta.",
+        "Segundo: quanto ainda falta pagar. Quem compra sua carta assume esse saldo.",
+        "Terceiro: como tá o mercado naquele momento. Tem época que carta contemplada tem muita procura, tem época que não. O ágio pode ser bom, pode ser pequeno, pode não ter.",
+        "A transferência em si é simples. Quem assume precisa comprovar renda de pelo menos três vezes o valor da parcela, não ter restrição de crédito e passar pela análise da administradora.",
+        "E aqui na Avaner existe também a possibilidade de eu mesmo comprar a carta do cliente, então você não fica sozinho procurando comprador. Isso é uma possibilidade, conversada caso a caso, sem preço combinado antes.",
+        "Então eu trato isso como uma operação que precisa de análise. Dá pra fazer, mas não é automático. Se você pensa nisso, me chama que eu te mostro os números."
+      ],
+      "gancho_alt": "Se a ideia é vender a carta depois de contemplada, eu olho três coisas antes de entrar.",
+      "direcao": "Tom de consultor analisando um caso, contando nos dedos.",
+      "edicao": "Três tópicos na tela: o que você pagou · o que falta · o mercado.",
+      "legenda": "Venda de carta contemplada exige análise. Ágio não é garantido. Me chama no WhatsApp (link no perfil).",
+      "cta": "Então eu trato isso como uma operação que precisa de análise. Dá pra fazer, mas não é automático. Se você pensa nisso, me chama que eu te mostro os números.",
+      "obs": "",
+      "pend": [
+        "P7"
+      ],
+      "whatsapp": ""
+    },
+    {
+      "id": "V14",
+      "kind": "reel",
+      "date": "2026-10-24",
+      "slot": "",
+      "tipo": "Objeção",
+      "eixo": "Planejamento",
+      "titulo": "E se eu demorar pra ser contemplado?",
+      "turbinar": false,
+      "serie": "",
+      "fala_livre": false,
+      "gancho": "E se eu demorar pra ser contemplado?",
+      "roteiro": [
+        "Essa pergunta é muito justa: Michael, e se eu entrar e demorar pra ser contemplado?",
+        "Pode acontecer.",
+        "Principalmente se você entrar contando só com sorteio.",
+        "Por isso, quando eu monto um projeto desses, eu já quero entender uma coisa: você pensa em usar esse crédito logo ou consegue esperar?",
+        "Porque aí dá pra discutir lance livre, lance fixo, uso de parte da própria carta, lance parcelado em quatro vezes e até parcelas antecipadas.",
+        "Isso não me permite te falar em qual mês você vai contemplar.",
+        "Mas permite entrar sabendo quais ferramentas você tem pra tentar antecipar essa contemplação.",
+        "Pra mim, essa diferença é importante.",
+        "Se quiser ver quais ferramentas fazem sentido pra você, me chama no WhatsApp."
+      ],
+      "gancho_alt": "Se você entrar num consórcio contando só com sorteio, pode esperar bastante.",
+      "direcao": "Ler a pergunta com voz de cliente preocupado. Responder calmo.",
+      "edicao": "Legenda simples. Lista das formas de lance aparecendo uma a uma.",
+      "legenda": "Demora na contemplação pode acontecer. Dá pra entrar sabendo quais ferramentas de lance você tem. Me chama no WhatsApp (link no perfil).",
+      "cta": "Se quiser ver quais ferramentas fazem sentido pra você, me chama no WhatsApp.",
+      "obs": "",
+      "pend": [],
+      "whatsapp": ""
+    },
+    {
+      "id": "V15",
+      "kind": "reel",
+      "date": "2026-10-26",
+      "slot": "",
+      "tipo": "Comercial",
+      "eixo": "Taxa",
+      "titulo": "Última semana: o que muda dia 31",
+      "turbinar": true,
+      "serie": "",
+      "fala_livre": false,
+      "gancho": "ÚLTIMA SEMANA",
+      "roteiro": [
+        "Começou a última semana dessa condição do grupo 11.000.",
+        "Então deixa eu separar as datas pra não confundir.",
+        "A taxa de 15,75% vai até sexta, dia 30.",
+        "A venda desse grupo vai até 16 de novembro.",
+        "E a primeira assembleia tá prevista pro dia 19.",
+        "A partir do dia 31, quem entrar nesse mesmo grupo até o fim das vendas paga a taxa cheia, de 21%.",
+        "Então, se você já tava olhando esse grupo por causa da taxa, eu resolveria as dúvidas essa semana.",
+        "Me chama e escreve grupo 11 mil, que eu sei do que você tá falando."
+      ],
+      "gancho_alt": "Tem três datas nesse grupo, e a mais importante pra taxa é sexta-feira.",
+      "direcao": "Gravar segunda cedo. Tom de aviso, curto.",
+      "edicao": "Linha do tempo na tela: 30/10 fim da taxa · 16/11 fim das vendas · 19/11 assembleia.",
+      "legenda": "Última semana com taxa de 15,75%. Me chama: grupo 11 mil.",
+      "cta": "Me chama e escreve grupo 11 mil, que eu sei do que você tá falando.",
+      "obs": "",
+      "pend": [
+        "P5"
+      ],
+      "whatsapp": "grupo 11 mil"
+    },
+    {
+      "id": "V16",
+      "kind": "reel",
+      "date": "2026-10-27",
+      "slot": "",
+      "tipo": "Autoridade",
+      "eixo": "Planejamento",
+      "titulo": "INCC: o lado que muita gente esquece",
+      "turbinar": false,
+      "serie": "",
+      "fala_livre": false,
+      "gancho": "INCC: o lado que muita gente esquece",
+      "roteiro": [
+        "Quando eu falo que a parcela desse grupo é corrigida pelo INCC, muita gente torce o nariz. E faz sentido, porque a parcela sobe mesmo.",
+        "Mas tem um lado que muita gente esquece: o crédito também é corrigido.",
+        "Pensa assim. Se a sua carta de 1 milhão ficasse parada em 1 milhão por cinco anos, e a construção ficasse mais cara nesse tempo, quando você fosse usar ela comprava menos.",
+        "Com a correção, a carta acompanha o custo da construção. Você paga mais, e a carta também vale mais.",
+        "Então eu não chamo isso de vantagem nem de problema. É uma regra que você precisa colocar na conta antes de entrar. A primeira correção nesse grupo é na 14ª parcela.",
+        "Se quiser ver isso na sua simulação, me chama no WhatsApp."
+      ],
+      "gancho_alt": "Quando o INCC sobe, sua parcela sobe. Só que a sua carta também.",
+      "direcao": "Tom equilibrado, de quem explica as duas pontas.",
+      "edicao": "Na tela, duas setas subindo: parcela ↑ · crédito ↑.",
+      "legenda": "INCC corrige a parcela e o crédito. Coloque isso na conta antes de entrar. Me chama no WhatsApp (link no perfil).",
+      "cta": "Se quiser ver isso na sua simulação, me chama no WhatsApp.",
+      "obs": "",
+      "pend": [],
+      "whatsapp": ""
+    },
+    {
+      "id": "V17",
+      "kind": "reel",
+      "date": "2026-10-28",
+      "slot": "",
+      "tipo": "Objeção",
+      "eixo": "Taxa",
+      "titulo": "Vou esperar os juros caírem",
+      "turbinar": false,
+      "serie": "",
+      "fala_livre": false,
+      "gancho": "Esperar os juros caírem?",
+      "roteiro": [
+        "Um cliente pode pensar assim: Michael, os juros tão caindo. Vou esperar mais um pouco e depois financio.",
+        "E pode ser que faça sentido.",
+        "Só que eu faria a conta antes de tomar essa decisão.",
+        "Olha qual é a taxa do financiamento hoje, qual entrada você vai precisar e quanto fica o custo total.",
+        "Depois compara com o consórcio, e coloca na conta uma diferença importante: no financiamento você compra agora. No consórcio existe contemplação.",
+        "São ferramentas diferentes.",
+        "O que eu não faria é simplesmente esperar os juros caírem sem colocar os dois cenários no papel.",
+        "Essa condição do grupo vai até sexta.",
+        "Se quiser os dois cenários no papel, me chama no WhatsApp."
+      ],
+      "gancho_alt": "Esperar os juros baixarem pode fazer sentido. Mas faz a conta antes.",
+      "direcao": "Tom de conversa, sem ironia.",
+      "edicao": "Se citar a Selic, coloque o número e a data da última decisão do Copom na tela.",
+      "legenda": "Antes de esperar os juros caírem, coloque os dois cenários no papel. Me chama no WhatsApp (link no perfil).",
+      "cta": "Se quiser os dois cenários no papel, me chama no WhatsApp.",
+      "obs": "Confira se teve decisão do Copom nova antes de postar (a próxima reunião pode mudar o número).",
+      "pend": [],
+      "whatsapp": ""
+    },
+    {
+      "id": "V18",
+      "kind": "reel",
+      "date": "2026-10-29",
+      "slot": "",
+      "tipo": "Comercial",
+      "eixo": "Taxa",
+      "titulo": "Amanhã acaba: o que você precisa ter em mãos",
+      "turbinar": false,
+      "serie": "",
+      "fala_livre": false,
+      "gancho": "AMANHÃ ACABA",
+      "roteiro": [
+        "Amanhã acaba a condição do grupo 11.000. E eu quero te avisar uma coisa prática.",
+        "O limite pra enviar a proposta amanhã é às 20h. E antes disso tem documentação e análise, então não dá pra deixar pra última hora.",
+        "Então se você ainda tá decidindo, me chama hoje. Eu te mando a simulação, a gente vê se é integral ou reduzido, qual valor de carta, e vê se realmente faz sentido avançar.",
+        "Se for pra entrar, entra com calma."
+      ],
+      "gancho_alt": "Se você tá pensando em entrar, eu não deixaria isso pra amanhã à noite.",
+      "direcao": "Tom de quem cuida do cliente. Sem pressão exagerada.",
+      "edicao": "\"AMANHÃ\" ocupando a tela no gancho.",
+      "legenda": "Amanhã acaba. Me chama hoje pra gente ver se faz sentido avançar.",
+      "cta": "Então se você ainda tá decidindo, me chama hoje. Eu te mando a simulação, a gente vê se é integral ou reduzido, qual valor de carta, e vê se realmente faz sentido avançar.",
+      "obs": "Confirmar com a Yamaha a lista de documentos que precisam estar prontos.",
+      "pend": [
+        "P2",
+        "P6"
+      ],
+      "whatsapp": ""
+    },
+    {
+      "id": "V19",
+      "kind": "reel",
+      "date": "2026-10-30",
+      "slot": "manhã",
+      "tipo": "Comercial",
+      "eixo": "Taxa",
+      "titulo": "Hoje é o último dia",
+      "turbinar": true,
+      "serie": "",
+      "fala_livre": false,
+      "gancho": "HOJE É O ÚLTIMO DIA",
+      "roteiro": [
+        "Hoje é o último dia da condição de 15,75% no grupo 11.000 da Yamaha.",
+        "Então hoje eu vou deixar o WhatsApp aberto pra quem ainda precisa tirar alguma dúvida ou fazer uma simulação.",
+        "Se você tá olhando carta de imóvel entre 500 mil e 1 milhão, me manda uma mensagem com grupo 11 mil e o valor de crédito que você tá pensando.",
+        "Eu olho e te respondo.",
+        "O limite pra proposta é às 20h. Mas não deixa pra perto disso, porque tem documentação e análise antes."
+      ],
+      "gancho_alt": "Hoje termina a taxa de 15,75%.",
+      "direcao": "Gravar cedo e postar até 8h. Curto.",
+      "edicao": "Selo \"ÚLTIMO DIA\".",
+      "legenda": "Último dia. Me manda \"grupo 11 mil\" no WhatsApp.",
+      "cta": "Se você tá olhando carta de imóvel entre 500 mil e 1 milhão, me manda uma mensagem com grupo 11 mil e o valor de crédito que você tá pensando.",
+      "obs": "Confirmar com a Yamaha a lista de documentos que precisam estar prontos.",
+      "pend": [
+        "P2",
+        "P6"
+      ],
+      "whatsapp": "grupo 11 mil + valor de crédito"
+    },
+    {
+      "id": "V20",
+      "kind": "reel",
+      "date": "2026-10-30",
+      "slot": "noite",
+      "tipo": "Comercial",
+      "eixo": "Taxa",
+      "titulo": "Últimas horas",
+      "turbinar": false,
+      "serie": "",
+      "fala_livre": false,
+      "gancho": "ÚLTIMAS HORAS",
+      "roteiro": [
+        "Tô atendendo o pessoal que me chamou hoje, então vou ser rápido.",
+        "São as últimas horas da condição. O limite da proposta é às 20h. Se você ainda tá pensando, me manda mensagem agora que dá tempo de ver.",
+        "E se não for agora, tudo bem também. O consórcio precisa fazer sentido pra você."
+      ],
+      "gancho_alt": "Tô no meio dos atendimentos aqui, mas preciso dar esse último aviso.",
+      "direcao": "Gravar e postar até 17h, porque o limite da proposta é às 20h. Voz mais baixa, como quem fala no intervalo de um atendimento.",
+      "edicao": "Sem música. Corte final em preto.",
+      "legenda": "Últimas horas. Me chama no WhatsApp (link no perfil).",
+      "cta": "São as últimas horas da condição. O limite da proposta é às 20h. Se você ainda tá pensando, me manda mensagem agora que dá tempo de ver.",
+      "obs": "",
+      "pend": [
+        "P6"
+      ],
+      "whatsapp": ""
     }
   ],
-  "desejos": [
+  "ads": [
     {
-      "id": "w1",
-      "nome": "Não depender de banco",
-      "desc": "Tomar decisão financeira sem estar refém da aprovação, do humor ou das regras de um banco."
+      "id": "A01",
+      "kind": "ad",
+      "nome": "Taxa em reais",
+      "titulo": "Taxa em reais",
+      "duracao": "25s",
+      "plano": "Integral/Reduzido",
+      "gancho": "R$ 52.500 a menos de taxa",
+      "roteiro": [
+        "Se você tá pesquisando consórcio de imóvel, olha primeiro pra taxa.",
+        "Esse grupo da Yamaha tem carta de até 1 milhão e a taxa de administração caiu de 21% pra 15,75%.",
+        "Numa carta de 1 milhão, essa diferença representa 52 mil e 500 reais de taxa ao longo do plano.",
+        "Essa condição vai até dia 30 de outubro.",
+        "Se você quiser, me chama aqui no WhatsApp que eu faço a simulação no valor que você tá pensando."
+      ],
+      "gancho_alt": "R$ 52.500 de diferença só na taxa.",
+      "periodo": "03/10 a 30/10",
+      "inicio": "2026-10-03",
+      "fim": "2026-10-30",
+      "copy": "Carta de imóvel de até R$ 1 milhão com taxa de administração de 15,75% (era 21%). Numa carta de R$ 1 milhão, são R$ 52.500 a menos de taxa. Condição até 30/10. Me chama no WhatsApp que eu faço a simulação no seu valor.",
+      "obs": "",
+      "pend": [],
+      "whatsapp": "Oi! Vi o anúncio da taxa de 15,75% do grupo de imóveis.",
+      "interesse": "Comparação de taxa e custo do consórcio. Provavelmente já pesquisou ou tem proposta de outra administradora."
     },
     {
-      "id": "w2",
-      "nome": "Ser reconhecido como bem-sucedido",
-      "desc": "Status e reconhecimento entre pares — outros empresários, a família, o próprio círculo — como alguém que 'chegou lá'."
+      "id": "A02",
+      "kind": "ad",
+      "nome": "Parcela reduzida",
+      "titulo": "Parcela reduzida",
+      "duracao": "25s",
+      "plano": "Reduzido (R$ 700 mil a R$ 1 milhão)",
+      "gancho": "Carta de R$ 1 milhão · R$ 3.727/mês até a contemplação",
+      "roteiro": [
+        "Carta de 1 milhão começando com parcela de 3.727 até a contemplação.",
+        "É o plano reduzido do grupo de imóveis da Yamaha.",
+        "Quando você contempla, o crédito passa pro 1 milhão completo e a parcela é recalculada.",
+        "Esse plano vai de 700 mil a 1 milhão, e a condição de taxa atual vai até 30 de outubro.",
+        "Quer ver quanto fica no valor que você procura? Me chama aqui."
+      ],
+      "gancho_alt": "R$ 1 milhão de crédito começando em R$ 3.727 por mês.",
+      "periodo": "03/10 a 30/10",
+      "inicio": "2026-10-03",
+      "fim": "2026-10-30",
+      "copy": "Carta de R$ 1 milhão com parcela de R$ 3.727 até a contemplação, no plano reduzido do grupo de imóveis da Yamaha. Na contemplação, a parcela é recalculada pro crédito integral. Cartas de R$ 700 mil a R$ 1 milhão. Taxa de 15,75% até 30/10.",
+      "obs": "Na edição, \"até a contemplação\" precisa aparecer com o mesmo peso visual do R$ 3.727, nunca em rodapé pequeno.",
+      "pend": [],
+      "whatsapp": "Oi! Vi o anúncio da carta de R$ 1 milhão começando em R$ 3.727.",
+      "interesse": "Parcela reduzida, crédito alto e planejamento. Perfil que quer preservar caixa até a contemplação."
     },
     {
-      "id": "w3",
-      "nome": "Ter controle do próprio dinheiro",
-      "desc": "Entender exatamente onde o dinheiro está, por que está ali, e o que ele está fazendo por você."
+      "id": "A03",
+      "kind": "ad",
+      "nome": "Yamaha de imóvel?",
+      "titulo": "Yamaha de imóvel?",
+      "duracao": "20s",
+      "plano": "Integral/Reduzido",
+      "gancho": "YAMAHA… DE IMÓVEL?",
+      "roteiro": [
+        "Sim, Yamaha de imóvel.",
+        "A Yamaha tem administradora de consórcio própria e um grupo de imóveis com carta de até 1 milhão, sem taxa de adesão, sem fundo de reserva e taxa de 15,75% até 30 de outubro.",
+        "Eu sou o Michael, da Avaner, representante autorizado. Me chama no WhatsApp."
+      ],
+      "gancho_alt": "",
+      "periodo": "03/10 a 30/10",
+      "inicio": "2026-10-03",
+      "fim": "2026-10-30",
+      "copy": "Sim, a Yamaha tem consórcio de imóvel. Grupo novo com carta de até R$ 1 milhão, sem taxa de adesão, sem fundo de reserva e taxa de 15,75% até 30/10. Michael Miclos, Avaner, representante autorizado.",
+      "obs": "",
+      "pend": [],
+      "whatsapp": "Oi! Vi que a Yamaha tem consórcio de imóvel.",
+      "interesse": "Curiosidade e confiança na administradora. Pode estar conhecendo consórcio de imóvel agora."
     },
     {
-      "id": "w4",
-      "nome": "Patrimônio que trabalha sozinho",
-      "desc": "Patrimônio que se valoriza e gera resultado sem exigir esforço constante — o oposto de trocar hora por dinheiro."
+      "id": "A04",
+      "kind": "ad",
+      "nome": "Banco x consórcio",
+      "titulo": "Banco x consórcio",
+      "duracao": "25s",
+      "plano": "Integral",
+      "gancho": "R$ [1ª parcela do banco] x R$ 4.139",
+      "roteiro": [
+        "Imóvel de 1 milhão.",
+        "Vou colocar na tela uma simulação real de financiamento de 800 mil feita hoje, com 20 anos de prazo. [falar o valor da 1ª parcela que a simulação der]",
+        "Agora compara com uma carta de 800 mil nesse grupo da Yamaha: parcela integral hoje de 4.139 reais.",
+        "São operações diferentes. No financiamento você compra o imóvel agora. No consórcio você depende de contemplação ou lance.",
+        "Se você consegue planejar a compra, vale colocar as duas contas lado a lado.",
+        "Me chama aqui."
+      ],
+      "gancho_alt": "R$ [valor do banco] no banco x R$ 4.139 no consórcio.",
+      "periodo": "03/10 a 30/10",
+      "inicio": "2026-10-03",
+      "fim": "2026-10-30",
+      "copy": "Imóvel de R$ 1 milhão: financiamento x consórcio, com simulação real feita no dia. Carta de R$ 800 mil com parcela integral de R$ 4.139. São operações diferentes, vale colocar as duas lado a lado. Me chama no WhatsApp.",
+      "obs": "Regra: simulação bancária real do dia, print na tela e as mesmas premissas na fala (R$ 800 mil, 240 meses, SAC).",
+      "pend": [],
+      "whatsapp": "Oi! Vi a comparação entre financiamento e consórcio.",
+      "interesse": "Comparação com financiamento. O ponto principal é quando ele precisa do imóvel."
     },
     {
-      "id": "w5",
-      "nome": "Segurança pra imprevistos",
-      "desc": "Ter uma base que aguenta um susto — de saúde, de mercado, de negócio — sem derrubar tudo."
+      "id": "A05",
+      "kind": "ad",
+      "nome": "Lance com o próprio crédito",
+      "titulo": "Lance com o próprio crédito",
+      "duracao": "25s",
+      "plano": "Integral/Reduzido",
+      "gancho": "Lance de R$ 347 mil · R$ 47 mil do seu bolso",
+      "roteiro": [
+        "Você acha que precisa ter uns 350 mil na conta pra ofertar um lance de 30% numa carta de 1 milhão?",
+        "Nesse grupo, o lance fixo de 30% dá 347 mil, e até 300 mil podem sair da própria carta como lance embutido.",
+        "O que você complementa por fora é uns 47 mil.",
+        "Se for contemplado nessa modalidade, ficam 700 mil de crédito pra usar.",
+        "Contemplação não é garantida.",
+        "Quer entender essa conta? Me chama."
+      ],
+      "gancho_alt": "Lance de R$ 347 mil com R$ 47 mil saindo do seu bolso.",
+      "periodo": "03/10 a 30/10",
+      "inicio": "2026-10-03",
+      "fim": "2026-10-30",
+      "copy": "Lance fixo de 30% numa carta de R$ 1 milhão: R$ 347.250. Até R$ 300 mil podem sair da própria carta como embutido, e você complementa R$ 47.250. Se contemplado nessa modalidade, ficam R$ 700 mil de crédito. Contemplação não é garantida.",
+      "obs": "",
+      "pend": [
+        "P3",
+        "P4"
+      ],
+      "whatsapp": "Oi! Vi o anúncio sobre montar o lance.",
+      "interesse": "Estratégia de lance e de quanto precisa ter pra contemplar."
     },
     {
-      "id": "w6",
-      "nome": "Ser visto como estrategista",
-      "desc": "Sair do grupo de 'mais um endividado' ou 'mais um que só trabalha' pra ser reconhecido como quem pensa à frente."
+      "id": "A06",
+      "kind": "ad",
+      "nome": "Crédito antes do imóvel",
+      "titulo": "Crédito antes do imóvel",
+      "duracao": "25s",
+      "plano": "Reduzido",
+      "gancho": "Estruture o crédito antes de escolher o imóvel",
+      "roteiro": [
+        "Você pensa em aumentar patrimônio nos próximos anos, mas ainda não decidiu qual imóvel comprar?",
+        "Você não precisa ter o imóvel escolhido agora.",
+        "Nesse grupo da Yamaha tem crédito de 700 mil a 1 milhão no plano reduzido.",
+        "Você pode entrar, organizar sua estratégia de lance e uso do crédito, e decidir o imóvel mais pra frente.",
+        "Pode ser compra, renda ou outra estratégia que faça sentido pro seu cenário.",
+        "Se você pensa desse jeito, me chama aqui no WhatsApp."
+      ],
+      "gancho_alt": "Você pode estruturar o crédito antes de escolher o imóvel.",
+      "periodo": "03/10 a 30/10",
+      "inicio": "2026-10-03",
+      "fim": "2026-10-30",
+      "copy": "Você pode estruturar o crédito antes de escolher o imóvel. Grupo de imóveis da Yamaha com cartas de R$ 700 mil a R$ 1 milhão no plano reduzido e taxa de 15,75% até 30/10. Me chama no WhatsApp.",
+      "obs": "",
+      "pend": [],
+      "whatsapp": "Oi! Vi o anúncio sobre estruturar o crédito antes de escolher o imóvel.",
+      "interesse": "Patrimônio e investimento: renda, compra futura, estratégia."
+    },
+    {
+      "id": "A07",
+      "kind": "ad",
+      "nome": "Prazo final",
+      "titulo": "Prazo final",
+      "duracao": "15s",
+      "plano": "Integral/Reduzido",
+      "gancho": "ATÉ SEXTA, 30/10",
+      "roteiro": [
+        "Essa condição de 15,75% acaba sexta, dia 30.",
+        "É o grupo de imóveis da Yamaha, com carta de 500 mil a 1 milhão, sem adesão e sem fundo de reserva.",
+        "Se você estava esperando, é essa semana. Me chama."
+      ],
+      "gancho_alt": "Sexta acaba a taxa de 15,75%.",
+      "periodo": "26/10 a 30/10 (pausar às 18h do dia 30; limite da proposta: 20h)",
+      "inicio": "2026-10-26",
+      "fim": "2026-10-30",
+      "copy": "A taxa de 15,75% do grupo de imóveis da Yamaha acaba sexta, 30/10, às 20h. Carta de R$ 500 mil a R$ 1 milhão, sem adesão e sem fundo de reserva. Me chama no WhatsApp.",
+      "obs": "",
+      "pend": [
+        "P6"
+      ],
+      "whatsapp": "Oi! Vi que a taxa de 15,75% acaba dia 30.",
+      "interesse": "Reta final. Quem já conhece o grupo e quer decidir antes de 30/10."
+    },
+    {
+      "id": "A08",
+      "kind": "ad",
+      "nome": "Grupo novo",
+      "titulo": "Grupo novo",
+      "duracao": "20s",
+      "plano": "Integral/Reduzido",
+      "gancho": "1ª assembleia: 19/11",
+      "roteiro": [
+        "Esse é um grupo novo de imóveis da Yamaha.",
+        "A primeira assembleia é dia 19 de novembro.",
+        "Tem carta de até 1 milhão, e a condição atual de taxa, 15,75%, vai até 30 de outubro.",
+        "Se você tá pensando em entrar num grupo já com uma estratégia de lance montada desde o início, me chama aqui no WhatsApp.",
+        "Eu vejo com você valor da carta, plano e possibilidades de lance."
+      ],
+      "gancho_alt": "Grupo novo. Primeira assembleia dia 19 de novembro.",
+      "periodo": "03/10 a 30/10",
+      "inicio": "2026-10-03",
+      "fim": "2026-10-30",
+      "copy": "Grupo novo de imóveis da Yamaha, primeira assembleia em 19/11. Carta de até R$ 1 milhão e taxa de 15,75% até 30/10. Me chama no WhatsApp que eu te mostro como montar o lance.",
+      "obs": "",
+      "pend": [],
+      "whatsapp": "Oi! Vi o anúncio do grupo novo de imóveis da Yamaha.",
+      "interesse": "Grupo em formação, primeira assembleia em 19/11 e planejamento de lance desde o início."
     }
   ],
-  "mapa_credito": [
+  "entradas": [
     {
-      "tipo": "Cartão de crédito (rotativo)",
-      "taxa": "436,2% ao ano",
-      "fonte": "Banco Central, jul/2026",
-      "nota": "A porta de entrada mais comum pra dívida ruim — chegou a bater 451,5% no ano."
+      "grupo": "Anúncios",
+      "id": "A01",
+      "nome": "Taxa em reais",
+      "mensagem": "Oi! Vi o anúncio da taxa de 15,75% do grupo de imóveis.",
+      "interesse": "Comparação de taxa e custo do consórcio. Provavelmente já pesquisou ou tem proposta de outra administradora."
     },
     {
-      "tipo": "Cheque especial",
-      "taxa": "321,1% ao ano",
-      "fonte": "Banco Central, ago/2026",
-      "nota": "Recorde da série histórica desde 1994 — subiu de 141% pra 321% em poucos meses."
+      "grupo": "Anúncios",
+      "id": "A02",
+      "nome": "Parcela reduzida",
+      "mensagem": "Oi! Vi o anúncio da carta de R$ 1 milhão começando em R$ 3.727.",
+      "interesse": "Parcela reduzida, crédito alto e planejamento. Perfil que quer preservar caixa até a contemplação."
     },
     {
-      "tipo": "Crédito livre — pessoa física",
-      "taxa": "60% ao ano",
-      "fonte": "Banco Central, jul/2026",
-      "nota": "Mesmo caindo no mês, é uma das taxas mais altas do mundo pra crédito de consumo."
+      "grupo": "Anúncios",
+      "id": "A03",
+      "nome": "Yamaha de imóvel?",
+      "mensagem": "Oi! Vi que a Yamaha tem consórcio de imóvel.",
+      "interesse": "Curiosidade e confiança na administradora. Pode estar conhecendo consórcio de imóvel agora."
     },
     {
-      "tipo": "Consignado privado",
-      "taxa": "10% de inadimplência (recorde)",
-      "fonte": "Banco Central / imprensa, 2026",
-      "nota": "Era vendido como 'a dívida mais segura do Brasil' — quebrou recorde de calote."
+      "grupo": "Anúncios",
+      "id": "A04",
+      "nome": "Banco x consórcio",
+      "mensagem": "Oi! Vi a comparação entre financiamento e consórcio.",
+      "interesse": "Comparação com financiamento. O ponto principal é quando ele precisa do imóvel."
     },
     {
-      "tipo": "Financiamento imobiliário",
-      "taxa": "≈11% a 12% ao ano + CET",
-      "fonte": "InvestNews, 2026",
-      "nota": "Taxa 'baixa' na comparação, mas 30 anos de prazo multiplicam o custo total."
+      "grupo": "Anúncios",
+      "id": "A05",
+      "nome": "Lance com o próprio crédito",
+      "mensagem": "Oi! Vi o anúncio sobre montar o lance.",
+      "interesse": "Estratégia de lance e de quanto precisa ter pra contemplar."
     },
     {
-      "tipo": "Consórcio (taxa de administração)",
-      "taxa": "Sem incidência de juro composto",
-      "fonte": "Avaner",
-      "nota": "Não é crédito bancário — outra lógica de custo, sem análise de risco tradicional."
+      "grupo": "Anúncios",
+      "id": "A06",
+      "nome": "Crédito antes do imóvel",
+      "mensagem": "Oi! Vi o anúncio sobre estruturar o crédito antes de escolher o imóvel.",
+      "interesse": "Patrimônio e investimento: renda, compra futura, estratégia."
+    },
+    {
+      "grupo": "Anúncios",
+      "id": "A07",
+      "nome": "Prazo final",
+      "mensagem": "Oi! Vi que a taxa de 15,75% acaba dia 30.",
+      "interesse": "Reta final. Quem já conhece o grupo e quer decidir antes de 30/10."
+    },
+    {
+      "grupo": "Anúncios",
+      "id": "A08",
+      "nome": "Grupo novo",
+      "mensagem": "Oi! Vi o anúncio do grupo novo de imóveis da Yamaha.",
+      "interesse": "Grupo em formação, primeira assembleia em 19/11 e planejamento de lance desde o início."
+    },
+    {
+      "grupo": "Reels turbinados",
+      "id": "V01",
+      "nome": "Chegou o e-mail da Yamaha",
+      "mensagem": "Oi! Vi o vídeo da prorrogação do grupo 11.000.",
+      "interesse": "Quem viu o grupo em setembro e não entrou. Taxa."
+    },
+    {
+      "grupo": "Reels turbinados",
+      "id": "V02",
+      "nome": "Mas eu não quero comprar imóvel agora",
+      "mensagem": "Oi! Vi o vídeo sobre consórcio de imóvel pra usar mais pra frente.",
+      "interesse": "Planejamento futuro: construir, vender um imóvel, preparar lance."
+    },
+    {
+      "grupo": "Reels turbinados",
+      "id": "V03",
+      "nome": "Yamaha de imóvel? (ep. 1)",
+      "mensagem": "Oi! Vi o vídeo da Yamaha de imóvel.",
+      "interesse": "Curiosidade e confiança na administradora."
+    },
+    {
+      "grupo": "Reels turbinados",
+      "id": "V04",
+      "nome": "A conta dos R$ 52.500",
+      "mensagem": "Oi! Vi o vídeo da conta dos R$ 52.500.",
+      "interesse": "Taxa e custo em reais."
+    },
+    {
+      "grupo": "Reels turbinados",
+      "id": "V05",
+      "nome": "O plano reduzido, explicado direito",
+      "mensagem": "Oi! Vi o vídeo do plano reduzido.",
+      "interesse": "Parcela reduzida e preservar caixa até a contemplação."
+    },
+    {
+      "grupo": "Reels turbinados",
+      "id": "V06",
+      "nome": "Você não precisa ter os 350 mil hoje",
+      "mensagem": "Oi! Vi o vídeo sobre o lance.",
+      "interesse": "Lance e quanto precisa ter."
+    },
+    {
+      "grupo": "Reels turbinados",
+      "id": "V08",
+      "nome": "Financiamento x consórcio",
+      "mensagem": "Oi! Vi o vídeo de financiamento x consórcio.",
+      "interesse": "Comparação com financiamento e prazo de compra."
+    },
+    {
+      "grupo": "Reels turbinados",
+      "id": "V12",
+      "nome": "Qual plano é melhor?",
+      "mensagem": "Oi! Quero ver qual plano faz sentido pra mim.",
+      "interesse": "Escolha de plano e valor de carta. Pode já mandar o valor que está pensando."
+    },
+    {
+      "grupo": "Reels turbinados",
+      "id": "V15",
+      "nome": "Última semana",
+      "mensagem": "grupo 11 mil",
+      "interesse": "Reta final da taxa."
+    },
+    {
+      "grupo": "Reels turbinados",
+      "id": "V19",
+      "nome": "Hoje é o último dia",
+      "mensagem": "grupo 11 mil + valor de crédito",
+      "interesse": "Último dia. Quer simulação rápida."
+    },
+    {
+      "grupo": "Orgânico",
+      "id": "BIO",
+      "nome": "Link da bio (todos os Reels)",
+      "mensagem": "Oi! Vim pelo Instagram, grupo 11 mil.",
+      "interesse": "Geral. Vale perguntar qual vídeo ele viu."
     }
   ],
-  "scripts": [
+  "pendencias": [
     {
-      "id": "v1",
-      "pilar": "Alavancagem Patrimonial",
-      "titulo": "Comprar à vista mata seu patrimônio",
-      "gancho": "Comprar à vista mata seu patrimônio. A matemática que ninguém te mostra.",
-      "corpo": "Você economiza 3 anos, junta o dinheiro, compra o imóvel à vista. Parabéns — você acabou de trocar dinheiro líquido por um ativo parado, e ainda gastou a munição toda de uma vez. Enquanto isso, quem alavanca comprou o mesmo imóvel usando uma fração do capital e deixou o resto trabalhando em outra frente.",
-      "virada": "Alavancagem patrimonial é isso: usar o mínimo de capital próprio pra destravar o máximo de ativo. Não é sobre ter menos dinheiro — é sobre fazer o dinheiro fazer mais de uma coisa ao mesmo tempo.",
-      "cta": "Comenta 'PATRIMÔNIO' que eu te mostro a conta comparada.",
-      "como_falar": "Tom professor-provocador — começa didático e vira afiado na frase 'gastou a munição toda de uma vez'. Ênfase em 'ao mesmo tempo' no fechamento.",
-      "como_editar": "Corte a cada 3-4s. Zoom-in na palavra 'munição'. Texto na tela: 'CAPITAL PRÓPRIO x CAPITAL ALAVANCADO' em duas colunas.",
-      "capa": "COMPRAR À VISTA TE DEIXA MAIS POBRE (SIM, ISSO MESMO)",
-      "dor": "Ansiedade com dinheiro parado",
-      "desejo": "Patrimônio que trabalha sozinho",
-      "fonte": ""
+      "id": "P1",
+      "assunto": "Fórmula da parcela depois da contemplação com lance e diluição de 100% nas parcelas",
+      "afeta": [],
+      "status": "PENDENTE",
+      "obs": "Nenhum conteúdo usa esse número. Não usar estimativa como informação oficial até a Yamaha confirmar."
     },
     {
-      "id": "v2",
-      "pilar": "Alavancagem Patrimonial",
-      "titulo": "Como os ricos realmente compram",
-      "gancho": "O empresário rico não compra com o próprio dinheiro. Ele usa o dinheiro dos outros pra crescer patrimônio.",
-      "corpo": "Repara no padrão: quem tem patrimônio de verdade quase nunca paga tudo do próprio bolso. Usa crédito estruturado, mantém o capital próprio livre pra outras oportunidades. Quem não tem patrimônio faz o oposto: junta, gasta tudo, fica sem munição pra próxima jogada.",
-      "virada": "Isso não é sorte nem 'ter mais dinheiro'. É método. E consórcio é uma das formas mais simples de aplicar esse método sem pagar juro escorchante por isso.",
-      "cta": "Segue pra entender como aplicar isso no seu patrimônio.",
-      "como_falar": "Tom de quem revela um padrão que só quem 'tá por dentro' enxerga — confidencial, mas firme. Ênfase em 'padrão' e 'método'.",
-      "como_editar": "Corte a cada 3-4s. Texto reforçando 'PADRÃO' quando citado.",
-      "capa": "COMO OS RICOS REALMENTE COMPRAM (NÃO É COM O PRÓPRIO DINHEIRO)",
-      "dor": "Vergonha de não ter patrimônio",
-      "desejo": "Ser reconhecido como bem-sucedido",
-      "fonte": ""
+      "id": "P2",
+      "assunto": "Documentos que precisam estar enviados/prontos no dia 30/10",
+      "afeta": [
+        "V18",
+        "V19"
+      ],
+      "status": "PENDENTE",
+      "obs": "Confirmar a lista com a Yamaha antes de gravar V18 e V19."
     },
     {
-      "id": "v3",
-      "pilar": "Alavancagem Patrimonial",
-      "titulo": "Consórcio é engenharia, não poupança",
-      "gancho": "Consórcio não é 'economia', é engenharia patrimonial. A diferença que muda tudo.",
-      "corpo": "Quando alguém pensa em consórcio, pensa em 'juntar dinheirinho todo mês'. Errado. Consórcio bem usado é um instrumento de engenharia financeira: você define o ativo, o prazo, a estratégia de lance, e constrói o caminho até lá — não fica só esperando sorteio.",
-      "virada": "A diferença entre quem vê consórcio como poupança e quem vê como engenharia patrimonial é a diferença entre usar 10% do potencial da ferramenta e usar 100%.",
-      "cta": "Manda mensagem se você quer usar os 100%.",
-      "como_falar": "Didático, ritmo de aula rápida. Pausa antes de 'errado' pra dar peso à correção.",
-      "como_editar": "Corte a cada 3-4s. Palavra 'ERRADO' aparece grande na tela.",
-      "capa": "CONSÓRCIO NÃO É POUPANÇA (É ENGENHARIA)",
-      "dor": "Ansiedade com dinheiro parado",
-      "desejo": "Ser visto como estrategista",
-      "fonte": ""
+      "id": "P3",
+      "assunto": "Base do lance fixo",
+      "afeta": [
+        "V06",
+        "A05"
+      ],
+      "status": "CONFIRMADO",
+      "obs": "30% sobre crédito integral + taxa, inclusive no reduzido. Carta de R$ 1 milhão: base R$ 1.157.500, lance R$ 347.250."
     },
     {
-      "id": "v4",
-      "pilar": "Alavancagem Patrimonial",
-      "titulo": "3 formas de multiplicar patrimônio com consórcio",
-      "gancho": "3 formas de usar consórcio pra multiplicar patrimônio (a maioria só usa 1).",
-      "corpo": "Primeiro: comprar o ativo e alugar, gerando renda passiva. Segundo: usar a carta contemplada como capital de giro e girar o dinheiro de volta pro patrimônio. Terceiro: vender a cota contemplada com ágio pra quem tem pressa — sim, isso também é estratégia válida.",
-      "virada": "A maioria das pessoas só conhece a forma número 1. As outras duas é que separam quem usa consórcio como ferramenta de quem só usa como sonho de consumo.",
-      "cta": "Comenta '3 FORMAS' que eu detalho cada uma.",
-      "como_falar": "Ritmo de lista — cada forma em bloco separado, pausa curta entre elas, contando nos dedos se possível.",
-      "como_editar": "Números 1, 2, 3 aparecem na tela em sincronia. Corte a cada 3s.",
-      "capa": "3 FORMAS DE USAR CONSÓRCIO QUE QUASE NINGUÉM USA",
-      "dor": "Vergonha de não ter patrimônio",
-      "desejo": "Ser visto como estrategista",
-      "fonte": ""
+      "id": "P4",
+      "assunto": "Limite do lance embutido",
+      "afeta": [
+        "V06",
+        "A05"
+      ],
+      "status": "CONFIRMADO",
+      "obs": "30% do valor nominal do crédito. Carta de R$ 1 milhão: até R$ 300.000 de embutido, R$ 47.250 de complemento, R$ 700.000 de crédito líquido."
     },
     {
-      "id": "v5",
-      "pilar": "Alavancagem Patrimonial",
-      "titulo": "Por que o empresário que entende de dinheiro não financia",
-      "gancho": "Por que o empresário que entende de dinheiro prefere consórcio a financiamento pra imóvel de investimento.",
-      "corpo": "Financiamento: seu dinheiro fica preso pagando juro composto por 30 anos. Consórcio: seu capital fica livre pra continuar rodando no seu negócio, enquanto a carta de crédito trabalha em paralelo. Financiamento imobiliza duas vezes: o imóvel e o seu caixa.",
-      "virada": "Não é sobre gostar mais de consórcio. É matemática de oportunidade — e quem tem empresa sabe fazer essa conta melhor do que ninguém.",
-      "cta": "Comenta 'INVESTIDOR' que eu te mando essa comparação em número.",
-      "como_falar": "Tom de conversa entre pares — 'de empresário pra empresário'. Ritmo pausado, como quem explica algo técnico com respeito.",
-      "como_editar": "Corte a cada 4s. Comparação visual: 'CAIXA PRESO' x 'CAIXA LIVRE'.",
-      "capa": "O EMPRESÁRIO QUE ENTENDE DE DINHEIRO NÃO FINANCIA",
-      "dor": "Raiva de pagar juro",
-      "desejo": "Ter controle do próprio dinheiro",
-      "fonte": ""
+      "id": "P5",
+      "assunto": "Taxa de 31/10 a 16/11",
+      "afeta": [
+        "V15"
+      ],
+      "status": "CONFIRMADO",
+      "obs": "Volta para 21%."
     },
     {
-      "id": "v6",
-      "pilar": "Alavancagem Patrimonial",
-      "titulo": "Seu dinheiro parado está encolhendo",
-      "gancho": "'Ter dinheiro parado' não é segurança — é patrimônio perdendo valor pra inflação todo mês.",
-      "corpo": "Todo mês que seu dinheiro fica parado numa conta rendendo quase nada, a inflação come um pedaço dele silenciosamente. Você não vê isso na tela do banco, mas seu poder de compra tá encolhendo — uma perda lenta que ninguém sente até fazer a conta.",
-      "virada": "Segurança de verdade é ter esse dinheiro trabalhando numa estratégia que você entende e controla — não parado esperando 'o momento certo', que nunca chega sozinho.",
-      "cta": "Salva esse vídeo. Você vai lembrar dele da próxima vez que pensar 'vou deixar mais um tempo parado'.",
-      "como_falar": "Tom quase de sussurro na primeira frase — como quem conta um segredo desconfortável. Sobe a energia em 'perda lenta que ninguém sente'.",
-      "como_editar": "Número diminuindo lentamente atrás de você (simulando perda de poder de compra). Corte a cada 3-4s.",
-      "capa": "SEU DINHEIRO PARADO ESTÁ ENCOLHENDO (E VOCÊ NÃO VÊ)",
-      "dor": "Ansiedade com dinheiro parado",
-      "desejo": "Ter controle do próprio dinheiro",
-      "fonte": ""
+      "id": "P6",
+      "assunto": "Horário limite em 30/10",
+      "afeta": [
+        "V18",
+        "V19",
+        "V20",
+        "A07"
+      ],
+      "status": "CONFIRMADO",
+      "obs": "Proposta até 20h. Não incentivar deixar pra última hora."
     },
     {
-      "id": "v7",
-      "pilar": "Alavancagem Patrimonial",
-      "titulo": "Como 1 carta vira 3 imóveis",
-      "gancho": "Como uma carta de crédito contemplada vira 3 imóveis (não é mágica, é estratégia).",
-      "corpo": "Contemplou. Comprou o primeiro imóvel. Valorizou. Vendeu ou refinanciou uma parte, usou o lucro pra entrar em outra cota. Contemplou de novo. Repete o processo. Isso não é sorte de mercado — é giro patrimonial calculado.",
-      "virada": "A pergunta não é 'dá pra fazer isso'. É 'por que tão pouca gente faz isso de propósito, em vez de tropeçar nisso por acaso'.",
-      "cta": "Manda mensagem se você quer montar esse giro de propósito.",
-      "como_falar": "Ritmo de storytelling curto — narra como sequência de eventos, quase cinematográfico, acelerando levemente a cada 'contemplou de novo'.",
-      "como_editar": "Números '1 imóvel → 2 → 3' aparecem em sequência conforme narra. Corte a cada 3s.",
-      "capa": "COMO 1 CARTA VIRA 3 IMÓVEIS (PASSO A PASSO)",
-      "dor": "Vergonha de não ter patrimônio",
-      "desejo": "Patrimônio que trabalha sozinho",
-      "fonte": ""
+      "id": "P7",
+      "assunto": "Transferência de cota contemplada",
+      "afeta": [
+        "V13"
+      ],
+      "status": "CONFIRMADO",
+      "obs": "Comprador: renda de 3x a parcela, sem restrição, análise da administradora. A Avaner pode comprar a carta como possibilidade, sem recompra, preço ou ágio garantidos."
     },
     {
-      "id": "v8",
-      "pilar": "Alavancagem Patrimonial",
-      "titulo": "O silêncio de quem fatura alto e não tem patrimônio",
-      "gancho": "Se você fatura alto mas seu patrimônio não cresce na mesma proporção, o problema não é a sua renda.",
-      "corpo": "Eu vejo isso toda semana: empresário faturando 6 dígitos por mês, vida aparentemente ok, e o patrimônio pessoal dele parado no mesmo lugar há anos. O problema nunca foi quanto entra. É que ninguém separou 'dinheiro que sustenta o mês' de 'dinheiro que constrói o futuro'.",
-      "virada": "Renda alta sem estratégia patrimonial é só um salário mais bonito. Patrimônio não se constrói por acidente — se constrói com decisão.",
-      "cta": "Comenta 'DIAGNÓSTICO' se isso te descreve.",
-      "como_falar": "Tom confrontador mas respeitoso — de quem 'te vê' de verdade. Pausa antes de 'o problema nunca foi quanto entra' pra deixar a frase reverberar.",
-      "como_editar": "Pouco texto na tela — deixa a fala carregar o peso emocional. Corte mais lento, a cada 4s.",
-      "capa": "FATURAR ALTO E NÃO TER PATRIMÔNIO: O SILÊNCIO QUE NINGUÉM FALA",
-      "dor": "Vergonha de não ter patrimônio",
-      "desejo": "Ser reconhecido como bem-sucedido",
-      "fonte": ""
-    },
-    {
-      "id": "v9",
-      "pilar": "Alavancagem Patrimonial",
-      "titulo": "Ter bens x ter patrimônio estruturado",
-      "gancho": "A diferença entre 'ter bens' e 'ter patrimônio estruturado' — e por que isso muda o seu jogo.",
-      "corpo": "Ter bens é ter um carro, uma casa, umas reservas espalhadas sem conexão entre si. Patrimônio estruturado é quando cada ativo tem uma função dentro de um plano maior — um gera renda, outro valoriza, outro dá liquidez rápida se precisar.",
-      "virada": "Duas pessoas com o mesmo total em bens podem estar em situações completamente diferentes — uma vulnerável, outra blindada. A diferença é só: teve arquitetura ou não teve.",
-      "cta": "Segue se você quer entender como montar essa arquitetura.",
-      "como_falar": "Tom de arquiteto explicando planta — pausado, técnico mas acessível. Ênfase na palavra 'arquitetura', repetida de propósito.",
-      "como_editar": "Ícones dos ativos conectados por linhas na tela. Corte a cada 4s.",
-      "capa": "TER BENS x TER PATRIMÔNIO (NÃO É A MESMA COISA)",
-      "dor": "Medo do imprevisto",
-      "desejo": "Segurança pra imprevistos",
-      "fonte": ""
-    },
-    {
-      "id": "v10",
-      "pilar": "Alavancagem Patrimonial",
-      "titulo": "A carta contemplada como munição de negociação",
-      "gancho": "Consórcio contemplado vira ferramenta de negociação. Poucos sabem usar isso a seu favor.",
-      "corpo": "Carta de crédito contemplada é dinheiro à vista na mão. E dinheiro à vista, numa negociação, tem poder que financiamento aprovado não tem — o vendedor sabe que fecha na hora, sem análise de banco, sem risco de cair no meio do caminho. Isso vale desconto — muitas vezes mais desconto do que qualquer economia de juro.",
-      "virada": "Pouca gente negocia usando isso como munição. A maioria só pensa 'vou comprar o imóvel' — esquece que também tá segurando uma carta de barganha.",
-      "cta": "Comenta 'NEGOCIAÇÃO' que eu te mostro como usar isso na prática.",
-      "como_falar": "Tom de quem ensina uma jogada esperta — cúmplice, quase sorrindo, ritmo ágil.",
-      "como_editar": "Corte a cada 3s. Palavra 'MUNIÇÃO' em destaque na tela.",
-      "capa": "A CARTA CONTEMPLADA É MAIS PODEROSA DO QUE VOCÊ PENSA",
-      "dor": "Raiva de pagar juro",
-      "desejo": "Ter controle do próprio dinheiro",
-      "fonte": ""
-    },
-    {
-      "id": "v11",
-      "pilar": "Alavancagem Patrimonial",
-      "titulo": "Eu não vendo consórcio",
-      "gancho": "Eu não vendo consórcio. Eu ensino alavancagem patrimonial — consórcio é só uma das ferramentas.",
-      "corpo": "Se você me segue só esperando eu empurrar cota, vai se decepcionar. O que eu realmente faço é ensinar como pensar patrimônio de um jeito diferente — consórcio é uma ferramenta dentro disso, não o ponto principal. O ponto principal é você sair sabendo alavancar, com ou sem mim.",
-      "virada": "É por isso que esse perfil existe: pra virar sua referência em alavancagem, não só mais uma conta vendendo produto financeiro.",
-      "cta": "Segue pra virar referência em alavancagem comigo.",
-      "como_falar": "Vídeo de manifesto — tom mais sério e pessoal que os outros do pilar, olhando reto pra câmera do início ao fim, sem cortar o olhar.",
-      "como_editar": "Plano mais fixo, menos cortes (a cada 5s) — reforça seriedade do manifesto. Sem efeitos sonoros.",
-      "capa": "EU NÃO VENDO CONSÓRCIO (a frase é a atração — sem imagem chamativa)",
-      "dor": "Desconfiança de vendedor disfarçado de consultor",
-      "desejo": "Ser visto como estrategista",
-      "fonte": ""
-    },
-    {
-      "id": "v12",
-      "pilar": "Alavancagem Financeira",
-      "titulo": "Juro desde o dia 1 x taxa de administração",
-      "gancho": "Financiamento: você paga juro desde o dia 1. Consórcio: você paga taxa de administração, sem juro. A conta, ao vivo.",
-      "corpo": "No financiamento, seu primeiro boleto já vem com juro embutido — dia 1, mês 1, você paga juro sobre um valor que ainda nem foi todo liberado pra você. No consórcio, o que você paga é taxa de administração, dividida ao longo do prazo, sem incidência de juro composto sobre saldo devedor.",
-      "virada": "Quando alguém compara os dois só olhando a parcela mensal, tá comparando errado. A comparação certa é o custo total do dinheiro ao longo do tempo.",
-      "cta": "Comenta 'CONTA' que eu faço essa comparação com números reais.",
-      "como_falar": "Tom didático, comparativo — desenha um quadro mental de dois lados.",
-      "como_editar": "Split screen: 'FINANCIAMENTO' de um lado, 'CONSÓRCIO' do outro. Corte a cada 3-4s.",
-      "capa": "JURO x TAXA DE ADMINISTRAÇÃO (NÃO É A MESMA COISA)",
-      "dor": "Raiva de pagar juro",
-      "desejo": "Ter controle do próprio dinheiro",
-      "fonte": ""
-    },
-    {
-      "id": "v13",
-      "pilar": "Alavancagem Financeira",
-      "titulo": "Você vai pagar quase o dobro",
-      "gancho": "R$ 500 mil financiados a 11,7% ao ano por 30 anos: você paga quase o dobro do imóvel. O número na tela.",
-      "corpo": "R$ 500 mil financiados a 11,7% ao ano, 30 anos: no fim, você paga perto do dobro do valor do imóvel — quase R$ 500 mil só de juro, empilhado em cima do valor original. Fiz essa conta com uma tabela real de amortização, não é estimativa solta.",
-      "virada": "Ninguém mostra esse número na hora de assinar o contrato — só a parcela mensal, que parece 'cabe no orçamento'. O total é que conta a história real.",
-      "cta": "Salva esse vídeo — na próxima simulação, pede o total pago no fim, não só a parcela.",
-      "como_falar": "Ritmo de contador revelando um resultado — pausa antes de dizer o valor total, quase teatral.",
-      "como_editar": "Número 'R$500 mil → quase R$1 milhão' crescendo na tela tipo contador. Corte a cada 3-4s.",
-      "capa": "VOCÊ VAI PAGAR QUASE O DOBRO (E NINGUÉM TE MOSTRA)",
-      "dor": "Raiva de pagar juro",
-      "desejo": "Ter controle do próprio dinheiro",
-      "fonte": "Taxa Itaú (11,70% a.a., fim de 2025) — InvestNews, 2026"
-    },
-    {
-      "id": "v14",
-      "pilar": "Alavancagem Financeira",
-      "titulo": "Não saber quando não é não ter controle",
-      "gancho": "'Mas no consórcio eu não sei quando sou contemplado' — verdade. E tem estratégia pra reduzir essa incerteza.",
-      "corpo": "É verdade, no consórcio você não escolhe o mês exato da contemplação — depende de sorteio ou lance. Mas existe diferença entre 'não saber quando' e 'não ter controle nenhum'. Com lance planejado, histórico do grupo e estratégia de entrada, dá pra reduzir bastante essa margem.",
-      "virada": "A incerteza existe, mas é administrável — bem diferente da incerteza de 'será que meu financiamento vai ser aprovado', que você não controla nem um pouco.",
-      "cta": "Comenta 'CONTEMPLAÇÃO' que eu te explico como planejar isso.",
-      "como_falar": "Tom de quem valida a objeção antes de rebater — começa concordando, depois vira com autoridade calma.",
-      "como_editar": "Corte a cada 4s. Texto: 'INCERTEZA ADMINISTRÁVEL x INCERTEZA TOTAL'.",
-      "capa": "NÃO SEI QUANDO SOU CONTEMPLADO — E AGORA?",
-      "dor": "Medo de ser negado",
-      "desejo": "Ter controle do próprio dinheiro",
-      "fonte": ""
-    },
-    {
-      "id": "v15",
-      "pilar": "Alavancagem Financeira",
-      "titulo": "O banco não é seu consultor",
-      "gancho": "O banco quer que você financie. Eu quero que você entenda por que isso nem sempre é a melhor conta.",
-      "corpo": "O banco não é seu vilão, mas também não é seu consultor — ele quer vender financiamento, porque é assim que lucra com você durante 30 anos. Ninguém do outro lado do balcão vai te falar sobre a alternativa que reduz o quanto você paga a ele.",
-      "virada": "Isso não é teoria da conspiração, é modelo de negócio. Cabe a você ter alguém do seu lado da mesa, não do lado do banco.",
-      "cta": "Segue pra ter alguém do seu lado nessa decisão.",
-      "como_falar": "Tom mais grave, quase confidencial, como quem revela um conflito de interesse óbvio que ninguém nomeia. Sem sorriso.",
-      "como_editar": "Corte a cada 4s. Pouco texto na tela.",
-      "capa": "O BANCO NÃO É SEU CONSULTOR (É SÓ SEU CREDOR)",
-      "dor": "Desconfiança de vendedor disfarçado de consultor",
-      "desejo": "Não depender de banco",
-      "fonte": ""
-    },
-    {
-      "id": "v16",
-      "pilar": "Alavancagem Financeira",
-      "titulo": "A jogada do lance embutido",
-      "gancho": "Lance embutido: a jogada que acelera contemplação sem tirar dinheiro extra do seu bolso.",
-      "corpo": "Lance embutido é usar uma parte do próprio crédito da carta como lance — sem precisar desembolsar dinheiro extra. Isso reduz o valor final da carta, mas acelera muito a chance de contemplação. Uma das estratégias mais usadas por quem quer sair do grupo mais rápido sem comprometer o caixa.",
-      "virada": "A maioria nem sabe que essa opção existe — acha que só tem lance livre, que exige dinheiro à parte. Saber a diferença muda completamente sua estratégia de entrada.",
-      "cta": "Manda mensagem se você quer entender qual lance faz sentido pro seu caso.",
-      "como_falar": "Tom didático-técnico, mas acessível — como explicar um atalho que pouca gente conhece.",
-      "como_editar": "Diagrama 'crédito total menos lance embutido igual carta final' na tela. Corte a cada 4s.",
-      "capa": "A JOGADA QUE ACELERA SUA CONTEMPLAÇÃO (SEM GASTAR MAIS)",
-      "dor": "Medo de ser negado",
-      "desejo": "Ser visto como estrategista",
-      "fonte": ""
-    },
-    {
-      "id": "v17",
-      "pilar": "Alavancagem Financeira",
-      "titulo": "Sua entrada não volta",
-      "gancho": "Pagar entrada de financiamento é jogar dinheiro fora. Aqui está o que fazer no lugar.",
-      "corpo": "Entrada de financiamento não volta. Não é investimento, não gera patrimônio próprio até você quitar — é o preço de entrada pro banco aceitar te emprestar o resto. Se você tem R$ 100 mil pra dar de entrada, esse dinheiro pode estar fazendo outra coisa por você enquanto o consórcio caminha em paralelo.",
-      "virada": "Não é sobre nunca usar capital próprio. É sobre não jogar ele fora numa entrada que só serve pra reduzir o risco do banco, não o seu.",
-      "cta": "Comenta 'ENTRADA' que eu te mostro uma forma diferente de usar esse capital.",
-      "como_falar": "Tom assertivo, quase indignado em 'não volta' — repete a palavra com ênfase.",
-      "como_editar": "Efeito visual de dinheiro 'sumindo' na palavra 'não volta'. Corte a cada 3-4s.",
-      "capa": "SUA ENTRADA DE FINANCIAMENTO NÃO VOLTA (E NINGUÉM FALA ISSO)",
-      "dor": "Raiva de pagar juro",
-      "desejo": "Ter controle do próprio dinheiro",
-      "fonte": ""
-    },
-    {
-      "id": "v18",
-      "pilar": "Alavancagem Financeira",
-      "titulo": "Simulei R$1 milhão nos dois cenários",
-      "gancho": "Consórcio de R$ 1 milhão x financiamento de R$ 1 milhão: comparei os dois cenários. O resultado não é o que parece.",
-      "corpo": "Simulei os dois: consórcio de R$ 1 milhão e financiamento de R$ 1 milhão, mesmo prazo aproximado. O financiamento parece mais rápido no papel — mas quando você soma o total pago, incluindo juro composto, seguro obrigatório e todas as taxas, o consórcio sai na frente, e não por pouco.",
-      "virada": "O resultado surpreende quem só olha 'quanto tempo demora'. Quando você olha 'quanto custa no total', a história muda.",
-      "cta": "Manda mensagem que eu te envio essa simulação completa.",
-      "como_falar": "Tom de quem revela um resultado de pesquisa própria — confiante, quase surpreso ele mesmo, pra gerar curiosidade genuína.",
-      "como_editar": "Duas colunas com os totais finais aparecendo lado a lado no fim. Corte a cada 4s.",
-      "capa": "SIMULEI R$1MI EM CONSÓRCIO x FINANCIAMENTO. O RESULTADO SURPREENDE",
-      "dor": "Medo de ser negado",
-      "desejo": "Ser visto como estrategista",
-      "fonte": ""
-    },
-    {
-      "id": "v19",
-      "pilar": "Alavancagem Financeira",
-      "titulo": "O número que o banco não mostra",
-      "gancho": "O CET — Custo Efetivo Total — é o número que o banco não mostra de cara no financiamento. Eu mostro.",
-      "corpo": "CET é o Custo Efetivo Total — junta juro, seguro obrigatório, taxas administrativas, tudo. É legalmente obrigatório informar, mas quase ninguém pergunta, e o vendedor não vai oferecer isso espontaneamente. A parcela que parece boa esconde um CET bem mais alto do que a taxa de juro anunciada.",
-      "virada": "Se você nunca pediu o CET do seu financiamento, provavelmente não sabe o custo real do que assinou.",
-      "cta": "Comenta 'CET' que eu te explico como pedir e interpretar esse número.",
-      "como_falar": "Tom de denúncia calma — expõe uma informação escondida à vista de todos. Ênfase em 'obrigatório informar' e 'ninguém pergunta'.",
-      "como_editar": "Sigla 'CET' aparece grande, depois se decompõe nos componentes (juro + seguro + taxas). Corte a cada 4s.",
-      "capa": "O NÚMERO QUE O BANCO NÃO MOSTRA DE CARA",
-      "dor": "Medo de ser negado",
-      "desejo": "Ter controle do próprio dinheiro",
-      "fonte": ""
-    },
-    {
-      "id": "v20",
-      "pilar": "Alavancagem Financeira",
-      "titulo": "Se só tem um plano, você não tem plano",
-      "gancho": "Se seu único plano pra comprar imóvel é financiamento, você está jogando o jogo do banco — não o seu.",
-      "corpo": "Se financiamento é seu único plano, você tá 100% dependente da aprovação de um comitê de crédito que nunca vai conhecer, seguindo regras que mudam a cada trimestre — como já vimos. Ter só esse plano é apostar seu patrimônio inteiro na boa vontade de terceiros.",
-      "virada": "Ter alternativa não é 'ser contra financiamento'. É não colocar todo seu plano de vida na mão de uma aprovação que não depende de você.",
-      "cta": "Segue se você quer ter mais de uma rota até seu objetivo.",
-      "como_falar": "Tom assertivo, ritmo de discurso — fala com convicção, como posicionamento de marca, não dica solta.",
-      "como_editar": "Corte a cada 3-4s.",
-      "capa": "SE SÓ TEM UM PLANO, VOCÊ NÃO TEM PLANO",
-      "dor": "Medo de ficar pra trás",
-      "desejo": "Não depender de banco",
-      "fonte": ""
-    },
-    {
-      "id": "v21",
-      "pilar": "Alavancagem Financeira",
-      "titulo": "Consórcio pesado não é o consórcio popular",
-      "gancho": "Consórcio pesado (alto valor de crédito) muda completamente a lógica pra quem já tem patrimônio. Não é o consórcio 'popular'.",
-      "corpo": "Consórcio de valor alto muda a lógica completamente: grupos menores, prazos mais curtos, gente com mais poder de lance disputando junto — outro jogo, outra estratégia, comparado ao consórcio de entrada que todo mundo conhece.",
-      "virada": "O estigma do 'consórcio de fusca' fez muita gente com dinheiro ignorar uma ferramenta que, bem usada em valor alto, é puramente estratégica.",
-      "cta": "Comenta 'AVANER' se você quer entender essa lógica em valor alto.",
-      "como_falar": "Tom mais sofisticado/executivo que os outros vídeos do pilar — reforça o reposicionamento pro público de alto padrão.",
-      "como_editar": "Corte a cada 4s.",
-      "capa": "CONSÓRCIO PESADO NÃO É O MESMO JOGO DO CONSÓRCIO POPULAR",
-      "dor": "Vergonha de não ter patrimônio",
-      "desejo": "Ser reconhecido como bem-sucedido",
-      "fonte": ""
-    },
-    {
-      "id": "v22",
-      "pilar": "Alavancagem Financeira",
-      "titulo": "Juntar dinheiro x alavancar patrimônio",
-      "gancho": "Todo mundo fala em 'juntar dinheiro'. Ninguém fala em 'alavancar patrimônio'. A diferença é o motivo de uns crescerem e outros não.",
-      "corpo": "'Juntar dinheiro' é reativo — você espera acumular pra então agir. 'Alavancar patrimônio' é ativo — você usa estrutura, crédito e estratégia pra colocar o patrimônio pra crescer antes de ter tudo guardado. A diferença de resultado entre essas mentalidades, em 10 anos, é enorme.",
-      "virada": "Quem cresce de verdade não é quem junta mais rápido. É quem entendeu que alavancagem bem usada multiplica tempo, não só dinheiro.",
-      "cta": "Comenta 'ALAVANCAGEM' — esse é o conceito que eu quero que você domine nos próximos 30 dias.",
-      "como_falar": "O vídeo mais 'manifesto conceitual' do pilar — fala mais devagar, cada frase com peso de definição.",
-      "como_editar": "As duas expressões aparecem lado a lado na tela, uma esmaecida, outra em destaque. Corte a cada 4s.",
-      "capa": "JUNTAR DINHEIRO x ALAVANCAR PATRIMÔNIO",
-      "dor": "Medo de ficar pra trás",
-      "desejo": "Ser reconhecido como bem-sucedido",
-      "fonte": ""
-    },
-    {
-      "id": "v23",
-      "pilar": "Alavancagem de Capital",
-      "titulo": "Sua carta pode virar caixa",
-      "gancho": "Carta de crédito contemplada não precisa virar imóvel na hora. Pode virar capital de giro pro seu negócio.",
-      "corpo": "Você contemplou, mas o momento de comprar o imóvel não é agora — talvez o mercado não esteja no ponto certo, talvez você tenha uma oportunidade melhor no próprio negócio. Poucas pessoas sabem que dá pra usar essa carta como capital de giro, mantendo a flexibilidade de decidir o melhor destino depois.",
-      "virada": "Tratar a carta contemplada como 'só serve pra comprar o bem original' é limitar uma ferramenta que pode resolver o problema mais urgente que você tem agora: caixa.",
-      "cta": "Manda mensagem se seu negócio precisa de fôlego de caixa.",
-      "como_falar": "Tom prático, de consultor de negócios — direto ao ponto, como quem já resolveu esse problema pra outros clientes.",
-      "como_editar": "Corte a cada 4s.",
-      "capa": "SUA CARTA CONTEMPLADA PODE VIRAR CAIXA (NÃO SÓ IMÓVEL)",
-      "dor": "Medo do imprevisto",
-      "desejo": "Segurança pra imprevistos",
-      "fonte": ""
-    },
-    {
-      "id": "v24",
-      "pilar": "Alavancagem de Capital",
-      "titulo": "Onde os empresários acham que termina o consórcio",
-      "gancho": "Empresário usa consórcio pra destravar capital sem comprometer o caixa da empresa. Veja como.",
-      "corpo": "Empresa cresce, precisa de capital pra girar — máquina nova, estoque, contratação. A saída óbvia é tirar do caixa ou pegar empréstimo caro. A saída menos óbvia é usar uma carta de consórcio contemplada, que não carrega o juro de um empréstimo bancário tradicional.",
-      "virada": "É uma fonte de capital que a maioria dos empresários nem coloca na equação, porque associa consórcio só a 'comprar bem pessoal'.",
-      "cta": "Comenta 'CAPITAL' se você quer entender como estruturar isso na sua empresa.",
-      "como_falar": "Tom empresarial, de par pra par — vocabulário de negócio (caixa, giro, capital), ritmo firme.",
-      "como_editar": "Corte a cada 4s.",
-      "capa": "ONDE OS EMPRESÁRIOS ACHAM QUE TERMINA O CONSÓRCIO (E NÃO TERMINA)",
-      "dor": "Medo do imprevisto",
-      "desejo": "Não depender de banco",
-      "fonte": ""
-    },
-    {
-      "id": "v25",
-      "pilar": "Alavancagem de Capital",
-      "titulo": "Contemplou. E agora, o que fazer primeiro?",
-      "gancho": "Contemplação: quitar dívida cara, investir no negócio ou comprar ativo. A ordem certa importa — e muito.",
-      "corpo": "Quitar uma dívida cara com juro alto. Investir num equipamento que aumenta sua capacidade de faturar. Comprar um ativo que valoriza. As três são usos válidos da contemplação — mas a ordem em que você resolve isso muda o resultado final. Quitar dívida cara quase sempre vem primeiro.",
-      "virada": "Muita gente pula direto pro 'comprar algo novo' sem primeiro estancar o que já tá custando caro. Isso é entusiasmo, não estratégia.",
-      "cta": "Salva esse vídeo — a ordem certa aqui muda o resultado final.",
-      "como_falar": "Tom de consultor organizando prioridades — enumera com pausa clara entre cada opção, marca bem a palavra 'ordem'.",
-      "como_editar": "As três opções aparecem numeradas, depois se reordenam na tela. Corte a cada 4s.",
-      "capa": "CONTEMPLOU? E AGORA, O QUE FAZER PRIMEIRO?",
-      "dor": "Raiva de pagar juro",
-      "desejo": "Ter controle do próprio dinheiro",
-      "fonte": ""
-    },
-    {
-      "id": "v26",
-      "pilar": "Alavancagem de Capital",
-      "titulo": "Nem sempre o plano original ainda faz sentido",
-      "gancho": "O erro de tratar toda contemplação como 'compra de imóvel'. Às vezes o retorno está em outro lugar.",
-      "corpo": "Nem toda contemplação precisa virar 'compra do bem original'. Às vezes o retorno de usar aquele capital em outro lugar — quitando dívida, capitalizando um investimento que já existe, resolvendo um gargalo do negócio — é muito maior do que comprar o imóvel ou o carro que motivou a entrada no grupo.",
-      "virada": "Trate a contemplação como capital disponível pra melhor decisão do momento, não como um compromisso automático com o plano original.",
-      "cta": "Comenta 'DIAGNÓSTICO' se você tá perto de contemplar e não sabe qual caminho seguir.",
-      "como_falar": "Tom reflexivo, de quem convida a repensar um automatismo — ritmo mais lento, pausas propositais.",
-      "como_editar": "Corte a cada 4-5s (mais lento, tom reflexivo).",
-      "capa": "CONTEMPLOU? NEM SEMPRE O PLANO ORIGINAL AINDA FAZ SENTIDO",
-      "dor": "Medo do imprevisto",
-      "desejo": "Ser visto como estrategista",
-      "fonte": ""
-    },
-    {
-      "id": "v27",
-      "pilar": "Alavancagem de Capital",
-      "titulo": "Seu equipamento não precisa travar seu caixa",
-      "gancho": "Consórcio de veículo pesado ou equipamento: como girar o caixa da empresa sem tirar capital de giro.",
-      "corpo": "Máquina, caminhão, equipamento pesado — tudo isso entra no radar de consórcio, e poucos empresários sabem disso. Em vez de financiar o equipamento e travar o caixa em juro, a empresa usa a carta contemplada pra adquirir sem comprometer o capital de giro do mês a mês.",
-      "virada": "Isso muda completamente a capacidade de crescer sem sufocar a operação — o problema número 1 de empresa que expande rápido demais sem fôlego financeiro.",
-      "cta": "Manda mensagem se seu negócio depende de máquina ou frota.",
-      "como_falar": "Tom técnico-empresarial, direto — fala como quem entende de operação, não só de finanças.",
-      "como_editar": "Corte a cada 4s.",
-      "capa": "SEU EQUIPAMENTO NÃO PRECISA TRAVAR SEU CAIXA",
-      "dor": "Medo do imprevisto",
-      "desejo": "Segurança pra imprevistos",
-      "fonte": ""
-    },
-    {
-      "id": "v28",
-      "pilar": "Alavancagem de Capital",
-      "titulo": "Você usa só 20% do que o consórcio oferece",
-      "gancho": "Diversificar patrimônio com consórcio: imóvel, veículo e serviços trabalhando juntos pela sua estratégia.",
-      "corpo": "Imóvel valoriza devagar e dá segurança. Veículo e equipamento geram capacidade produtiva. Serviços (viagem, eventos, até funerário) resolvem necessidades pontuais sem tirar dinheiro do orçamento do mês. Usar consórcio só pra imóvel é usar 20% do que a ferramenta oferece.",
-      "virada": "Diversificar dentro do próprio consórcio — não só fora dele — é uma camada de estratégia que quase ninguém explora.",
-      "cta": "Segue pra ver como isso se aplica no seu caso.",
-      "como_falar": "Ritmo de lista rápida no início (imóvel / veículo / serviços), desacelera na virada pra dar peso à conclusão.",
-      "como_editar": "Ícones dos três tipos de ativo lado a lado. Corte a cada 3-4s.",
-      "capa": "VOCÊ TÁ USANDO SÓ 20% DO QUE O CONSÓRCIO OFERECE",
-      "dor": "Vergonha de não ter patrimônio",
-      "desejo": "Patrimônio que trabalha sozinho",
-      "fonte": ""
-    },
-    {
-      "id": "v29",
-      "pilar": "Alavancagem de Capital",
-      "titulo": "Se sua empresa quebra, o que sobra?",
-      "gancho": "Se seu dinheiro está 100% dentro do negócio, um imprevisto quebra tudo. Aqui está onde o consórcio entra.",
-      "corpo": "Se 100% do seu patrimônio pessoal e empresarial tá dentro do mesmo negócio, qualquer imprevisto sério — um processo, uma crise de mercado, um problema de saúde — pode derrubar tudo de uma vez, porque não existe nada fora daquela cesta.",
-      "virada": "Consórcio é uma das formas mais simples de começar a construir patrimônio fora do risco direto da operação — sem precisar de grandes somas de uma vez.",
-      "cta": "Comenta 'PROTEÇÃO' se seu patrimônio hoje é só a empresa.",
-      "como_falar": "Tom sério, quase de alerta amigável — fala como quem já viu esse cenário dar errado com alguém.",
-      "como_editar": "Corte a cada 4-5s.",
-      "capa": "SE SUA EMPRESA QUEBRA, O QUE SOBRA?",
-      "dor": "Medo do imprevisto",
-      "desejo": "Segurança pra imprevistos",
-      "fonte": ""
-    },
-    {
-      "id": "v30",
-      "pilar": "Alavancagem de Capital",
-      "titulo": "O que a faculdade não ensina sobre ativos",
-      "gancho": "A carta de crédito é um ativo — e ativo bem usado gera outro ativo. A lógica que ninguém ensina na faculdade.",
-      "corpo": "Ativo bem usado não fica parado sendo só 'uma coisa que você tem'. Ele gera renda, serve de garantia, abre porta pra outro negócio, valoriza. A carta de crédito contemplada, tratada como ativo, pode ser o início de uma cadeia — não o fim de um processo de compra.",
-      "virada": "Ninguém ensina isso na escola nem na faculdade. Ensina a trabalhar, ganhar, gastar. Não ensina a fazer o dinheiro trabalhar em cadeia.",
-      "cta": "Segue esse perfil — é basicamente isso que eu ensino aqui.",
-      "como_falar": "Tom de fechamento de pilar, quase filosófico mas ainda direto — última frase com peso de assinatura.",
-      "como_editar": "Corte a cada 4s.",
-      "capa": "O QUE A FACULDADE NÃO ENSINA SOBRE ATIVOS",
-      "dor": "Culpa por não ter começado antes",
-      "desejo": "Patrimônio que trabalha sozinho",
-      "fonte": ""
-    },
-    {
-      "id": "v31",
-      "pilar": "Projeções",
-      "titulo": "Selic 13,75%. Ainda assim é caro.",
-      "gancho": "O Boletim Focus acabou de confirmar: Selic a 13,75% em dezembro. Guarda essa previsão comigo.",
-      "corpo": "Hoje a Selic tá em 14%. A projeção mais recente do mercado — Boletim Focus, divulgado no fim de agosto — é que ela termine o ano em 13,75%. Só mais um cortezinho. Faz a conta: 13,75% ao ano ainda é uma das maiores taxas de juro do mundo, muito acima da inflação projetada de 5,01%.",
-      "virada": "Isso muda a estratégia de quem tá esperando 'condição ideal' pra decidir. Se mesmo na projeção mais otimista o juro continua de dois dígitos, esperar não é estratégia — é adiamento.",
-      "cta": "Comenta 'PREVISÃO' que eu te mando a projeção completa e explico como eu monto plano pra esse cenário.",
-      "como_falar": "Tom de analista — confiante, sem sensacionalismo. Fala '13,75%' devagar e claro, quase soletrando. Ênfase forte em 'ainda'.",
-      "como_editar": "Gráfico de linha caindo de 14% pra 13,75% ao citar a projeção. Corte a cada 3-4s. Trilha neutra, informativa.",
-      "capa": "13,75% EM DEZEMBRO (E AINDA ASSIM...)",
-      "dor": "Medo de ficar pra trás",
-      "desejo": "Ter controle do próprio dinheiro",
-      "fonte": "Boletim Focus, Banco Central, 31/ago/2026"
-    },
-    {
-      "id": "v32",
-      "pilar": "Projeções",
-      "titulo": "O segmento que mais cresce no consórcio",
-      "gancho": "O consórcio de imóveis vai crescer 25% esse ano. O maior crescimento de qualquer segmento do setor. Eu vou te explicar o porquê.",
-      "corpo": "A ABAC — associação que reúne as administradoras de consórcio do Brasil — projeta 25% de crescimento pro segmento de imóveis em 2026. Compara: veículos leves crescem 6%, motos 7%. Imóvel dispara na frente de todo mundo.",
-      "virada": "Quando um segmento cresce 4 vezes mais rápido que os outros do mesmo setor, isso é sinal de mercado, não modinha. Quem entra agora entra no início dessa curva.",
-      "cta": "Manda mensagem se você quer entender onde essa curva te encaixa.",
-      "como_falar": "Energia mais alta, tom de quem conta uma boa notícia — o vídeo mais otimista do calendário. Ênfase forte no '25%' e na comparação com 6% e 7%.",
-      "como_editar": "Gráfico de barras comparando os segmentos (imóveis disparado). Corte a cada 3s. Efeito sonoro positivo — único do calendário.",
-      "capa": "O SEGMENTO QUE MAIS CRESCE NO CONSÓRCIO EM 2026",
-      "dor": "Medo de ficar pra trás",
-      "desejo": "Não depender de banco",
-      "fonte": "ABAC, projeções por segmento 2026"
-    },
-    {
-      "id": "v33",
-      "pilar": "Projeções",
-      "titulo": "Minha previsão pros próximos 12 meses",
-      "gancho": "Minha previsão pros próximos 12 meses: quem não migrar a estratégia agora vai pagar essa conta lá na frente.",
-      "corpo": "Eu junto os três dados que te mostrei essa semana: Selic ainda de dois dígitos até dezembro, mesmo na melhor projeção. Bancos restringindo crédito a partir de agora. E o segmento de imóveis no consórcio crescendo 4 vezes mais rápido que o resto do setor.",
-      "virada": "Minha aposta é clara: quem esperar 'o momento ideal' vai continuar esperando, porque esse momento, nesse cenário, não existe.",
-      "cta": "Se você quer montar essa estratégia comigo, comenta 'FUTURO'.",
-      "como_falar": "O vídeo de maior autoridade do calendário — postura ereta, olhar fixo, tom de convicção. Pausa de 1s antes de 'minha aposta é clara'.",
-      "como_editar": "Mosaico rápido (1-2s cada) reaproveitando elementos dos vídeos-chave da semana antes de voltar pro seu rosto. Trilha cinemática, de peso.",
-      "capa": "MINHA PREVISÃO PROS PRÓXIMOS 12 MESES",
-      "dor": "Culpa por não ter começado antes",
-      "desejo": "Ser visto como estrategista",
-      "fonte": "Síntese de Anbima + ABAC + Banco Central"
-    },
-    {
-      "id": "v34",
-      "pilar": "Projeções",
-      "titulo": "O cenário pros próximos 12 meses",
-      "gancho": "PIB crescendo só 1,92%, dólar a R$ 5,20, Selic ainda em dois dígitos até dezembro. Eu vou te mostrar o que isso significa pra quem tem patrimônio.",
-      "corpo": "Três números que saíram juntos no último Boletim Focus: economia crescendo pouco (1,92% de PIB), dólar estável mas caro (R$ 5,20) e juro ainda alto (13,75% projetado pro fim do ano). Junta os três e você tem um cenário de crescimento fraco com dinheiro caro.",
-      "virada": "Nesse tipo de cenário, quem tem patrimônio parado perde em dois lados ao mesmo tempo: rende pouco e o crédito pra crescer continua caro.",
-      "cta": "Salva esse vídeo — ele resume o cenário que vai definir os próximos 12 meses pra quem tem dinheiro ou negócio.",
-      "como_falar": "Tom analítico, professor. Fala os três números do gancho num ritmo quase de contagem, pausa curta entre cada um.",
-      "como_editar": "Os três números aparecem em sequência, 1s de destaque cada. Corte a cada 3-4s. Sem alarme sonoro.",
-      "capa": "O CENÁRIO PROS PRÓXIMOS 12 MESES",
-      "dor": "Ansiedade com dinheiro parado",
-      "desejo": "Segurança pra imprevistos",
-      "fonte": "Boletim Focus, Banco Central, 31/ago/2026"
-    },
-    {
-      "id": "v35",
-      "pilar": "Código Vermelho",
-      "titulo": "Os bancos vão fechar a porta",
-      "gancho": "Isso aqui não é opinião minha, não. É o próprio Banco Central falando: o crédito imobiliário vai ficar mais difícil a partir de agora.",
-      "corpo": "Semana passada saiu a pesquisa trimestral do BC com os sete maiores bancos do país. Pro terceiro trimestre desse ano, vão apertar a mão na hora de aprovar financiamento. O motivo declarado: menos tolerância a risco e mais medo de inadimplência. Já apertou. Tá no papel.",
-      "virada": "Enquanto isso, quem já tá dentro de um consórcio nem sente esse aperto. Não tem análise de banco, não tem 'comitê de risco' decidindo se você merece ou não.",
-      "cta": "Se você tava enrolando pra decidir, o relógio andou. Comenta 'BANCO' que eu te mando o resumo dessa pesquisa.",
-      "como_falar": "Ritmo firme, sem sorrir. Encara a câmera na primeira frase sem piscar de leve. No corpo, acelera na enumeração dos motivos — fala cortada. Na virada, desacelera, quase confidencial.",
-      "como_editar": "Corte seco a cada 3-4s. Print real da manchete da pesquisa do BC por 2s. Legenda queimada em 'BANCO CENTRAL' e 'JÁ APERTOU'. Efeito de impacto seco. Trilha de tensão, drone grave.",
-      "capa": "OS BANCOS ACABARAM DE CONFIRMAR: JÁ APERTOU",
-      "dor": "Medo de ser negado",
-      "desejo": "Não depender de banco",
-      "fonte": "Pesquisa Trimestral de Condições de Crédito, Banco Central (via Portas), 2026"
-    },
-    {
-      "id": "v36",
-      "pilar": "Código Vermelho",
-      "titulo": "7,8%. O maior número desde 2011",
-      "gancho": "7,8%. Guarda esse número.",
-      "corpo": "É a taxa de inadimplência de pessoa física no crédito livre. Maior desde março de 2011. Não é gente desempregada — o desemprego tá em 5,3%, uma das menores taxas dos últimos anos. É gente empregada, endividada mesmo assim.",
-      "virada": "O banco não pune só quem atrasou. Ele desconfia de todo mundo. Analisa mais, aprova menos, cobra mais caro de quem passa. O consórcio não entra nessa lógica.",
-      "cta": "Manda mensagem que eu te explico como funciona a análise pra entrar num consórcio — spoiler: não tem nada a ver com isso.",
-      "como_falar": "Abre em silêncio — meio segundo olhando pra câmera antes de falar. Diz '7,8%. Guarda esse número' pausado, quase soletrando.",
-      "como_editar": "Primeiro frame: '7,8%' gigante, tela toda, 1,5-2s, ANTES do rosto. Corte a cada 3s dali em diante. Efeito de alerta/glitch quando o número aparece.",
-      "capa": "7,8% — A MAIOR INADIMPLÊNCIA DESDE 2011",
-      "dor": "Medo do imprevisto",
-      "desejo": "Segurança pra imprevistos",
-      "fonte": "Exame / Banco Central / Serasa Experian, 2026"
-    },
-    {
-      "id": "v37",
-      "pilar": "Código Vermelho",
-      "titulo": "A dívida que era 'segura' quebrou",
-      "gancho": "Se até o consignado tá quebrando, presta atenção no que eu vou falar.",
-      "corpo": "Consignado sempre foi vendido como 'o crédito mais seguro do Brasil'. Pois esse ano a inadimplência do consignado privado bateu 10%. Um patamar que nunca tinha acontecido. A dívida 'mais segura do país' nunca deu tanto calote quanto agora.",
-      "virada": "Isso muda o humor de qualquer banco. Se até o produto mais seguro deles quebrou recorde, imagina o financiamento de 30 anos que você tá pedindo.",
-      "cta": "Comenta 'CONSIGNADO' que eu te mostro a diferença na prática.",
-      "como_falar": "Tom grave do início ao fim — o mais 'notícia de jornal' do bloco. Fala mais devagar. Repete a frase final com 1s de pausa antes.",
-      "como_editar": "Corte mais espaçado, a cada 4-5s. Texto '10% — RECORDE INÉDITO' fixo por 3s. Overlay levemente mais escuro.",
-      "capa": "A DÍVIDA MAIS SEGURA DO BRASIL QUEBROU",
-      "dor": "Medo de ser negado",
-      "desejo": "Segurança pra imprevistos",
-      "fonte": "Exame — recorde de inadimplência no Brasil, 2026"
-    },
-    {
-      "id": "v38",
-      "pilar": "Código Vermelho",
-      "titulo": "Cortaram a Selic 5 vezes. Ainda tá cara.",
-      "gancho": "O Copom já cortou a Selic 5 vezes esse ano. E mesmo assim ela continua cara. Deixa eu te mostrar a conta.",
-      "corpo": "Começou o ano em 15%. Hoje tá em 14%. O mercado projeta 13,75% pra dezembro, no Boletim Focus mais recente. Cinco cortes seguidos e o juro ainda tá em dois dígitos — uma das maiores taxas de juro real do mundo.",
-      "virada": "Enquanto você espera 'o juro ficar bom', o preço do imóvel não para de subir e cada mês de aluguel é dinheiro que não volta. Esperar juro cair também tem custo.",
-      "cta": "Se você tá nessa de 'esperar cair', comenta 'SELIC' que eu te mostro a outra conta.",
-      "como_falar": "Tom de analista, sem sensacionalismo. Fala os números devagar — '15, 14,75, 14,50, 14,25, 14' — quase contando nos dedos. Acelera em 'cada mês de aluguel é dinheiro que não volta'.",
-      "como_editar": "Sem corte nos primeiros 3s — plano fixo (quebra o padrão de jump-cut). Gráfico de escada descendo (15% → 14%) ao citar os cortes. Depois, corte a cada 3s.",
-      "capa": "5 CORTES DEPOIS, A SELIC AINDA TÁ EM DOIS DÍGITOS",
-      "dor": "Culpa por não ter começado antes",
-      "desejo": "Ter controle do próprio dinheiro",
-      "fonte": "Banco Central (Copom) / Boletim Focus, ago/2026"
-    },
-    {
-      "id": "v39",
-      "pilar": "Código Vermelho",
-      "titulo": "6 motivos que reprovam seu financiamento",
-      "gancho": "Você pode fazer tudo certo e mesmo assim ter o financiamento negado. Óh os motivos.",
-      "corpo": "Primeiro: CPF com qualquer restrição, mesmo pequena. Segundo: score baixo. Terceiro: parcela acima de 30% da renda bruta, isso é lei. Quarto: IR atrasado. Quinto: outro financiamento em aberto. Sexto: documento faltando ou vencido.",
-      "virada": "Reparou que metade dessas travas é sobre 'quanto você já deve', não sobre 'quanto você tem'? O consórcio não te avalia pela mesma régua.",
-      "cta": "Se você já foi negado ou tem medo de ser, comenta 'REPROVADO' que eu te explico a diferença.",
-      "como_falar": "Ritmo de metralhadora — cada motivo em menos de 2s, quase sem respirar entre eles.",
-      "como_editar": "Corte SECO a cada motivo (1,5-2s). Número gigante (1 a 6) em sincronia com a fala. Efeito 'tick' a cada número. Trilha com batida constante.",
-      "capa": "6 MOTIVOS QUE REPROVAM SEU FINANCIAMENTO",
-      "dor": "Medo de ser negado",
-      "desejo": "Ter controle do próprio dinheiro",
-      "fonte": "Direcional Engenharia — causas de reprovação de financiamento imobiliário, 2026"
-    },
-    {
-      "id": "v40",
-      "pilar": "Código Vermelho",
-      "titulo": "Empresário: seu CNPJ pode estar te atrapalhando",
-      "gancho": "Se você é sócio de empresa, esse vídeo é sobre um risco que você talvez nem saiba que corre.",
-      "corpo": "O Brasil bateu recorde: mais de 9,1 milhões de empresas inadimplentes, R$ 232,9 bilhões em dívida atrasada. E o banco, quando analisa seu financiamento pessoa física, olha também o que você é como sócio, como avalista, como fiador.",
-      "virada": "Separar patrimônio pessoal de risco de empresa não é luxo, é sobrevivência. O consórcio é uma das formas de construir patrimônio fora do raio de análise do seu CNPJ.",
-      "cta": "Comenta 'EMPRESÁRIO' que eu te explico como estruturar isso direito.",
-      "como_falar": "Tom mais baixo e próximo, como quem conta algo em confiança — mais devagar que a média do bloco.",
-      "como_editar": "Corte mais espaçado (4-5s). Texto só nos números-chave (9,1 milhões / R$232,9 bi).",
-      "capa": "SE VOCÊ É SÓCIO, PRESTA ATENÇÃO",
-      "dor": "Medo do imprevisto",
-      "desejo": "Segurança pra imprevistos",
-      "fonte": "Serasa Experian — inadimplência de empresas no Brasil, jun/2026 (recorde da série)"
-    },
-    {
-      "id": "v41",
-      "pilar": "Código Vermelho",
-      "titulo": "82% do PIB. Isso te afeta direto",
-      "gancho": "Um número que parece distante mas bate direto no seu bolso: 82%.",
-      "corpo": "É quanto a dívida pública do Brasil representa do PIB. O FMI projeta que isso pode chegar a 100% até 2027. Quando o país deve muito, o governo paga juro alto pra continuar tomando emprestado. E o juro do governo é a régua do seu juro.",
-      "virada": "Quando alguém te diz 'o juro vai cair rapidinho', pergunta: baseado em quê? Por isso eu falo pra montar estratégia que não depende do humor da Selic.",
-      "cta": "Salva esse vídeo. Você vai precisar lembrar dessa conta na próxima vez que alguém disser 'os juros vão cair mês que vem'.",
-      "como_falar": "Abre com o número solto, sem contexto, pausado. Vira pra tom de 'professor' na explicação do mecanismo.",
-      "como_editar": "Número '82%' na tela antes de qualquer fala. Gráfico simples de linha subindo. Zoom-in na palavra 'régua'.",
-      "capa": "82% DO PIB — E ISSO CAI NO SEU JURO",
-      "dor": "Medo de ficar pra trás",
-      "desejo": "Ter controle do próprio dinheiro",
-      "fonte": "Exame / FMI — dívida pública brasileira, 2026"
-    },
-    {
-      "id": "v42",
-      "pilar": "Código Vermelho",
-      "titulo": "Quem passa também paga mais caro",
-      "gancho": "Deixa eu te contar a parte que ninguém fala sobre 'crédito mais restrito'.",
-      "corpo": "Quando o banco aperta a aprovação, ele não fica mais barato pra quem consegue passar. Fica mais caro. Menos gente aprovada, mais risco concentrado em quem sobra, juro sobe pra compensar.",
-      "virada": "É o oposto da lógica do consórcio. Lá, quanto mais gente no grupo, mais diluído fica o custo — a lógica é inversa à do banco.",
-      "cta": "Comenta 'LÓGICA' que eu te explico como funciona a formação do grupo.",
-      "como_falar": "Tom de 'revelação' — fala como quem conta um segredo do mercado. Ênfase forte em 'mais caro', repetida.",
-      "como_editar": "Duas setas comparando banco x consórcio. Efeito sonoro de dinheiro na palavra 'mais caro'. Corte a cada 3s.",
-      "capa": "O QUE NINGUÉM TE CONTA SOBRE CRÉDITO RESTRITO",
-      "dor": "Raiva de pagar juro",
-      "desejo": "Ter controle do próprio dinheiro",
-      "fonte": "Pesquisa Trimestral de Condições de Crédito, Banco Central, 2026"
-    },
-    {
-      "id": "v43",
-      "pilar": "Código Vermelho",
-      "titulo": "A tempestade perfeita do crédito em 2026",
-      "gancho": "Junta três coisas: Selic ainda em dois dígitos, inadimplência recorde e banco fechando a porta. Isso tem nome: tempestade perfeita.",
-      "corpo": "Não é exagero meu. É a soma exata do que te mostrei essa semana: juro que não cai rápido, brasileiro batendo recorde de atraso, e banco anunciando que vai apertar ainda mais o crédito a partir de agora.",
-      "virada": "Quem entende disso não fica esperando a tempestade passar. Constrói uma rota que não depende do tempo lá fora.",
-      "cta": "Se você quer entender como ficar de fora dessa conta, comenta 'ESTRATÉGIA'.",
-      "como_falar": "Energia mais alta que os anteriores — clímax do bloco. Enumera as três coisas subindo o tom a cada uma.",
-      "como_editar": "Reaproveita ~2s de cada vídeo-chave da semana em sequência tipo 'trailer'. Trilha sobe em intensidade e cai na virada.",
-      "capa": "TEMPESTADE PERFEITA",
-      "dor": "Medo de ficar pra trás",
-      "desejo": "Ser visto como estrategista",
-      "fonte": "Recap dos vídeos anteriores do bloco"
-    },
-    {
-      "id": "v44",
-      "pilar": "Código Vermelho",
-      "titulo": "Eu queria não precisar gravar esse vídeo",
-      "gancho": "Eu queria não ter que gravar esse vídeo. Mas os números não deixam eu ficar quieto.",
-      "corpo": "Essa semana eu vi: 7,8% de inadimplência, maior em mais de dez anos. Consignado batendo 10%. Banco Central confirmando que os bancos vão apertar o crédito a partir de agora. Isso é o cenário real que vai bater na sua porta.",
-      "virada": "Eu não tô aqui pra assustar por assustar. Tô aqui porque tem gente decidindo do jeito antigo, sem saber que o jeito antigo ficou mais caro e mais difícil.",
-      "cta": "Se ninguém te explicou isso ainda, comenta 'PRIMEIRA VEZ' que eu te mando por onde começar.",
-      "como_falar": "O tom mais pessoal e vulnerável do bloco — fala devagar no gancho, quase hesitante, genuíno.",
-      "como_editar": "Quebra o padrão de jump-cut nos primeiros 3-4s (plano mais longo). Sem efeito sonoro de impacto — o silêncio é o efeito.",
-      "capa": "EU QUERIA NÃO TER QUE GRAVAR ESSE VÍDEO",
-      "dor": "Culpa por não ter começado antes",
-      "desejo": "Não depender de banco",
-      "fonte": "Recap dos dados do bloco"
-    },
-    {
-      "id": "v45",
-      "pilar": "Código Vermelho",
-      "titulo": "436% ao ano. Isso não é erro de digitação",
-      "gancho": "436% ao ano. Deixa eu repetir devagar: quatrocentos e trinta e seis por cento. Isso não é erro de digitação.",
-      "corpo": "É a taxa de juro do rotativo do cartão de crédito no Brasil em julho — dado do Banco Central. No pico do ano ela bateu 451%. Se você deixa uma fatura cair no rotativo, em poucos meses a dívida dobra, tripla, e continua crescendo enquanto você só consegue pagar o mínimo.",
-      "virada": "O cartão de crédito é a porta de entrada mais comum pra dívida ruim no Brasil — o oposto do que eu falo aqui: em vez de fazer o dinheiro trabalhar pra você, o rotativo faz você trabalhar pro banco, a uma taxa que nenhum investimento paga de volta.",
-      "cta": "Comenta 'ROTATIVO' se você quer entender como sair dessa armadilha de vez.",
-      "como_falar": "Abre soletrando o número devagar, quase incrédulo. Tom de alerta grave do início ao fim.",
-      "como_editar": "Número '436%' em fonte gigante, tela toda, antes do rosto aparecer. Efeito sonoro de alarme forte — o mais dramático do bloco. Trilha de tensão crescente.",
-      "capa": "436% AO ANO — A TAXA MAIS ALTA DO CRÉDITO BRASILEIRO",
-      "dor": "Raiva de pagar juro",
-      "desejo": "Não depender de banco",
-      "fonte": "Banco Central — juro do rotativo do cartão de crédito, jul/2026"
-    },
-    {
-      "id": "v46",
-      "pilar": "Código Vermelho",
-      "titulo": "O cheque especial acabou de bater recorde histórico",
-      "gancho": "Aquele cheque especial que 'só usei uns dias pra salvar o mês' — sabe quanto custa agora? 321% ao ano. Recorde de todos os tempos.",
-      "corpo": "Dado oficial do Banco Central, agosto de 2026: taxa média do cheque especial em 321,1% ao ano — o maior número da série histórica, iniciada em 1994. Subiu de 141% pra 321% em poucos meses. As pessoas usam achando que é só um 'empurrãozinho' de curto prazo, mas a taxa importa muito mais do que por quantos dias você usa.",
-      "virada": "Cheque especial deveria ser emergência de última hora, não hábito de fim de mês. Quem tem patrimônio estruturado — mesmo pequeno — tem uma reserva que substitui esse 'empurrãozinho' sem pagar 321% de juro por isso.",
-      "cta": "Manda mensagem se você quer montar uma reserva que te tira dessa dependência.",
-      "como_falar": "Tom mais próximo, quase de conversa entre amigos sobre um hábito comum, até o número — aí o tom vira alerta seco.",
-      "como_editar": "Número '321% ao ano — RECORDE' com destaque na tela ao ser citado. Corte a cada 3-4s. Efeito de 'novo recorde' tipo placar.",
-      "capa": "O CHEQUE ESPECIAL ACABOU DE BATER RECORDE HISTÓRICO",
-      "dor": "Medo do imprevisto",
-      "desejo": "Segurança pra imprevistos",
-      "fonte": "Banco Central — taxa de juros do cheque especial, ago/2026 (recorde desde 1994)"
-    },
-    {
-      "id": "v47",
-      "pilar": "Mitos & Educação",
-      "titulo": "Consórcio não é rifa",
-      "gancho": "'Consórcio é rifa' — o mito que ainda mata bons negócios. O que é sorteio de verdade, eu explico.",
-      "corpo": "Rifa é sorte pura, sem controle, sem estratégia, sem previsibilidade nenhuma. Consórcio tem sorteio como UM dos caminhos de contemplação, mas também tem lance — que é decisão, não sorte. Chamar consórcio de rifa é ignorar metade do mecanismo.",
-      "virada": "Esse mito sozinho já afastou milhares de pessoas de uma ferramenta patrimonial só por causa de uma comparação errada e preguiçosa.",
-      "cta": "Comenta 'MITO' se você também já pensou assim.",
-      "como_falar": "Tom professoral-corretivo, mas sem soar arrogante — corrige com paciência, não com deboche.",
-      "como_editar": "Palavra 'RIFA' riscada na tela ao ser desmentida. Corte a cada 3-4s.",
-      "capa": "CONSÓRCIO NÃO É RIFA (E A DIFERENÇA IMPORTA)",
-      "dor": "Desconfiança de vendedor disfarçado de consultor",
-      "desejo": "Ter controle do próprio dinheiro",
-      "fonte": ""
-    },
-    {
-      "id": "v48",
-      "pilar": "Mitos & Educação",
-      "titulo": "Você não precisa de tempo de sobra",
-      "gancho": "'Só é bom pra quem tem tempo de sobra' — errado. Te mostro pra quem realmente é estratégico.",
-      "corpo": "Esse mito nasceu de quem só usa o consórcio de forma passiva, sem lance, sem estratégia — aí sim, precisa de 'tempo de sobra' esperando o sorteio. Quem usa com lance planejado e propósito claro contempla muito mais rápido.",
-      "virada": "Não é o consórcio que exige tempo de sobra. É a falta de estratégia que faz parecer assim.",
-      "cta": "Manda mensagem se você quer uma estratégia que não depende de 'ter tempo de sobra'.",
-      "como_falar": "Tom de correção rápida — desmonta o mito em poucas frases, ritmo ágil.",
-      "como_editar": "Corte a cada 3s.",
-      "capa": "VOCÊ NÃO PRECISA DE TEMPO DE SOBRA PRA ISSO",
-      "dor": "Medo de ficar pra trás",
-      "desejo": "Ter controle do próprio dinheiro",
-      "fonte": ""
-    },
-    {
-      "id": "v49",
-      "pilar": "Mitos & Educação",
-      "titulo": "Financiamento é mais seguro? Depende de qual segurança",
-      "gancho": "'Financiamento é mais seguro' — depende do que você chama de segurança. Vamos aos números.",
-      "corpo": "Segurança de financiamento é 'eu sei exatamente quando recebo o bem'. Mas isso não é grátis — você paga essa certeza com juro alto por 30 anos. Segurança de verdade também é 'eu sei exatamente quanto vou pagar no total', e nisso o consórcio costuma ganhar disparado.",
-      "virada": "As duas modalidades vendem 'segurança' — só que segurança de tipos diferentes. Escolher sem saber qual segurança você realmente precisa é escolher no escuro.",
-      "cta": "Comenta 'SEGURANÇA' que eu detalho essa diferença.",
-      "como_falar": "Tom equilibrado, quase de mediador — reconhece o ponto do outro lado antes de argumentar.",
-      "como_editar": "Corte a cada 4s.",
-      "capa": "FINANCIAMENTO É MAIS SEGURO? DEPENDE DE QUAL SEGURANÇA",
-      "dor": "Medo de ser negado",
-      "desejo": "Ter controle do próprio dinheiro",
-      "fonte": ""
-    },
-    {
-      "id": "v50",
-      "pilar": "Mitos & Educação",
-      "titulo": "Pra que serve a taxa de administração",
-      "gancho": "A taxa de administração não é 'imposto disfarçado'. É isso que ela realmente cobre.",
-      "corpo": "A taxa de administração remunera a empresa que organiza o grupo, faz a gestão financeira, garante o pagamento das contemplações e responde legalmente por tudo isso perante o Banco Central. Não é lucro escondido — é o custo de operação de um sistema regulado.",
-      "virada": "Chamar isso de 'imposto disfarçado' é desconhecer que todo serviço financeiro tem um custo — a pergunta certa é 'a taxa é justa pelo que entrega'.",
-      "cta": "Comenta 'TAXA' se você quer entender como calcular se vale a pena no seu caso.",
-      "como_falar": "Tom explicativo, tranquilo — desarma a desconfiança com informação, sem se colocar na defensiva.",
-      "como_editar": "Corte a cada 4s.",
-      "capa": "PRA QUE SERVE A TAXA DE ADMINISTRAÇÃO (DE VERDADE)",
-      "dor": "Desconfiança de vendedor disfarçado de consultor",
-      "desejo": "Ter controle do próprio dinheiro",
-      "fonte": ""
-    },
-    {
-      "id": "v51",
-      "pilar": "Mitos & Educação",
-      "titulo": "3 formas de não depender só de sorte",
-      "gancho": "'Contemplação é sorte' — 3 estratégias que aumentam sua chance sem depender de sorte.",
-      "corpo": "Primeira: lance livre, oferecendo mais do que o mínimo pra furar a fila. Segunda: lance embutido, usando parte do próprio crédito. Terceira: escolher grupos com histórico de contemplação mais rápida antes de entrar.",
-      "virada": "Sorte é não fazer nada e esperar. Estratégia é usar as ferramentas que já existem dentro do próprio consórcio pra encurtar o caminho.",
-      "cta": "Salva esse vídeo — as 3 estratégias estão aqui.",
-      "como_falar": "Ritmo de lista numerada, pausa clara entre cada estratégia.",
-      "como_editar": "Números 1, 2, 3 na tela em sincronia. Corte a cada 3s.",
-      "capa": "3 FORMAS DE NÃO DEPENDER SÓ DE SORTE",
-      "dor": "Medo de ser negado",
-      "desejo": "Ser visto como estrategista",
-      "fonte": ""
-    },
-    {
-      "id": "v52",
-      "pilar": "Mitos & Educação",
-      "titulo": "Ser bom no seu negócio não te torna bom com seu dinheiro",
-      "gancho": "Por que empresário bem-sucedido às vezes toma a pior decisão financeira da vida por achar que já sabe tudo.",
-      "corpo": "Empresário de sucesso é ótimo em gerir o próprio negócio — e acha, por reflexo, que essa competência se traduz automaticamente em decisão financeira pessoal. Às vezes se traduz. Às vezes é exatamente o excesso de confiança que leva a comprar errado, financiar errado.",
-      "virada": "Ser bom no seu negócio não te torna automaticamente especialista em patrimônio pessoal. São competências diferentes, e admitir isso é o primeiro passo pra não errar caro.",
-      "cta": "Comenta 'DIAGNÓSTICO' se você nunca parou pra separar essas duas coisas.",
-      "como_falar": "Tom respeitoso mas confrontador — fala 'de igual pra igual' com o público empresário, sem soar condescendente.",
-      "como_editar": "Corte a cada 4s.",
-      "capa": "SER BOM NO SEU NEGÓCIO NÃO TE TORNA BOM COM SEU DINHEIRO",
-      "dor": "Vergonha de não ter patrimônio",
-      "desejo": "Ser visto como estrategista",
-      "fonte": ""
-    },
-    {
-      "id": "v53",
-      "pilar": "Mitos & Educação",
-      "titulo": "56% acham que sabem. Só 28% sabem de verdade",
-      "gancho": "56% dos brasileiros dizem que conhecem consórcio. Só 28% entendem de verdade. Você está em qual grupo?",
-      "corpo": "Pesquisa da ABAC: 56% das pessoas dizem que conhecem consórcio. Só 28% dizem entender bem de verdade. Praticamente metade de quem 'acha que sabe' na verdade só ouviu falar por cima — e toma decisão, ou evita decisão, com base nesse conhecimento raso.",
-      "virada": "Metade de quem descarta consórcio como opção nunca entendeu de verdade como funciona. Isso é dinheiro deixado na mesa por falta de informação.",
-      "cta": "Comenta 'ENTENDO' — vamos ver em qual grupo você realmente está.",
-      "como_falar": "Tom direto, quase confrontador na pergunta final — desafia o espectador a se avaliar honestamente.",
-      "como_editar": "Números '56%' e '28%' lado a lado, o segundo bem menor visualmente. Corte a cada 4s.",
-      "capa": "56% ACHAM QUE SABEM. SÓ 28% SABEM DE VERDADE",
-      "dor": "Desconfiança de vendedor disfarçado de consultor",
-      "desejo": "Ser visto como estrategista",
-      "fonte": "ABAC via Editorial Brasil, 2026"
-    },
-    {
-      "id": "v54",
-      "pilar": "Mitos & Educação",
-      "titulo": "Consórcio pesado x consórcio popular",
-      "gancho": "O maior mito sobre consórcio pesado (alto valor) é achar que ele funciona igual ao consórcio popular.",
-      "corpo": "Consórcio popular tem grupos grandes, prazos longos, disputa alta por sorteio. Consórcio pesado — valores altos — tem grupos menores, dinâmica diferente, e costuma favorecer quem entende de lance estratégico. Tratar os dois como 'a mesma coisa só que com mais zero' é o erro.",
-      "virada": "É outro produto, outro público, outra estratégia. Confundir os dois é a razão de tanta gente bem-sucedida nunca ter considerado consórcio a sério.",
-      "cta": "Manda mensagem se você quer entender a lógica em valor alto.",
-      "como_falar": "Tom mais refinado, reforçando o reposicionamento pro público de alto padrão.",
-      "como_editar": "Corte a cada 4s.",
-      "capa": "CONSÓRCIO PESADO x CONSÓRCIO POPULAR: NÃO CONFUNDA",
-      "dor": "Vergonha de não ter patrimônio",
-      "desejo": "Ser reconhecido como bem-sucedido",
-      "fonte": ""
-    },
-    {
-      "id": "v55",
-      "pilar": "Cases & Prova Social",
-      "titulo": "Sala comercial sem mexer no caixa",
-      "gancho": "Como um cliente usou a carta contemplada pra comprar a sala comercial sem tirar dinheiro do caixa da empresa.",
-      "corpo": "[PREENCHER COM CASE REAL] Contexto do cliente (anônimo se preferir): o que ele buscava, qual objetivo. Como a carta contemplada resolveu isso sem mexer no caixa da empresa. Resultado prático — sala comprada, caixa intacto.",
-      "virada": "[PREENCHER COM CASE REAL] O que mudou pro cliente depois — na operação, no patrimônio ou na tranquilidade dele.",
-      "cta": "Comenta 'CASE' se você quer um resultado parecido.",
-      "como_falar": "Tom de narrativa real — mais pausado que os vídeos conceituais, com detalhes concretos que só uma história verdadeira tem.",
-      "como_editar": "Se possível, intercalar com um clipe curto do próprio cliente (com autorização). Corte a cada 4-5s (ritmo de depoimento, não de alerta).",
-      "capa": "[Foto/print real do resultado, com autorização] + frase de efeito",
-      "dor": "Medo do imprevisto",
-      "desejo": "Segurança pra imprevistos",
-      "fonte": "Case real — grave só com autorização explícita do cliente"
-    },
-    {
-      "id": "v56",
-      "pilar": "Cases & Prova Social",
-      "titulo": "De dinheiro parado a novo patamar",
-      "gancho": "Cliente trocou 'dinheiro parado' por uma carta de crédito e mudou o patamar do patrimônio em poucos anos.",
-      "corpo": "[PREENCHER COM CASE REAL] Situação inicial real do cliente — quanto tempo o dinheiro ficava parado, o que ele achava que era 'seguro'. A decisão de migrar pra consórcio. O que aconteceu depois, com números reais e autorizados.",
-      "virada": "[PREENCHER COM CASE REAL] A lição que esse case ensina pra quem assiste e se identifica com a situação inicial.",
-      "cta": "Manda mensagem se sua situação parece com essa.",
-      "como_falar": "Tom inspirador mas sóbrio — sem exagero de resultado, sem prometer o que não é garantido.",
-      "como_editar": "Corte a cada 4-5s. Números reais (autorizados) na tela.",
-      "capa": "[Resultado do case em destaque, com autorização]",
-      "dor": "Ansiedade com dinheiro parado",
-      "desejo": "Patrimônio que trabalha sozinho",
-      "fonte": "Case real — grave só com autorização explícita do cliente"
-    },
-    {
-      "id": "v57",
-      "pilar": "Cases & Prova Social",
-      "titulo": "Bastidor de uma contemplação",
-      "gancho": "Bastidor de uma contemplação: da assinatura até o uso da carta de crédito.",
-      "corpo": "[PREENCHER COM CASE REAL] Documentar o processo real, do início ao fim, com um cliente disposto a aparecer. Mostrar os momentos-chave: entrada no grupo, estratégia de lance usada, momento da contemplação, uso da carta.",
-      "virada": "[PREENCHER COM CASE REAL] O que esse bastidor desmistifica sobre o processo pra quem nunca viu de perto.",
-      "cta": "Salva esse vídeo se você quer entender o processo passo a passo.",
-      "como_falar": "Tom documental — menos roteirizado, mais 'observacional', deixando a autenticidade do momento real conduzir.",
-      "como_editar": "Filmagem mais crua/menos editada (reforça autenticidade). Cortes mais longos (5-6s).",
-      "capa": "[Momento real mais marcante do processo, com autorização]",
-      "dor": "Medo de ser negado",
-      "desejo": "Ter controle do próprio dinheiro",
-      "fonte": "Case real — grave só com autorização explícita do cliente"
-    },
-    {
-      "id": "v58",
-      "pilar": "CTA Direto",
-      "titulo": "Fatura acima de R$30 mil e não tem estratégia?",
-      "gancho": "Se você fatura acima de R$ 30 mil por mês e ainda não tem estratégia patrimonial, esse vídeo é pra você.",
-      "corpo": "Eu trabalho com empresários e profissionais que já faturam bem, mas que nunca pararam pra estruturar o que fazer com esse dinheiro além de pagar as contas do mês e deixar sobrar o resto numa conta qualquer. Se isso é você, esse é o momento de mudar isso.",
-      "virada": "Não é sobre ganhar mais. É sobre estruturar o que você já ganha.",
-      "cta": "Comenta 'DIAGNÓSTICO' que eu te chamo pra uma conversa.",
-      "como_falar": "Tom Ruler — direto, sem rodeio, energia de convite assertivo, não de súplica.",
-      "como_editar": "Corte a cada 3-4s.",
-      "capa": "FATURA ACIMA DE R$30 MIL E NÃO TEM ESTRATÉGIA? ESSE É PRA VOCÊ",
-      "dor": "Vergonha de não ter patrimônio",
-      "desejo": "Ser visto como estrategista",
-      "fonte": ""
-    },
-    {
-      "id": "v59",
-      "pilar": "CTA Direto",
-      "titulo": "Chega de dinheiro parado perdendo pra inflação",
-      "gancho": "Chega de deixar dinheiro parado perdendo pra inflação. Te explico o próximo passo.",
-      "corpo": "Se você chegou até aqui seguindo os vídeos dessa semana, já sabe o cenário: juro alto, banco mais seletivo, inflação corroendo quem fica parado. Sabe o diagnóstico. Falta o próximo passo prático.",
-      "virada": "Eu não vim só te alertar. Vim te mostrar o caminho depois do alerta.",
-      "cta": "Manda 'ALAVANCAGEM' no direct que eu te explico o próximo passo.",
-      "como_falar": "Tom de transição — reconhece o que já foi mostrado, aponta pra ação. Energia crescente até o CTA.",
-      "como_editar": "Reaproveita rapidamente prints de vídeos anteriores da semana (1-2s cada) antes de virar pro CTA. Corte a cada 3-4s.",
-      "capa": "VOCÊ JÁ SABE O PROBLEMA. AGORA VEM A SOLUÇÃO",
-      "dor": "Ansiedade com dinheiro parado",
-      "desejo": "Não depender de banco",
-      "fonte": ""
-    },
-    {
-      "id": "v60",
-      "pilar": "CTA Direto",
-      "titulo": "Você tem patrimônio, falta estratégia",
-      "gancho": "Você tem patrimônio, mas não tem estratégia. Eu resolvo essa segunda parte. Fala comigo.",
-      "corpo": "Muita gente que me assiste já tem alguma coisa construída — um imóvel, uma reserva, um negócio rodando. O que falta não é ativo. É estratégia amarrando tudo isso num plano com direção.",
-      "virada": "Ter patrimônio sem estratégia é ter ingredientes sem receita. Dá pra fazer alguma coisa, mas não o prato que você realmente queria.",
-      "cta": "Link na bio — vamos conversar sobre isso.",
-      "como_falar": "Tom de fechamento — mais pessoal, olhando reto pra câmera, convite genuíno, não script de vendas.",
-      "como_editar": "Corte a cada 4s.",
-      "capa": "VOCÊ TEM PATRIMÔNIO. FALTA ESTRATÉGIA",
-      "dor": "Vergonha de não ter patrimônio",
-      "desejo": "Ser visto como estrategista",
-      "fonte": ""
+      "id": "P8",
+      "assunto": "Uso do crédito em construção",
+      "afeta": [
+        "V09"
+      ],
+      "status": "CONFIRMADO",
+      "obs": "Projeto + cronograma físico-financeiro; liberação em pelo menos 3 etapas, direto na conta do consorciado."
     }
   ],
-  "calendario": [
-    {
-      "data": "2026-09-07",
-      "dia_semana": "Segunda",
-      "horario": "07h30",
-      "script_id": "v1"
-    },
-    {
-      "data": "2026-09-07",
-      "dia_semana": "Segunda",
-      "horario": "19h30",
-      "script_id": "v12"
-    },
-    {
-      "data": "2026-09-08",
-      "dia_semana": "Terça",
-      "horario": "07h30",
-      "script_id": "v23"
-    },
-    {
-      "data": "2026-09-08",
-      "dia_semana": "Terça",
-      "horario": "19h30",
-      "script_id": "v31"
-    },
-    {
-      "data": "2026-09-09",
-      "dia_semana": "Quarta",
-      "horario": "07h30",
-      "script_id": "v35"
-    },
-    {
-      "data": "2026-09-09",
-      "dia_semana": "Quarta",
-      "horario": "19h30",
-      "script_id": "v47"
-    },
-    {
-      "data": "2026-09-10",
-      "dia_semana": "Quinta",
-      "horario": "07h30",
-      "script_id": "v55"
-    },
-    {
-      "data": "2026-09-10",
-      "dia_semana": "Quinta",
-      "horario": "19h30",
-      "script_id": "v58"
-    },
-    {
-      "data": "2026-09-11",
-      "dia_semana": "Sexta",
-      "horario": "07h30",
-      "script_id": "v36"
-    },
-    {
-      "data": "2026-09-11",
-      "dia_semana": "Sexta",
-      "horario": "19h30",
-      "script_id": "v2"
-    },
-    {
-      "data": "2026-09-12",
-      "dia_semana": "Sábado",
-      "horario": "07h30",
-      "script_id": "v13"
-    },
-    {
-      "data": "2026-09-12",
-      "dia_semana": "Sábado",
-      "horario": "19h30",
-      "script_id": "v24"
-    },
-    {
-      "data": "2026-09-13",
-      "dia_semana": "Domingo",
-      "horario": "07h30",
-      "script_id": "v48"
-    },
-    {
-      "data": "2026-09-13",
-      "dia_semana": "Domingo",
-      "horario": "19h30",
-      "script_id": "v37"
-    },
-    {
-      "data": "2026-09-14",
-      "dia_semana": "Segunda",
-      "horario": "07h30",
-      "script_id": "v3"
-    },
-    {
-      "data": "2026-09-14",
-      "dia_semana": "Segunda",
-      "horario": "19h30",
-      "script_id": "v14"
-    },
-    {
-      "data": "2026-09-15",
-      "dia_semana": "Terça",
-      "horario": "07h30",
-      "script_id": "v25"
-    },
-    {
-      "data": "2026-09-15",
-      "dia_semana": "Terça",
-      "horario": "19h30",
-      "script_id": "v32"
-    },
-    {
-      "data": "2026-09-16",
-      "dia_semana": "Quarta",
-      "horario": "07h30",
-      "script_id": "v38"
-    },
-    {
-      "data": "2026-09-16",
-      "dia_semana": "Quarta",
-      "horario": "19h30",
-      "script_id": "v49"
-    },
-    {
-      "data": "2026-09-17",
-      "dia_semana": "Quinta",
-      "horario": "07h30",
-      "script_id": "v4"
-    },
-    {
-      "data": "2026-09-17",
-      "dia_semana": "Quinta",
-      "horario": "19h30",
-      "script_id": "v15"
-    },
-    {
-      "data": "2026-09-18",
-      "dia_semana": "Sexta",
-      "horario": "07h30",
-      "script_id": "v39"
-    },
-    {
-      "data": "2026-09-18",
-      "dia_semana": "Sexta",
-      "horario": "19h30",
-      "script_id": "v56"
-    },
-    {
-      "data": "2026-09-19",
-      "dia_semana": "Sábado",
-      "horario": "07h30",
-      "script_id": "v59"
-    },
-    {
-      "data": "2026-09-19",
-      "dia_semana": "Sábado",
-      "horario": "19h30",
-      "script_id": "v5"
-    },
-    {
-      "data": "2026-09-20",
-      "dia_semana": "Domingo",
-      "horario": "07h30",
-      "script_id": "v16"
-    },
-    {
-      "data": "2026-09-20",
-      "dia_semana": "Domingo",
-      "horario": "19h30",
-      "script_id": "v26"
-    },
-    {
-      "data": "2026-09-21",
-      "dia_semana": "Segunda",
-      "horario": "07h30",
-      "script_id": "v50"
-    },
-    {
-      "data": "2026-09-21",
-      "dia_semana": "Segunda",
-      "horario": "19h30",
-      "script_id": "v40"
-    },
-    {
-      "data": "2026-09-22",
-      "dia_semana": "Terça",
-      "horario": "07h30",
-      "script_id": "v6"
-    },
-    {
-      "data": "2026-09-22",
-      "dia_semana": "Terça",
-      "horario": "19h30",
-      "script_id": "v17"
-    },
-    {
-      "data": "2026-09-23",
-      "dia_semana": "Quarta",
-      "horario": "07h30",
-      "script_id": "v27"
-    },
-    {
-      "data": "2026-09-23",
-      "dia_semana": "Quarta",
-      "horario": "19h30",
-      "script_id": "v33"
-    },
-    {
-      "data": "2026-09-24",
-      "dia_semana": "Quinta",
-      "horario": "07h30",
-      "script_id": "v41"
-    },
-    {
-      "data": "2026-09-24",
-      "dia_semana": "Quinta",
-      "horario": "19h30",
-      "script_id": "v51"
-    },
-    {
-      "data": "2026-09-25",
-      "dia_semana": "Sexta",
-      "horario": "07h30",
-      "script_id": "v7"
-    },
-    {
-      "data": "2026-09-25",
-      "dia_semana": "Sexta",
-      "horario": "19h30",
-      "script_id": "v18"
-    },
-    {
-      "data": "2026-09-26",
-      "dia_semana": "Sábado",
-      "horario": "07h30",
-      "script_id": "v42"
-    },
-    {
-      "data": "2026-09-26",
-      "dia_semana": "Sábado",
-      "horario": "19h30",
-      "script_id": "v28"
-    },
-    {
-      "data": "2026-09-27",
-      "dia_semana": "Domingo",
-      "horario": "07h30",
-      "script_id": "v52"
-    },
-    {
-      "data": "2026-09-27",
-      "dia_semana": "Domingo",
-      "horario": "19h30",
-      "script_id": "v8"
-    },
-    {
-      "data": "2026-09-28",
-      "dia_semana": "Segunda",
-      "horario": "07h30",
-      "script_id": "v19"
-    },
-    {
-      "data": "2026-09-28",
-      "dia_semana": "Segunda",
-      "horario": "19h30",
-      "script_id": "v43"
-    },
-    {
-      "data": "2026-09-29",
-      "dia_semana": "Terça",
-      "horario": "07h30",
-      "script_id": "v57"
-    },
-    {
-      "data": "2026-09-29",
-      "dia_semana": "Terça",
-      "horario": "19h30",
-      "script_id": "v60"
-    },
-    {
-      "data": "2026-09-30",
-      "dia_semana": "Quarta",
-      "horario": "07h30",
-      "script_id": "v9"
-    },
-    {
-      "data": "2026-09-30",
-      "dia_semana": "Quarta",
-      "horario": "19h30",
-      "script_id": "v20"
-    },
-    {
-      "data": "2026-10-01",
-      "dia_semana": "Quinta",
-      "horario": "07h30",
-      "script_id": "v29"
-    },
-    {
-      "data": "2026-10-01",
-      "dia_semana": "Quinta",
-      "horario": "19h30",
-      "script_id": "v34"
-    },
-    {
-      "data": "2026-10-02",
-      "dia_semana": "Sexta",
-      "horario": "07h30",
-      "script_id": "v44"
-    },
-    {
-      "data": "2026-10-02",
-      "dia_semana": "Sexta",
-      "horario": "19h30",
-      "script_id": "v53"
-    },
-    {
-      "data": "2026-10-03",
-      "dia_semana": "Sábado",
-      "horario": "07h30",
-      "script_id": "v10"
-    },
-    {
-      "data": "2026-10-03",
-      "dia_semana": "Sábado",
-      "horario": "19h30",
-      "script_id": "v21"
-    },
-    {
-      "data": "2026-10-04",
-      "dia_semana": "Domingo",
-      "horario": "07h30",
-      "script_id": "v45"
-    },
-    {
-      "data": "2026-10-04",
-      "dia_semana": "Domingo",
-      "horario": "19h30",
-      "script_id": "v30"
-    },
-    {
-      "data": "2026-10-05",
-      "dia_semana": "Segunda",
-      "horario": "07h30",
-      "script_id": "v54"
-    },
-    {
-      "data": "2026-10-05",
-      "dia_semana": "Segunda",
-      "horario": "19h30",
-      "script_id": "v11"
-    },
-    {
-      "data": "2026-10-06",
-      "dia_semana": "Terça",
-      "horario": "07h30",
-      "script_id": "v22"
-    },
-    {
-      "data": "2026-10-06",
-      "dia_semana": "Terça",
-      "horario": "19h30",
-      "script_id": "v46"
-    }
-  ],
-  "periodo": {
-    "inicio": "2026-09-07",
-    "fim": "2026-10-06"
+  "numeros": {
+    "reduzido": [
+      [
+        700000,
+        490000,
+        "2.609,19",
+        "3.622,09"
+      ],
+      [
+        750000,
+        525000,
+        "2.795,56",
+        "3.880,81"
+      ],
+      [
+        800000,
+        560000,
+        "2.981,93",
+        "4.139,53"
+      ],
+      [
+        850000,
+        595000,
+        "3.168,30",
+        "4.398,25"
+      ],
+      [
+        900000,
+        630000,
+        "3.354,68",
+        "4.656,98"
+      ],
+      [
+        950000,
+        665000,
+        "3.541,05",
+        "4.915,70"
+      ],
+      [
+        1000000,
+        700000,
+        "3.727,42",
+        "5.174,42"
+      ]
+    ],
+    "integral": [
+      [
+        500000,
+        "2.587,21"
+      ],
+      [
+        550000,
+        "2.845,93"
+      ],
+      [
+        600000,
+        "3.104,65"
+      ],
+      [
+        650000,
+        "3.363,37"
+      ],
+      [
+        700000,
+        "3.622,09"
+      ],
+      [
+        750000,
+        "3.880,81"
+      ],
+      [
+        800000,
+        "4.139,53"
+      ],
+      [
+        850000,
+        "4.398,25"
+      ],
+      [
+        900000,
+        "4.656,98"
+      ],
+      [
+        950000,
+        "4.915,70"
+      ],
+      [
+        1000000,
+        "5.174,42"
+      ]
+    ],
+    "regras": [
+      "Prazo: 240 meses · 2.200 participantes",
+      "Taxa de administração: 15,75% (era 21%) até 30/10, proposta até 20h",
+      "De 31/10 a 16/11: taxa volta para 21%",
+      "Venda de cotas até 16/11 · 1ª assembleia em 19/11",
+      "Sem taxa de adesão, sem fundo de reserva, sem seguro sobre o lance",
+      "INCC a partir da 14ª parcela (corrige parcela e crédito)",
+      "Seguro prestamista incluso na parcela",
+      "Plano reduzido: R$ 700 mil a R$ 1 milhão (70% até a contemplação; recalcula na contemplação)",
+      "Plano integral: R$ 500 mil a R$ 1 milhão",
+      "Contemplações previstas por mês: 1 sorteio, 1 lance livre, 1 lance fixo",
+      "Lance fixo de 30% sobre crédito integral + taxa",
+      "Lance embutido: até 30% do valor nominal do crédito",
+      "Lance parcelável em 4x sem juros (crédito liberado após a 4ª)",
+      "Parcelas antecipadas podem ser usadas como lance"
+    ],
+    "contas": [
+      [
+        "Desconto na taxa, carta R$ 1 milhão (21% − 15,75%)",
+        "R$ 52.500"
+      ],
+      [
+        "Desconto na taxa, carta R$ 700 mil",
+        "R$ 36.750"
+      ],
+      [
+        "Base do lance fixo, carta R$ 1 milhão (crédito + taxa)",
+        "R$ 1.157.500"
+      ],
+      [
+        "Lance fixo de 30%",
+        "R$ 347.250"
+      ],
+      [
+        "Embutido máximo (30% do crédito nominal)",
+        "R$ 300.000"
+      ],
+      [
+        "Complemento do cliente",
+        "R$ 47.250"
+      ],
+      [
+        "Crédito líquido após o embutido",
+        "R$ 700.000"
+      ],
+      [
+        "Custo do plano R$ 1 milhão (crédito + taxa, sem seguro e INCC)",
+        "R$ 1.157.500"
+      ],
+      [
+        "Consórcio carta R$ 800 mil: parcela integral / custo do plano",
+        "R$ 4.139,53 / R$ 926.000"
+      ]
+    ]
   }
 };
-const PILAR_ORDER = ["Alavancagem Patrimonial", "Alavancagem Financeira", "Alavancagem de Capital", "Projeções", "Código Vermelho", "Mitos & Educação", "Cases & Prova Social", "CTA Direto"];

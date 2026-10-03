@@ -2,137 +2,155 @@
 <html lang="pt-BR">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Central Código Vermelho</title>
-<meta name="description" content="Calendário de 30 dias, 60 roteiros completos, mapa de crédito e painel de execução da Avaner">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Central de Campanhas AVANER</title>
+<meta name="description" content="Painel de execução das campanhas AVANER — Consórcio Yamaha">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;700;800&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<div class="ticker-wrap"><div class="ticker" id="ticker"></div></div>
-
 <header class="top">
   <div class="brand">
-    <h1><em>Código</em> Vermelho</h1>
-    <span class="sub">Central de conteúdo — Avaner · 30 dias · 60 roteiros</span>
+    <h1 id="brandTitle">Grupo <em>11.000</em></h1>
+    <span class="sub" id="brandSub">Central de campanha · Avaner · Consórcio Yamaha</span>
   </div>
-  <button class="theme-toggle" id="themeToggle" type="button">Tema: sistema</button>
+  <div class="top-actions">
+    <label class="campaign-switch" for="campaignSelect"><span>Campanha</span><select id="campaignSelect" aria-label="Selecionar campanha"></select></label>
+    <div class="gsearch">
+      <input id="globalSearch" type="search" placeholder="Buscar em tudo (código, título, texto)..." autocomplete="off" aria-label="Busca global">
+      <div id="globalResults" class="gresults" hidden></div>
+    </div>
+    <button class="theme-toggle" id="themeToggle" type="button">Tema: sistema</button>
+  </div>
 </header>
 
 <nav class="tabs" id="tabs" role="tablist" aria-label="Seções">
-  <button role="tab" aria-selected="true" data-view="geral">Visão geral</button>
+  <button role="tab" aria-selected="true" data-view="hoje">Hoje</button>
+  <button role="tab" aria-selected="false" data-view="geral">Visão geral</button>
   <button role="tab" aria-selected="false" data-view="execucao">Execução</button>
   <button role="tab" aria-selected="false" data-view="calendario">Calendário</button>
   <button role="tab" aria-selected="false" data-view="roteiros">Roteiros</button>
-  <button role="tab" aria-selected="false" data-view="dores">Dores &amp; desejos</button>
-  <button role="tab" aria-selected="false" data-view="credito">Mapa de crédito</button>
-  <button role="tab" aria-selected="false" data-view="viral">Sistema de viralização</button>
+  <button role="tab" aria-selected="false" data-view="anuncios">Anúncios</button>
+  <button role="tab" aria-selected="false" data-view="whatsapp">WhatsApp</button>
+  <button role="tab" aria-selected="false" data-view="numeros">Números</button>
+  <button role="tab" aria-selected="false" data-view="pendencias">Pendências <span class="badge" id="pendBadge"></span></button>
 </nav>
 
 <main>
-  <section class="view active" id="view-geral">
-    <p class="eyebrow">Painel</p>
-    <h2>60 vídeos. 1 meta: virar referência em alavancagem.</h2>
-    <p class="lede">30 dias, 2 Reels por dia, formato cortes. Cada roteiro tem copy completa, direção de fala, direção de edição, a dor e o desejo que ele ativa, e a fonte do dado quando aplicável.</p>
-    <div class="stats" id="statsRow"></div>
+  <div id="connStatus" class="conn-status"></div>
+
+  <section class="view active" id="view-hoje">
+    <p class="eyebrow" id="hojeEyebrow">Hoje</p>
+    <h2 id="hojeTitle">Hoje</h2>
+    <p class="lede" id="hojeLede"></p>
+    <div id="hojeBody"></div>
+  </section>
+
+  <section class="view" id="view-geral">
+    <p class="eyebrow">Campanha</p>
+    <h2>Visão geral</h2>
+    <div class="stats" id="geralDates"></div>
     <div class="section-block">
-      <h3>Distribuição por pilar</h3>
-      <div class="pilar-bars" id="pilarBars"></div>
+      <h3>Andamento</h3>
+      <div class="stats" id="geralStats"></div>
+      <div class="exec-progress" id="geralBar"></div>
+      <div class="exec-legend" id="geralLegend"></div>
     </div>
     <div class="section-block">
-      <h3>Como este painel funciona</h3>
-      <div class="field-grid">
-        <div class="field"><div class="fl">Execução</div><div class="fv">O status de produção de cada vídeo — gravado, editado, programado, publicado. Sincroniza com o Supabase, então o time inteiro vê o mesmo status.</div></div>
-        <div class="field"><div class="fl">Calendário</div><div class="fv">Os 30 dias com 2 posts cada, na ordem sugerida. Clique num horário pra abrir o roteiro completo.</div></div>
-        <div class="field"><div class="fl">Roteiros</div><div class="fv">Biblioteca com os 60 roteiros completos, filtrável por pilar e por busca de texto.</div></div>
-        <div class="field"><div class="fl">Dores &amp; desejos / Mapa de crédito</div><div class="fv">O mapa emocional e as taxas reais de cada tipo de dívida no Brasil hoje, pra usar como referência a qualquer momento.</div></div>
-      </div>
+      <h3>Pendências abertas</h3>
+      <div id="geralPend"></div>
+    </div>
+    <div class="section-block prose" id="geralEstrategia">
+      <h3>Estratégia</h3>
     </div>
   </section>
 
   <section class="view" id="view-execucao">
     <p class="eyebrow">Produção</p>
-    <h2>Painel de execução</h2>
-    <p class="lede">Acompanhe o que já foi gravado, editado, programado e publicado. Marcar uma etapa marca automaticamente as anteriores.</p>
-    <div id="execConnStatus" class="conn-status"></div>
-    <div class="stats" id="execStats"></div>
-    <div class="exec-progress" id="execProgressBar"></div>
-    <div class="exec-legend" id="execProgressLegend"></div>
+    <h2>Execução</h2>
+    <p class="lede">Gravado, editado e publicado de cada Reel e anúncio. Marcar uma etapa marca as anteriores. Conteúdo bloqueado não pode ser marcado como publicado.</p>
     <div class="filters" id="execFilters">
-      <input class="search-box" id="execSearchBox" type="search" placeholder="Buscar por título ou pilar...">
+      <input class="search-box" id="execSearch" type="search" placeholder="Buscar por código ou título...">
     </div>
-    <p class="result-count" id="execResultCount"></p>
+    <p class="result-count" id="execCount"></p>
     <div class="table-scroll">
       <table class="exec-table">
-        <thead><tr><th>Quando</th><th>Pilar</th><th>Título</th><th>Gravado</th><th>Editado</th><th>Programado</th><th>Publicado</th><th>Notas</th></tr></thead>
-        <tbody id="execTableBody"></tbody>
+        <thead><tr><th>Quando</th><th>Código</th><th>Título</th><th>Situação</th><th>Gravado</th><th>Editado</th><th>Publicado</th><th>Notas</th></tr></thead>
+        <tbody id="execBody"></tbody>
       </table>
     </div>
   </section>
 
   <section class="view" id="view-calendario">
-    <p class="eyebrow" id="calPeriodo">Período</p>
-    <h2>Calendário — 30 dias</h2>
-    <p class="lede">2 Reels por dia. Clique em qualquer horário pra abrir o roteiro completo na aba Roteiros. A bolinha ao lado do horário mostra o status de execução.</p>
-    <div class="cal-grid" id="calGrid"></div>
+    <p class="eyebrow" id="calEyebrow">Calendário da campanha</p>
+    <h2>Calendário</h2>
+    <p class="lede">Clique num conteúdo pra abrir o roteiro. A bolinha mostra a etapa de produção; a borda mostra a situação (liberado, atenção, bloqueado).</p>
+    <div class="exec-legend" id="calLegend"></div>
+    <div id="calBody"></div>
   </section>
 
   <section class="view" id="view-roteiros">
-    <p class="eyebrow">Biblioteca completa</p>
-    <h2>Roteiros — copy, fala e edição</h2>
-    <p class="lede">Roteiro-base: grave com a sua própria cadência e gírias. O texto é o esqueleto do que falar — sua voz é o que faz não soar como IA.</p>
-    <div class="filters" id="filters">
-      <input class="search-box" id="searchBox" type="search" placeholder="Buscar por palavra, gancho ou dado...">
+    <p class="eyebrow" id="reelsEyebrow">Reels</p>
+    <h2>Roteiros</h2>
+    <p class="lede">O texto é o esqueleto do que falar. Grave com a sua cadência.</p>
+    <div class="filters" id="rotFilters">
+      <input class="search-box" id="rotSearch" type="search" placeholder="Buscar por palavra, gancho ou legenda...">
     </div>
-    <p class="result-count" id="resultCount"></p>
-    <div class="script-list" id="scriptList"></div>
+    <p class="result-count" id="rotCount"></p>
+    <div class="script-list" id="rotList"></div>
   </section>
 
-  <section class="view" id="view-dores">
-    <p class="eyebrow">Psicologia do gancho</p>
-    <h2>Dores &amp; desejos</h2>
-    <p class="lede">Todo roteiro deste calendário ativa pelo menos uma dor e promete pelo menos um desejo — não é decoração, é o motor emocional por trás do dado e da virada. Veja a lista completa nas fichas de cada roteiro.</p>
-    <div class="section-block">
-      <h3>Dores</h3>
-      <div class="pain-grid" id="doresGrid"></div>
-    </div>
-    <div class="section-block">
-      <h3>Desejos</h3>
-      <div class="pain-grid" id="desejosGrid"></div>
-    </div>
+  <section class="view" id="view-anuncios">
+    <p class="eyebrow">Tráfego pro WhatsApp</p>
+    <h2>Anúncios</h2>
+    <p class="lede" id="adsLede"></p>
+    <div class="script-list" id="adList"></div>
   </section>
 
-  <section class="view" id="view-credito">
-    <p class="eyebrow">Todas as opções de crédito</p>
-    <h2>Mapa de crédito no Brasil</h2>
-    <p class="lede">Não é só financiamento imobiliário — o bloco Código Vermelho bate em todas as frentes de dívida. Taxas reais, com fonte, pra usar em qualquer roteiro novo.</p>
-    <div class="table-scroll">
-      <table class="credit-table">
-        <thead><tr><th>Tipo de crédito</th><th>Taxa</th><th>O que significa</th><th>Fonte</th></tr></thead>
-        <tbody id="creditBody"></tbody>
-      </table>
-    </div>
+  <section class="view" id="view-whatsapp">
+    <p class="eyebrow">Entrada dos leads</p>
+    <h2>WhatsApp</h2>
+    <p class="lede">Todo lead vai direto pro WhatsApp do Michael, sem resposta automática. Configure no Meta a mensagem pré-preenchida de cada anúncio e Reel turbinado; ela mostra de onde o lead veio e qual assunto trouxe ele.</p>
+    <div id="waBody"></div>
   </section>
 
-  <section class="view" id="view-viral">
-    <p class="eyebrow">O mecanismo, não só a lista de ideias</p>
-    <h2>Sistema de viralização</h2>
-    <p class="lede">Aplique estas regras em qualquer vídeo do calendário — inclusive nos que vierem depois dos 30 dias.</p>
-    <div class="viral-list" id="viralList"></div>
-    <div class="meta-box">
-      <h4>Meta dos 30 dias</h4>
-      <p>A palavra <strong>"alavancagem"</strong> aparece de propósito nos ganchos e CTAs dos pilares de Alavancagem Patrimonial, Financeira e de Capital. Repetir o mesmo conceito-âncora em ângulos diferentes, todos os dias, é o que faz o algoritmo e o público te associarem a esse termo em 30 dias. Não troque por sinônimos ("crescimento", "investimento") nesses vídeos — a repetição exata da palavra constrói a associação de marca.</p>
-    </div>
+  <section class="view" id="view-numeros">
+    <p class="eyebrow">Tabela oficial</p>
+    <h2>Números</h2>
+    <div id="numBody"></div>
+  </section>
+
+  <section class="view" id="view-pendencias">
+    <p class="eyebrow">Confirmações com a Yamaha</p>
+    <h2>Pendências</h2>
+    <p class="lede">PENDENTE deixa os conteúdos ligados em atenção. BLOQUEADO impede marcar como publicado. CONFIRMADO tira os avisos dos conteúdos.</p>
+    <div id="pendBody"></div>
   </section>
 </main>
 
-<footer>Central de conteúdo Avaner · dados públicos do Banco Central, Boletim Focus, ABAC, FipeZap e Serasa Experian (ago/2026) · uso interno</footer>
+<footer id="footerText">Central de Campanhas · Avaner · uso interno</footer>
+
+<div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+
+<div id="tp" hidden>
+  <div id="tpGuide"></div>
+  <div id="tpScroll"><div id="tpText"></div></div>
+  <div id="tpBar">
+    <button id="tpPlay" class="go" type="button">▶ Rolar</button>
+    <button id="tpSlow" type="button" aria-label="Mais devagar">−</button><span id="tpSpd">vel 3</span><button id="tpFast" type="button" aria-label="Mais rápido">+</button>
+    <button id="tpSmall" type="button" aria-label="Diminuir letra">A−</button><button id="tpBig" type="button" aria-label="Aumentar letra">A+</button>
+    <button id="tpMirror" type="button">Espelhar</button>
+    <button id="tpTop" type="button">Início</button>
+    <button id="tpClose" type="button">Fechar</button>
+  </div>
+</div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="supabase-config.js"></script>
 <script src="data.js"></script>
+<script src="data-trucks.js"></script>
 <script src="app.js"></script>
 </body>
 </html>
