@@ -3,11 +3,14 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
 <title>Central de Campanhas AVANER</title>
 <meta name="description" content="Painel de execução das campanhas AVANER — Consórcio Yamaha">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;700;800&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
-<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="central-v3.css?v=20261002-v3">
 </head>
 <body>
 
@@ -147,10 +150,22 @@
   </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="supabase-config.js"></script>
-<script src="data.js"></script>
-<script src="data-trucks.js"></script>
-<script src="app.js"></script>
+<script>
+window.addEventListener('error', function(e){
+  try { var el=document.getElementById('connStatus'); if(el){ el.className='conn-status warn'; el.innerHTML='<span class="conn-warn">● Erro de carregamento: '+String(e.message||'erro no JavaScript')+'.</span>'; } } catch(_){}
+});
+window.addEventListener('unhandledrejection', function(e){ console.error(e.reason); });
+</script>
+<script src="central-v3.bundle.js?v=20261002-v3"></script>
+<script>
+(function(){
+  var s=document.createElement('script');
+  s.src='https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2';
+  s.async=true;
+  s.onload=function(){ if(window.initSupabaseSync) window.initSupabaseSync(); };
+  s.onerror=function(){ console.warn('Supabase CDN indisponível; painel segue com backup local.'); };
+  document.head.appendChild(s);
+})();
+</script>
 </body>
 </html>
